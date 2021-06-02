@@ -1,15 +1,15 @@
-import { publish, subscribe, unSubscribe } from './transmitter';
+import { publish, subscribe, unSubscribe } from "./transmitter";
 
-const stateGlobalName = 'WEB_IFC_STATE'
+const stateGlobalName = "WEB_IFC_STATE";
 const state = (globalThis as any)[stateGlobalName] || {};
 const keys = new Set();
 
-export const GLOBAL_STATE_EVENT = 'GLOBAL_STATE_EVENT';
+export const GLOBAL_STATE_EVENT = "GLOBAL_STATE_EVENT";
 
 // helper if we want to save state
 if (!(window as any)[stateGlobalName]) {
     (globalThis as any)[stateGlobalName] = {};
-    window.addEventListener('SIMPLE_HTML_SAVE_STATE', () => {
+    window.addEventListener("SIMPLE_HTML_SAVE_STATE", () => {
         // here we could have set it to local store/file
         (globalThis as any)[stateGlobalName] = state;
         console.log(stateGlobalName, (globalThis as any)[stateGlobalName]);
@@ -37,7 +37,7 @@ export function validateKey(key: string) {
 }
 
 // internal object
-const State = class <T> {
+const State = class<T> {
     mainStateKey: string;
     isObject: boolean;
     internalStateKey: string;
@@ -67,7 +67,7 @@ const State = class <T> {
             // set internal state
             this.internalStateKey = internalStateKey;
             if (!this.getStateContainer().hasOwnProperty(this.internalStateKey)) {
-                if (typeof defaultValue === 'object' && defaultValue !== null) {
+                if (typeof defaultValue === "object" && defaultValue !== null) {
                     this.getStateContainer()[this.internalStateKey] = defaultValue;
                 } else {
                     this.getStateContainer()[this.internalStateKey] = {};
@@ -104,7 +104,7 @@ const State = class <T> {
 
     protected resetSimpleState(val: any = this.defaultValue) {
         if (this.isObject) {
-            throw 'this is object only state, use resetObj';
+            throw "this is object only state, use resetObj";
         }
         this.getStateContainer()[this.getStateKey()] = val;
     }
@@ -118,7 +118,7 @@ const State = class <T> {
      */
     protected getSimpleState(): stateResult<T> {
         if (this.isObject) {
-            throw 'this is object only state, use getObjectValue';
+            throw "this is object only state, use getObjectValue";
         }
 
         const STATE_KEY = this.getStateKey();
@@ -140,7 +140,7 @@ const State = class <T> {
      */
     protected getSimpleValue(): T {
         if (this.isObject) {
-            throw 'this is object only state, use getObject';
+            throw "this is object only state, use getObject";
         }
 
         return this.getStateContainer()[this.getStateKey()];
@@ -197,14 +197,13 @@ const State = class <T> {
      * @param context must be object
      * @param callback
      */
-    public subscribe(context: {}, callback: () => void): void {
-
+    public subscribe(context: Record<string, unknown>, callback: () => void): void {
         // for following the event we just use the internal event handler
         subscribe(this.getStateKey(), context, callback);
     }
 
-    public unsubscribe(context: {}) {
-        unSubscribe(this.getStateKey(), context)
+    public unsubscribe(context: Record<string, unknown>) {
+        unSubscribe(this.getStateKey(), context);
     }
 };
 

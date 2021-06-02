@@ -1,5 +1,5 @@
 // set to window, so it can survive hmr if we add it
-const transmitterGlobalName = 'WEB_IFC_TRANSMITTER'
+const transmitterGlobalName = "WEB_IFC_TRANSMITTER";
 if (!(globalThis as any)[transmitterGlobalName]) {
     (globalThis as any)[transmitterGlobalName] = {};
 }
