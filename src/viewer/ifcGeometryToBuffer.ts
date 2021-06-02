@@ -13,7 +13,7 @@ export function ifcGeometryToBuffer(
     const normals = [];
     const colors = [];
     const colorsPicking = [];
-    const visible = [];
+    const hidden = [];
 
     for (let k = 0, lenk = vertexData.length / 6; k < lenk; k++) {
         positions.push(vertexData[k * 6 + 0]);
@@ -34,13 +34,13 @@ export function ifcGeometryToBuffer(
         colorsPicking.push(pickingColor.b);
         colorsPicking.push(1);
 
-        visible.push(0);
+        hidden.push(0);
     }
 
     geometry.setAttribute("position", new BufferAttribute(new Float32Array(positions), 3, true));
     geometry.setAttribute("normal", new BufferAttribute(new Float32Array(normals), 3, true));
     geometry.setAttribute("color", new BufferAttribute(new Float32Array(colors), 4, true));
-    geometry.setAttribute("showing", new BufferAttribute(new Float32Array(visible), 1, true));
+    geometry.setAttribute("hidden", new BufferAttribute(new Float32Array(hidden), 1, true));
     geometry.setAttribute(
         "colorpicking",
         new BufferAttribute(new Float32Array(colorsPicking), 4, true)

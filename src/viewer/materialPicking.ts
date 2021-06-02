@@ -18,15 +18,15 @@ materialPicking.onBeforeCompile = (shader) => {
 
     uniform bool picking;
     attribute vec4 colorpicking;
-    attribute float showing;
-    varying float vShowing;
+    attribute float hidden;
+    varying float vHidden;
     
     #include <clipping_planes_pars_vertex>
     
     void main() {
       #include <uv_vertex>
       #include <uv2_vertex>
-      vShowing = showing;
+      vHidden = hidden;
   
       #if defined( USE_COLOR_ALPHA )
 	      vColor = vec4( 1.0 );
@@ -50,19 +50,17 @@ materialPicking.onBeforeCompile = (shader) => {
     shader.fragmentShader = shader.fragmentShader.replace(
         "void main() {",
         `
-    varying float vShowing;
+    varying float vHidden;
     void main() {
-      if (vShowing > 0.1) discard;
+      if (vHidden > 0.1) discard;
     `
     );
 
     shader.fragmentShader = shader.fragmentShader.replace(
         "#include <clipping_planes_fragment>",
         `
-        if (vShowing > 0.1) discard;
+        if (vHidden > 0.1) discard;
         #include <clipping_planes_fragment>
       `
     );
-
-    //materialPicking.userData.shader = shader;
 };

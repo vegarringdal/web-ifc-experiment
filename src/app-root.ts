@@ -140,7 +140,7 @@ export class AppRoot extends HTMLElement {
           
                 const g = e.geometry.groups[x.group];
                 const colorAtt = e.geometry.attributes.color;
-                const showingAtt = e.geometry.attributes.showing;
+                const hiddenAtt = e.geometry.attributes.hidden;
                 const index = e.geometry.index.array;
           
                 const c = new Color('red')
@@ -154,9 +154,9 @@ export class AppRoot extends HTMLElement {
           
                 for(let i = g.start; i < g.start + g.count;i++ ) {
                   const p = index[i];
-                  showingAtt.setX(p, 1)
+                  hiddenAtt.setX(p, 1)
                }
-               showingAtt.needsUpdate = true
+               hiddenAtt.needsUpdate = true
          
               }
             });

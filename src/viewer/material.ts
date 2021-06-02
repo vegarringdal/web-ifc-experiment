@@ -9,26 +9,26 @@ material.onBeforeCompile = (shader) => {
   shader.vertexShader = shader.vertexShader.replace(
     "void main() {",
     `
-  attribute float showing;
-  varying float vShowing;
+  attribute float hidden;
+  varying float vHidden;
   void main() {
-    vShowing = showing;
+    vHidden = hidden;
   `
   );
 
   shader.fragmentShader = shader.fragmentShader.replace(
     "void main() {",
-    /*glsl*/`
-        varying float vShowing;
+    `
+        varying float vHidden;
         void main() {
-        if (vShowing > 0.1) discard;
+        if (vHidden > 0.1) discard;
     `
   );
 
   shader.fragmentShader = shader.fragmentShader.replace(
     "#include <clipping_planes_fragment>",
     `
-      if (vShowing > 0.1) discard;
+      if (vHidden > 0.1) discard;
       #include <clipping_planes_fragment>
     `
   );
