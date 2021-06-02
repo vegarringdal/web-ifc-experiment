@@ -309,9 +309,6 @@ video {
   --tw-ring-offset-shadow: 0 0 #0000;
   --tw-ring-shadow: 0 0 #0000;
 }
-.visible {
-  visibility: visible;
-}
 .w-full {
   width: 100%;
 }
