@@ -1,13 +1,17 @@
 import { html, render } from "lit-html";
 import {
     AmbientLight,
+    Box3,
     Color,
     DirectionalLight,
     PerspectiveCamera,
     Scene,
     Vector2,
+    Vector3,
     WebGLRenderer,
-    WebGLRenderTarget
+    WebGLRenderTarget,
+    MathUtils,
+    Mesh
 } from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { readAndParseIFC } from "viewer/readAndParseIFC";
@@ -16,6 +20,10 @@ import { MeshExtended } from "viewer/MeshExtended";
 import { propertyMap } from "viewer/propertyMap";
 export class AppRoot extends HTMLElement {
     scene: Scene;
+    renderer: WebGLRenderer;
+    camera: PerspectiveCamera;
+    controls: OrbitControls;
+
 
     public connectedCallback() {
         render(this.template(), this);
@@ -29,13 +37,18 @@ export class AppRoot extends HTMLElement {
         //Renderer
         const threeCanvas = document.getElementById("3dview") as HTMLCanvasElement;
         const renderer = new WebGLRenderer({ antialias: true, canvas: threeCanvas });
+        this.renderer = renderer;
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(window.devicePixelRatio);
 
         //Camera
         const camera = new PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+        this.camera = camera;
         camera.position.z = 5;
+
+        // controls
         const controls = new OrbitControls(camera, renderer.domElement);
+        this.controls = controls;
 
         //Lights
         const directionalLight1 = new DirectionalLight(0xffeeff, 0.8);
@@ -155,6 +168,30 @@ export class AppRoot extends HTMLElement {
           
     }
 
+
+    fitModelToFrame(object: Mesh) {
+      const box = new Box3().setFromObject(object);
+      const boxSize = box.getSize(new Vector3()).length();
+      const boxCenter = box.getCenter(new Vector3());
+
+      const halfSizeToFitOnScreen = boxSize * 0.5;
+      const halfFovY = MathUtils.degToRad(this.camera.fov * 0.5);
+      const distance = halfSizeToFitOnScreen / Math.tan(halfFovY);
+
+      const direction = new Vector3()
+          .subVectors(this.camera.position, boxCenter)
+          .multiply(new Vector3(1, 0, 1))
+          .normalize();
+
+      this.camera.position.copy(direction.multiplyScalar(distance).add(boxCenter));
+      this.camera.updateProjectionMatrix();
+      this.camera.lookAt(boxCenter.x, boxCenter.y, boxCenter.z);
+
+      // set target to newest loaded model
+      this.controls.target.copy(boxCenter);
+      this.controls.update();
+  }
+
     public template() {
         return html` <label class="inline-block p-2 m-2 bg-indigo-300 z-10 relative">
                 <input
@@ -165,6 +202,10 @@ export class AppRoot extends HTMLElement {
                         );
                         if (meshWithAlpha) this.scene.add(meshWithAlpha);
                         if (meshWithoutAlpha) this.scene.add(meshWithoutAlpha);
+                        if(meshWithAlpha || meshWithoutAlpha){
+                          this.fitModelToFrame(meshWithoutAlpha || meshWithAlpha)
+                        }
+                        
                     }}
                     type="file"
                     value=""
