@@ -1,10 +1,13 @@
-import { html } from "lit-html";
-import { customElement } from "@simple-html/core";
+import { html, render } from "lit-html";
+export class AppRoot extends HTMLElement {
 
-@customElement("app-root")
-export default class extends HTMLElement {
-  public render() {
+  public connectedCallback() {
+    render(this.template(), this)
+  }
+
+  public template() {
     return html`
-      <span class="inline-block p-2 m-2 bg-indigo-800 text-white">hello world</span> `;
+      <span class="inline-block p-2 m-2 bg-indigo-800 text-white">hello world</span>`;
   }
 }
+
