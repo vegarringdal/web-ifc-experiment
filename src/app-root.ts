@@ -24,6 +24,10 @@ export class AppRoot extends HTMLElement {
     camera: PerspectiveCamera;
     controls: OrbitControls;
 
+    selectionColor = new Color('yellow')
+    lastSelectedObjectColor= new Color()
+    lastSelectedGroup: any;
+    lastSelectedId: number;
 
     public connectedCallback() {
         render(this.template(), this);
@@ -87,7 +91,7 @@ export class AppRoot extends HTMLElement {
         AnimationLoop();
 
 
-        function selectObject(event: any) {
+        threeCanvas.onpointerdown = (event: any) => {
 
             // this does very little atm
 
@@ -126,37 +130,77 @@ export class AppRoot extends HTMLElement {
           
             //interpret the pixel as an ID
             const id = (pixelBuffer[0] << 16) | (pixelBuffer[1] << 8) | pixelBuffer[2];
-            console.log('id:', id);
-            const x = propertyMap.get(id);
+            const selectedID = propertyMap.get(id);
             camera.clearViewOffset();
-          
-            scene.children.forEach((e: MeshExtended) => {
+            
+
+             // new color
+    /*          scene.children.forEach((e: MeshExtended) => {
+
+              // just reset
               if (e.unpickable) {
                 e.unpickable();
               }
           
-              if (x && e.lookupID === x.id) {
-                console.log(e.geometry.userData.mergedUserData[x.group]);
-          
-                const g = e.geometry.groups[x.group];
+              if (this.lastSelectedId && e.lookupID === this.lastSelectedId) {
+               
+                const group = e.geometry.groups[this.lastSelectedGroup];
                 const colorAtt = e.geometry.attributes.color;
-                const hiddenAtt = e.geometry.attributes.hidden;
-                const index = e.geometry.index.array;
-          
-                const c = new Color('red')
-                
-                for(let i = g.start; i < g.start + g.count;i++ ) {
+                const index = e.geometry.index.array;       
+               
+                for(let i = group.start; i < group.start + group.count;i++ ) {
                     const p = index[i] * 4;
-                    colorAtt.setXYZ(p, c.r, c.g, c.b)                 
+                    colorAtt.setXYZ(p, this.lastSelectedObjectColor.r, this.lastSelectedObjectColor.g, this.lastSelectedObjectColor.b)                 
                 }
                 colorAtt.needsUpdate = true
-                e.geometry.computeVertexNormals();
+                
+    
           
-                for(let i = g.start; i < g.start + g.count;i++ ) {
-                  const p = index[i];
-                  hiddenAtt.setX(p, 1)
-               }
-               hiddenAtt.needsUpdate = true
+          
+         
+              }
+            }); */
+          
+
+
+            // new color
+            scene.children.forEach((e: MeshExtended) => {
+              if (e.unpickable) {
+                e.unpickable();
+              }
+              this.lastSelectedId = selectedID
+              if (selectedID && e.lookupID === selectedID.id) {
+               
+                const group = e.geometry.groups[selectedID.group];
+                this.lastSelectedGroup = group;
+                const colorAtt = e.geometry.attributes.color;
+                const index = e.geometry.index.array;       
+                
+                {
+                  let i = group.start
+                  const r = index[i] * 4;
+                  this.lastSelectedObjectColor.r = r
+                }
+
+                {
+                  let i = group.start+1
+                  const g = index[i] * 4;
+                  this.lastSelectedObjectColor.g = g
+                }
+
+                {
+                  let i = group.start+2
+                  const b = index[i] * 4;
+                  this.lastSelectedObjectColor.b = b
+                }
+                console.log(selectedID)
+                console.log(index[group.start] * 4, colorAtt.array[index[group.start] * 4], colorAtt.array[index[group.start+1] * 4], colorAtt.array[index[group.start+1] * 4])
+                for(let i = group.start; i < group.start + group.count;i++ ) {
+                    const p = index[i] * 4;
+                    colorAtt.setXYZ(p, this.selectionColor.r, this.selectionColor.g, this.selectionColor.b)                 
+                }
+                colorAtt.needsUpdate = true        
+                e.geometry.computeVertexNormals();
          
               }
             });
@@ -164,7 +208,7 @@ export class AppRoot extends HTMLElement {
             renderer.render(scene, camera);
           }
           
-          threeCanvas.onpointerdown = selectObject;
+     
           
     }
 
