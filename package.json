@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/simple-html/starter-web#readme",
   "devDependencies": {
+    "@types/three": "^0.129.0",
     "esbuild": "^0.12.5",
     "esbuild-helpers": "0.0.6",
     "lit-html": "^1.4.1",
