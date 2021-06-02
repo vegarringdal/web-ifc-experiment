@@ -1,1 +1,28 @@
 # web-ifc-experiment
+
+Repo for testing gpu picking with (web-ifc)[https://github.com/tomvandig/web-ifc]
+Work here might end up as seperate packages or part of [web-ifc-viewer](https://github.com/agviegas/web-ifc-viewer)
+Will use [web-ifc-three](https://github.com/tomvandig/web-ifc-three) to find out how some of the stuff work..
+
+Warning, this will have a lot of weird stuff :-)
+
+
+## how to use
+
+* clone repo
+* npm install
+* npm start
+* open browser to [localhost](http://localhost)
+
+
+
+What I want to have working (and might fail at getting to work)
+
+* [ ] select items
+* [ ] hide items
+* [ ] show data of selected
+* [ ] multi select by holding CTRL 
+* [ ] show all (hidden)
+* [ ] invert
+
+

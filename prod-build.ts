@@ -5,9 +5,11 @@ import {
   postcssPlugin,
   single,
   minifyHTMLLiteralsPlugin,
+  copySync,
 } from "esbuild-helpers";
 
 clearFolders("dist");
+copySync('node_modules/web-ifc/web-ifc.wasm', 'dist')
 
 /**
  * css so we dont need to wait for postcss unless we change css..
