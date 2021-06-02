@@ -8,6 +8,8 @@ Warning, this will have a lot of weird stuff :-)
 
 What I want to have working (and might fail at getting to work)
 
+Progress Sample (link)[https://vegarringdal.github.io/web-ifc-experiment/]
+
 * [ ] select items
 * [ ] hide items
 * [ ] show data of selected
