@@ -11,6 +11,16 @@ import {
 clearFolders("dist");
 copySync('node_modules/web-ifc/web-ifc.wasm', 'dist')
 
+
+// helpers so ifcjs does not make esbuild think its nodejs only
+const SkipPathAndFs = {
+  name: 'skip-path-and-fs',
+  setup(build: any) {
+    let filter = /^(path)|(fs)/
+    build.onResolve({ filter }, (args: any) => { return { path: args.path, external: true } })
+  },
+}
+
 /**
  * css so we dont need to wait for postcss unless we change css..
  */
@@ -51,6 +61,7 @@ single(
       minify: false,
       bundle: true,
       platform: "browser",
+      plugins: [SkipPathAndFs],
       sourcemap: true,
       logLevel: "error",
       incremental: true,
