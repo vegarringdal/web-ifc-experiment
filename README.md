@@ -6,16 +6,6 @@ Will use [web-ifc-three](https://github.com/tomvandig/web-ifc-three) to find out
 
 Warning, this will have a lot of weird stuff :-)
 
-
-## how to use
-
-* clone repo
-* npm install
-* npm start
-* open browser to [localhost](http://localhost)
-
-
-
 What I want to have working (and might fail at getting to work)
 
 * [ ] select items
@@ -24,5 +14,18 @@ What I want to have working (and might fail at getting to work)
 * [ ] multi select by holding CTRL 
 * [ ] show all (hidden)
 * [ ] invert
+
+
+## how to use
+
+* clone repo
+* npm install
+* npm start
+* open browser to [localhost](http://localhost)
+
+## build github pages site
+* npm run build
+
+
 
 

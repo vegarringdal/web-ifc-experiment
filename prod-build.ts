@@ -9,7 +9,17 @@ import {
 } from "esbuild-helpers";
 
 clearFolders("dist");
-copySync('node_modules/web-ifc/web-ifc.wasm', 'dist')
+copySync('node_modules/web-ifc/web-ifc.wasm', 'docs')
+
+// helpers so ifcjs does not make esbuild think its nodejs only
+const SkipPathAndFs = {
+  name: 'skip-path-and-fs',
+  setup(build: any) {
+    let filter = /^(path)|(fs)/
+    build.onResolve({ filter }, (args: any) => { return { path: args.path, external: true } })
+  },
+}
+
 
 /**
  * css so we dont need to wait for postcss unless we change css..
@@ -22,7 +32,7 @@ single(
       DEVELOPMENT: "true",
     },
     entryPoints: ["./src/index.css"],
-    outfile: "./dist/index.css",
+    outfile: "./docs/index.css",
     plugins: [
       postcssPlugin([require("tailwindcss")({
         purge: {
@@ -47,8 +57,8 @@ client(
       DEVELOPMENT: "false",
     },
     entryPoints: ["./src/index.ts"],
-    outfile: "./dist/index.js",
-    plugins: [minifyHTMLLiteralsPlugin()],
+    outfile: "./docs/index.js",
+    plugins: [minifyHTMLLiteralsPlugin(),SkipPathAndFs],
     minify: true,
     bundle: true,
     platform: "browser",
@@ -64,7 +74,7 @@ client(
 addDefaultIndex({
   publicFolders: [],
   hbr: false,
-  distFolder: "dist",
+  distFolder: "docs",
   entry: "./index.js",
   indexTemplate: /*html*/ `<!DOCTYPE html>
         <html lang="en">
@@ -76,7 +86,7 @@ addDefaultIndex({
             <script src="./index.js"></script>
           </head>
           <body>
-          <app-root></app-root>
+            <app-root></app-root>
           </body>
           </html>
           `,
