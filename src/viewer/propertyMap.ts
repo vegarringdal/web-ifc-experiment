@@ -1,1 +1,1 @@
-export const propertyMap = new Map();
+export const propertyMap = new Map<number, { id: number, group: number }>();

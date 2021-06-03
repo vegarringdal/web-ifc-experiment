@@ -9,7 +9,7 @@ import { readAndParseIFC } from "./readAndParseIFC";
 import Stats from "stats.js/src/stats.js";
 
 
-
+type listener = { handleEvent: (e: any) => void }
 export class ViewController {
     renderer: WebGLRenderer;
     scene: Scene;
@@ -22,13 +22,16 @@ export class ViewController {
     threeCanvas: HTMLCanvasElement;
 
 
+
     selectionColor = new Color("red");
     lastSelectedObjectColor = new Color();
     lastSelectedGroup: any;
     lastSelectedId: { id: number; group: number };
+    listeners: Set<listener>;
 
     constructor(canvas: string | HTMLCanvasElement,) {
 
+        this.listeners = new Set<listener>();
         this.__addRender(canvas)
         this.__addScene();
         this.__addCamera();
@@ -37,6 +40,7 @@ export class ViewController {
         this.__addLights();
         this.__addWindowResizer();
         this.__addStats();
+        this.__addClickEvent()
         this.animationLoop()
 
     }
@@ -137,7 +141,7 @@ export class ViewController {
         if (meshWithAlpha) this.scene.add(meshWithAlpha);
         if (meshWithoutAlpha) this.scene.add(meshWithoutAlpha);
         if (meshWithAlpha || meshWithoutAlpha) {
-           this.fitModelToFrame(meshWithoutAlpha || meshWithAlpha);
+            this.fitModelToFrame(meshWithoutAlpha || meshWithAlpha);
         }
     }
 
@@ -167,13 +171,81 @@ export class ViewController {
     }
 
 
-    __addClickEvent() {
+
+    private __getClickId(mouse: Vector2) {
+
+        // activate our picking material
+        this.scene.children.forEach((e: MeshExtended) => {
+            if (e.pickable) {
+                e.pickable();
+            }
+        });
+
+        this.camera.setViewOffset(
+            this.renderer.domElement.width,
+            this.renderer.domElement.height,
+            (mouse.x * window.devicePixelRatio) | 0,
+            (mouse.y * window.devicePixelRatio) | 0,
+            1,
+            1
+        );
+
+        // render the scene
+        let pickingTexture = new WebGLRenderTarget(1, 1);
+        const pixelBuffer = new Uint8Array(4);
+        this.renderer.setRenderTarget(pickingTexture);
+        this.renderer.render(this.scene, this.camera);
+
+        this.renderer.readRenderTargetPixels(pickingTexture, 0, 0, 1, 1, pixelBuffer);
+
+        //interpret the pixel as an ID
+        const id =
+            (pixelBuffer[0] << 16) | (pixelBuffer[1] << 8) | pixelBuffer[2];
+
+        this.camera.clearViewOffset();
+
+        // deactivate picking material
+        this.scene.children.forEach((e: MeshExtended) => {
+            // just reset
+            if (e.unpickable) {
+                e.unpickable();
+            }
+        })
+
+        this.renderer.setRenderTarget(null);
+        return id
+    }
+
+
+
+    public addEventListener(context: listener) {
+        this.listeners.add(context)
+    }
+
+    public removeEventListener(context: listener) {
+        this.listeners.delete(context)
+    }
+
+    private __triggerSelectEvent(id: number) {
+        if (id) {
+            const selectedID = propertyMap.get(id);
+            this.scene.children.forEach((e: MeshExtended) => {
+                if (selectedID && e.lookupID === selectedID.id) {
+                    const userdata = e.geometry?.userData?.mergedUserData;
+                    if (Array.isArray(userdata)) {
+                        const data = userdata[selectedID.group]
+                        const listeners = Array.from(this.listeners);
+                        listeners.forEach((l) => {
+                            l.handleEvent({ type: 'modelClick', data: data?.ifcData })
+                        })
+                    }
+                }
+            })
+        }
+    }
+
+    private __addClickEvent() {
         this.threeCanvas.onpointerdown = (event: any) => {
-            /*
-             *
-             * This is a mess atm
-             *
-             **/
 
             if (event.button != 0) return;
 
@@ -181,45 +253,15 @@ export class ViewController {
             mouse.x = event.clientX;
             mouse.y = event.clientY;
 
-            if (event.ctrlKey) {
-                debugger;
-            }
-
-            this.scene.children.forEach((e: MeshExtended) => {
-                if (e.pickable) {
-                    e.pickable();
-                }
-            });
-
-            this.camera.setViewOffset(
-                this.renderer.domElement.width,
-                this.renderer.domElement.height,
-                (mouse.x * window.devicePixelRatio) | 0,
-                (mouse.y * window.devicePixelRatio) | 0,
-                1,
-                1
-            );
-
-            // render the scene
-            let pickingTexture = new WebGLRenderTarget(1, 1);
-            const pixelBuffer = new Uint8Array(4);
-            this.renderer.setRenderTarget(pickingTexture);
-            this.renderer.render(this.scene, this.camera);
-
-            this.renderer.readRenderTargetPixels(pickingTexture, 0, 0, 1, 1, pixelBuffer);
-
-            //interpret the pixel as an ID
-            const id =
-                (pixelBuffer[0] << 16) | (pixelBuffer[1] << 8) | pixelBuffer[2];
+            const id = this.__getClickId(mouse)
+            this.__triggerSelectEvent(id);
             const selectedID = propertyMap.get(id);
-            this.camera.clearViewOffset();
 
-            // new color
+
+            // next part is just spagetti still and not very dynamic, on my todo..
+
+            // last color
             this.scene.children.forEach((e: MeshExtended) => {
-                // just reset
-                if (e.unpickable) {
-                    e.unpickable();
-                }
 
                 if (this.lastSelectedId && e.lookupID === this.lastSelectedId.id) {
                     const group = e.geometry.groups[this.lastSelectedId.group];
@@ -228,7 +270,6 @@ export class ViewController {
 
                     for (let i = group.start; i < group.start + group.count; i++) {
                         const p = index[i] * 4;
-                        // -> dont work colorAtt.setXYZ(p, this.lastSelectedObjectColor.r, this.lastSelectedObjectColor.g, this.lastSelectedObjectColor.b)
                         (colorAtt as any).array[p] = this.lastSelectedObjectColor.r as any;
                         (colorAtt as any).array[p + 1] = this.lastSelectedObjectColor
                             .g as any;
@@ -244,9 +285,6 @@ export class ViewController {
 
             // new color
             this.scene.children.forEach((e: MeshExtended) => {
-                if (e.unpickable) {
-                    e.unpickable();
-                }
 
                 if (selectedID && e.lookupID === selectedID.id) {
                     this.lastSelectedId = selectedID;
@@ -272,11 +310,9 @@ export class ViewController {
                         const x = index[i] * 4;
                         this.lastSelectedObjectColor.b = (colorAtt as any).array[x + 2];
                     }
-                    console.log(this.lastSelectedObjectColor);
+
                     for (let i = group.start; i < group.start + group.count; i++) {
                         const p = index[i] * 4;
-                        // -> does not work.. colorAtt.setXYZ(p, this.selectionColor.r, this.selectionColor.g, this.selectionColor.b)
-
                         (colorAtt as any).array[p] = this.selectionColor.r as any;
                         (colorAtt as any).array[p + 1] = this.selectionColor.g as any;
                         (colorAtt as any).array[p + 2] = this.selectionColor.b as any;
@@ -285,7 +321,7 @@ export class ViewController {
                     e.geometry.computeVertexNormals();
                 }
             });
-            this.renderer.setRenderTarget(null);
+
             this.renderer.render(this.scene, this.camera);
         }
 

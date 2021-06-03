@@ -7,6 +7,11 @@ export class AppRoot extends HTMLElement {
     public connectedCallback() {
         render(this.template(), this);
         this.viewController = new ViewController('3dview')
+        this.viewController.addEventListener(this)
+    }
+
+    handleEvent(e:any){
+        console.log(e)
     }
 
     public template() {
