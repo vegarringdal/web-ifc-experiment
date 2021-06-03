@@ -5,13 +5,17 @@ export class AppRoot extends HTMLElement {
     viewController: ViewController;
 
     public connectedCallback() {
-        render(this.template(), this);
+        this.render();
         this.viewController = new ViewController('3dview')
         this.viewController.addEventListener(this)
     }
 
     handleEvent(e:any){
         console.log(e)
+    }
+
+    public render(){
+        render(this.template(), this);
     }
 
     public template() {

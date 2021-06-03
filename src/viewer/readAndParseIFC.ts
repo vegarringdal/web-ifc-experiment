@@ -15,7 +15,7 @@ export function readAndParseIFC(
             const uIntArrayBuffer = new Uint8Array(fileRef);
 
             const data = new Uint8Array(uIntArrayBuffer);
-            const modelID = ifcAPI.OpenModel("example.ifc", data);
+            const modelID = ifcAPI.OpenModel(data);
 
             const c = loadAllGeometry(modelID, ifcAPI);
             ifcAPI.CloseModel(modelID); // dont know if this really do much,..
