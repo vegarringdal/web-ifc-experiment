@@ -3,6 +3,7 @@
     "eamodio.gitlens",
     "pflannery.vscode-versionlens",
     "esbenp.prettier-vscode",
-    "bierner.lit-html"
+    "bierner.lit-html",
+    "ms-azuretools.vscode-docker"
   ]
 }
