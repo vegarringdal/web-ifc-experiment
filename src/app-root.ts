@@ -12,7 +12,6 @@ export class AppRoot extends HTMLElement {
     }
 
     handleEvent(e:any){
-        console.log(e)
         if(e?.data){
             const keys = Object.keys(e.data)
             const values = keys.map((x)=>{
