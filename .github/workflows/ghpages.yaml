@@ -1,7 +1,10 @@
 name: Build and Deploy
 on:
- release:
-    branches: [ main ]
+  push:
+    branches:
+      - "!*"
+    tags:
+      - "v*"
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
