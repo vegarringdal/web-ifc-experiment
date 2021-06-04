@@ -9,6 +9,7 @@
     "humao.rest-client",
     "bradlc.vscode-tailwindcss",
     "gruntfuggly.todo-tree",
-    "ms-vscode-remote.remote-containers"
+    "ms-vscode-remote.remote-containers",
+    "dbaeumer.vscode-eslint"
   ]
 }

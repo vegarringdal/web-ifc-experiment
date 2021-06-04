@@ -1,15 +1,28 @@
-import { WebGLRenderer, Scene, Color, PerspectiveCamera, DirectionalLight, AmbientLight, Vector2, WebGLRenderTarget, Mesh, Box3, Vector3, } from "three";
+import {
+    WebGLRenderer,
+    Scene,
+    Color,
+    PerspectiveCamera,
+    DirectionalLight,
+    AmbientLight,
+    Vector2,
+    WebGLRenderTarget,
+    Mesh,
+    Box3,
+    Vector3
+} from "three";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore --types missing atm
 import { MathUtils } from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { MeshExtended } from "./MeshExtended";
 import { propertyMap } from "./propertyMap";
 import { readAndParseIFC } from "./readAndParseIFC";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore --types missing atm
 import Stats from "stats.js/src/stats.js";
 
-
-type listener = { handleEvent: (e: any) => void }
+type listener = { handleEvent: (e: any) => void };
 export class ViewController {
     renderer: WebGLRenderer;
     scene: Scene;
@@ -21,18 +34,15 @@ export class ViewController {
     monitors: Stats;
     threeCanvas: HTMLCanvasElement;
 
-
-
     selectionColor = new Color("red");
     lastSelectedObjectColor = new Color();
     lastSelectedGroup: any;
     lastSelectedId: { id: number; group: number };
     listeners: Set<listener>;
 
-    constructor(canvas: string | HTMLCanvasElement,) {
-
+    constructor(canvas: string | HTMLCanvasElement) {
         this.listeners = new Set<listener>();
-        this.__addRender(canvas)
+        this.__addRender(canvas);
         this.__addScene();
         this.__addCamera();
         this.__addControls();
@@ -40,9 +50,8 @@ export class ViewController {
         this.__addLights();
         this.__addWindowResizer();
         this.__addStats();
-        this.__addClickEvent()
-        this.animationLoop()
-
+        this.__addClickEvent();
+        this.animationLoop();
     }
 
     private animationLoop() {
@@ -61,39 +70,31 @@ export class ViewController {
     }
 
     private __addRender(canvas: string | HTMLCanvasElement) {
-        if (typeof canvas === 'string') {
+        if (typeof canvas === "string") {
             this.threeCanvas = document.getElementById("3dview") as HTMLCanvasElement;
             this.renderer = new WebGLRenderer({
                 antialias: true,
-                canvas: this.threeCanvas,
+                canvas: this.threeCanvas
             });
         } else {
-            this.threeCanvas = canvas
+            this.threeCanvas = canvas;
             this.renderer = new WebGLRenderer({
                 antialias: true,
-                canvas: canvas,
+                canvas: canvas
             });
         }
 
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         this.renderer.setPixelRatio(window.devicePixelRatio);
-
     }
-
 
     private __addScene() {
         this.scene = new Scene();
         this.scene.background = new Color("black");
     }
 
-
     private __addCamera() {
-        this.camera = new PerspectiveCamera(
-            45,
-            window.innerWidth / window.innerHeight,
-            0.1,
-            1000
-        );
+        this.camera = new PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
 
         this.camera.position.z = 5;
     }
@@ -134,9 +135,7 @@ export class ViewController {
     }
 
     public async readFile(file: File) {
-        const { meshWithAlpha, meshWithoutAlpha } = await readAndParseIFC(
-            file
-        );
+        const { meshWithAlpha, meshWithoutAlpha } = await readAndParseIFC(file);
 
         if (meshWithAlpha) this.scene.add(meshWithAlpha);
         if (meshWithoutAlpha) this.scene.add(meshWithoutAlpha);
@@ -159,9 +158,7 @@ export class ViewController {
             .multiply(new Vector3(1, 0, 1))
             .normalize();
 
-        this.camera.position.copy(
-            direction.multiplyScalar(distance).add(boxCenter)
-        );
+        this.camera.position.copy(direction.multiplyScalar(distance).add(boxCenter));
         this.camera.updateProjectionMatrix();
         this.camera.lookAt(boxCenter.x, boxCenter.y, boxCenter.z);
 
@@ -170,10 +167,7 @@ export class ViewController {
         this.controls.update();
     }
 
-
-
     private __getClickId(mouse: Vector2) {
-
         // activate our picking material
         this.scene.children.forEach((e: MeshExtended) => {
             if (e.pickable) {
@@ -191,7 +185,7 @@ export class ViewController {
         );
 
         // render the scene
-        let pickingTexture = new WebGLRenderTarget(1, 1);
+        const pickingTexture = new WebGLRenderTarget(1, 1);
         const pixelBuffer = new Uint8Array(4);
         this.renderer.setRenderTarget(pickingTexture);
         this.renderer.render(this.scene, this.camera);
@@ -199,8 +193,7 @@ export class ViewController {
         this.renderer.readRenderTargetPixels(pickingTexture, 0, 0, 1, 1, pixelBuffer);
 
         //interpret the pixel as an ID
-        const id =
-            (pixelBuffer[0] << 16) | (pixelBuffer[1] << 8) | pixelBuffer[2];
+        const id = (pixelBuffer[0] << 16) | (pixelBuffer[1] << 8) | pixelBuffer[2];
 
         this.camera.clearViewOffset();
 
@@ -210,20 +203,18 @@ export class ViewController {
             if (e.unpickable) {
                 e.unpickable();
             }
-        })
+        });
 
         this.renderer.setRenderTarget(null);
-        return id
+        return id;
     }
 
-
-
     public addEventListener(context: listener) {
-        this.listeners.add(context)
+        this.listeners.add(context);
     }
 
     public removeEventListener(context: listener) {
-        this.listeners.delete(context)
+        this.listeners.delete(context);
     }
 
     private __triggerSelectEvent(id: number) {
@@ -233,36 +224,33 @@ export class ViewController {
                 if (selectedID && e.lookupID === selectedID.id) {
                     const userdata = e.geometry?.userData?.mergedUserData;
                     if (Array.isArray(userdata)) {
-                        const data = userdata[selectedID.group]
+                        const data = userdata[selectedID.group];
                         const listeners = Array.from(this.listeners);
                         listeners.forEach((l) => {
-                            l.handleEvent({ type: 'modelClick', data: data?.ifcData })
-                        })
+                            l.handleEvent({ type: "modelClick", data: data?.ifcData });
+                        });
                     }
                 }
-            })
+            });
         }
     }
 
     private __addClickEvent() {
         this.threeCanvas.onpointerdown = (event: any) => {
-
             if (event.button != 0) return;
 
             const mouse = new Vector2();
             mouse.x = event.clientX;
             mouse.y = event.clientY;
 
-            const id = this.__getClickId(mouse)
+            const id = this.__getClickId(mouse);
             this.__triggerSelectEvent(id);
             const selectedID = propertyMap.get(id);
-
 
             // next part is just spagetti still and not very dynamic, on my todo..
 
             // last color
             this.scene.children.forEach((e: MeshExtended) => {
-
                 if (this.lastSelectedId && e.lookupID === this.lastSelectedId.id) {
                     const group = e.geometry.groups[this.lastSelectedId.group];
                     const colorAtt = e.geometry.attributes.color;
@@ -271,10 +259,8 @@ export class ViewController {
                     for (let i = group.start; i < group.start + group.count; i++) {
                         const p = index[i] * 4;
                         (colorAtt as any).array[p] = this.lastSelectedObjectColor.r as any;
-                        (colorAtt as any).array[p + 1] = this.lastSelectedObjectColor
-                            .g as any;
-                        (colorAtt as any).array[p + 2] = this.lastSelectedObjectColor
-                            .b as any;
+                        (colorAtt as any).array[p + 1] = this.lastSelectedObjectColor.g as any;
+                        (colorAtt as any).array[p + 2] = this.lastSelectedObjectColor.b as any;
                     }
                 }
             });
@@ -285,7 +271,6 @@ export class ViewController {
 
             // new color
             this.scene.children.forEach((e: MeshExtended) => {
-
                 if (selectedID && e.lookupID === selectedID.id) {
                     this.lastSelectedId = selectedID;
                     const group = e.geometry.groups[selectedID.group];
@@ -294,19 +279,19 @@ export class ViewController {
                     const index = e.geometry.index.array;
 
                     {
-                        let i = group.start;
+                        const i = group.start;
                         const x = index[i] * 4;
                         this.lastSelectedObjectColor.r = (colorAtt as any).array[x];
                     }
 
                     {
-                        let i = group.start;
+                        const i = group.start;
                         const x = index[i] * 4;
                         this.lastSelectedObjectColor.g = (colorAtt as any).array[x + 1];
                     }
 
                     {
-                        let i = group.start;
+                        const i = group.start;
                         const x = index[i] * 4;
                         this.lastSelectedObjectColor.b = (colorAtt as any).array[x + 2];
                     }
@@ -323,7 +308,6 @@ export class ViewController {
             });
 
             this.renderer.render(this.scene, this.camera);
-        }
-
+        };
     }
 }

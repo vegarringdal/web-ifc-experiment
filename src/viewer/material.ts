@@ -1,35 +1,35 @@
 import { DoubleSide, MeshStandardMaterial } from "three";
 
 export const material = new MeshStandardMaterial({
-  vertexColors: true,
-  transparent: true,
-  side: DoubleSide
+    vertexColors: true,
+    transparent: true,
+    side: DoubleSide
 });
 material.onBeforeCompile = (shader) => {
-  shader.vertexShader = shader.vertexShader.replace(
-    "void main() {",
-    `
+    shader.vertexShader = shader.vertexShader.replace(
+        "void main() {",
+        `
   attribute float hidden;
   varying float vHidden;
   void main() {
     vHidden = hidden;
   `
-  );
+    );
 
-  shader.fragmentShader = shader.fragmentShader.replace(
-    "void main() {",
-    `
+    shader.fragmentShader = shader.fragmentShader.replace(
+        "void main() {",
+        `
         varying float vHidden;
         void main() {
         if (vHidden > 0.1) discard;
     `
-  );
+    );
 
-  shader.fragmentShader = shader.fragmentShader.replace(
-    "#include <clipping_planes_fragment>",
-    `
+    shader.fragmentShader = shader.fragmentShader.replace(
+        "#include <clipping_planes_fragment>",
+        `
       if (vHidden > 0.1) discard;
       #include <clipping_planes_fragment>
     `
-  );
+    );
 };
