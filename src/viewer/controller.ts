@@ -6,7 +6,7 @@ import { MeshExtended } from "./MeshExtended";
 import { propertyMap } from "./propertyMap";
 import { readAndParseIFC } from "./readAndParseIFC";
 // @ts-ignore --types missing atm
-import Stats from "stats.js/src/stats.js";
+import Stats from "stats.js/src/Stats.js";
 
 
 type listener = { handleEvent: (e: any) => void }
