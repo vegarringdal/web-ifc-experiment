@@ -20,7 +20,7 @@ import { propertyMap } from "./propertyMap";
 import { readAndParseIFC } from "./readAndParseIFC";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore --types missing atm
-import Stats from "stats.js/src/stats.js";
+import Stats from "stats.js/src/Stats.js";
 
 type listener = { handleEvent: (e: any) => void };
 export class ViewController {
