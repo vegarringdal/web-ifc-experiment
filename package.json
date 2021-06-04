@@ -7,7 +7,7 @@
     "dev": "ts-node dev-run",
     "build": "ts-node prod-build",
     "eslint": "eslint --fix ./src/**/*.ts",
-    "prettier:run": "prettier --write \"packages/**/*.ts\" \"samples/**/*.ts\"",
+    "prettier": "prettier --write \"src/**/*.ts\"",
     "prepare": "husky install"
   },
   "repository": {
