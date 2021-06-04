@@ -47,7 +47,7 @@ export function getAllGeometry(modelID: number, ifcAPI: WebIFC.IfcAPI) {
             }
 
             propertyMap.set(getCurrentColorId(), {
-                id: flatMeshGeometry.color.w === 1 ? normalMeshId : alphaMeshId,
+                meshID: flatMeshGeometry.color.w === 1 ? normalMeshId : alphaMeshId,
                 group:
                     flatMeshGeometry.color.w === 1
                         ? geometries.length - 1

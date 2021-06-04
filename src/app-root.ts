@@ -12,7 +12,9 @@ export class AppRoot extends HTMLElement {
     }
 
     handleEvent(e: any) {
+        // only event I have atm is from grip click event...
         if (e?.data) {
+            // just store them as key/values for now
             const keys = Object.keys(e.data);
             const values = keys.map((x) => {
                 if (e.data[x]?.value) {
@@ -30,11 +32,13 @@ export class AppRoot extends HTMLElement {
         }
     }
 
+    // helper to trigger html update
     public render() {
         render(this.template(), this);
     }
 
-    private getData() {
+
+    private getIFCDataAsHtml() {
         const { values, keys } = this.data;
 
         if (keys.length) {
@@ -51,6 +55,7 @@ export class AppRoot extends HTMLElement {
         }
     }
 
+    // this is helper for app-root innerHtml
     public template() {
         return html`
             <!--   template -->
@@ -67,7 +72,7 @@ export class AppRoot extends HTMLElement {
             </label>
 
             <div class="bottom-0 right-0 absolute bg-indigo-300 m-2 p-2 flex flex-col">
-                ${this.getData()}
+                ${this.getIFCDataAsHtml()}
             </div>
         `;
     }

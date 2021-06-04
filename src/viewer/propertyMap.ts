@@ -1,1 +1,2 @@
-export const propertyMap = new Map<number, { id: number; group: number }>();
+export type propertyMapType = { meshID: number; group: number }
+export const propertyMap = new Map<number, propertyMapType>();

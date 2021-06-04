@@ -16,7 +16,7 @@ import {
 import { MathUtils } from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { MeshExtended } from "./MeshExtended";
-import { propertyMap } from "./propertyMap";
+import { propertyMap, propertyMapType } from "./propertyMap";
 import { readAndParseIFC } from "./readAndParseIFC";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore --types missing atm
@@ -37,7 +37,7 @@ export class ViewController {
     selectionColor = new Color("red");
     lastSelectedObjectColor = new Color();
     lastSelectedGroup: any;
-    lastSelectedId: { id: number; group: number };
+    lastSelectedId: propertyMapType;
     listeners: Set<listener>;
 
     constructor(canvas: string | HTMLCanvasElement) {
@@ -94,9 +94,9 @@ export class ViewController {
     }
 
     private __addCamera() {
-        this.camera = new PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+        this.camera = new PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
 
-        this.camera.position.z = 5;
+        //  this.camera.position.z = 5;
     }
 
     private __addControls() {
@@ -161,7 +161,8 @@ export class ViewController {
         this.camera.position.copy(direction.multiplyScalar(distance).add(boxCenter));
         this.camera.updateProjectionMatrix();
         this.camera.lookAt(boxCenter.x, boxCenter.y, boxCenter.z);
-
+        this.camera.near = 1;
+        this.camera.far = boxSize * 100;
         // set target to newest loaded model
         this.controls.target.copy(boxCenter);
         this.controls.update();
@@ -221,7 +222,7 @@ export class ViewController {
         if (id) {
             const selectedID = propertyMap.get(id);
             this.scene.children.forEach((e: MeshExtended) => {
-                if (selectedID && e.lookupID === selectedID.id) {
+                if (selectedID && e.meshID === selectedID.meshID) {
                     const userdata = e.geometry?.userData?.mergedUserData;
                     if (Array.isArray(userdata)) {
                         const data = userdata[selectedID.group];
@@ -250,8 +251,10 @@ export class ViewController {
             // next part is just spagetti still and not very dynamic, on my todo..
 
             // last color
+
             this.scene.children.forEach((e: MeshExtended) => {
-                if (this.lastSelectedId && e.lookupID === this.lastSelectedId.id) {
+                if (this.lastSelectedId && e.meshID === this.lastSelectedId.meshID) {
+                    console.log("found existing");
                     const group = e.geometry.groups[this.lastSelectedId.group];
                     const colorAtt = e.geometry.attributes.color;
                     const index = e.geometry.index.array;
@@ -262,6 +265,15 @@ export class ViewController {
                         (colorAtt as any).array[p + 1] = this.lastSelectedObjectColor.g as any;
                         (colorAtt as any).array[p + 2] = this.lastSelectedObjectColor.b as any;
                     }
+                    colorAtt.needsUpdate = true;
+                } else {
+                    if (this.lastSelectedId) {
+                        console.log(
+                            e.meshID,
+                            e.meshID === this.lastSelectedId.meshID,
+                            this.lastSelectedId.meshID
+                        );
+                    }
                 }
             });
 
@@ -271,7 +283,7 @@ export class ViewController {
 
             // new color
             this.scene.children.forEach((e: MeshExtended) => {
-                if (selectedID && e.lookupID === selectedID.id) {
+                if (selectedID && e.meshID === selectedID.meshID) {
                     this.lastSelectedId = selectedID;
                     const group = e.geometry.groups[selectedID.group];
                     this.lastSelectedGroup = group;

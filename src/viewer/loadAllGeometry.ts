@@ -21,7 +21,7 @@ export function loadAllGeometry(modelID: number, ifcAPI: WebIFC.IfcAPI) {
             material
         ) as MeshExtended;
         meshWithoutAlpha.name = "no alpha";
-        meshWithoutAlpha.lookupID = normalMeshId;
+        meshWithoutAlpha.meshID = normalMeshId;
         meshWithoutAlpha.pickable = function () {
             this.material = materialPicking;
         };
@@ -36,7 +36,7 @@ export function loadAllGeometry(modelID: number, ifcAPI: WebIFC.IfcAPI) {
             material
         ) as MeshExtended;
         meshWithAlpha.name = "alpha";
-        meshWithAlpha.lookupID = alphaMeshId;
+        meshWithAlpha.meshID = alphaMeshId;
         meshWithAlpha.pickable = function () {
             this.material = materialPicking;
         };
