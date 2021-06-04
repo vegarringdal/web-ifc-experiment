@@ -20,6 +20,6 @@ jobs:
           npm run build
  
       - name: Deploy 🚀
-        uses: actions-js/push@master
+        uses: actions-js/push@main
         with:
           github_token: ${{ secrets.ACTION }}
