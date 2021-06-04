@@ -6,7 +6,9 @@
     "start": "ts-node dev-run",
     "dev": "ts-node dev-run",
     "build": "ts-node prod-build",
-    "eslint": "eslint --fix ./src/**/*.ts"
+    "eslint": "eslint --fix ./src/**/*.ts",
+    "prettier:run": "prettier --write \"packages/**/*.ts\" \"samples/**/*.ts\"",
+    "prepare": "husky install"
   },
   "repository": {
     "type": "git",
@@ -27,6 +29,7 @@
     "esbuild-helpers": "0.0.6",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^3.4.0",
+    "husky": "^6.0.0",
     "lit-html": "^1.4.1",
     "minify-html-literals": "^1.3.5",
     "postcss": "^8.3.0",
