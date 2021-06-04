@@ -1,0 +1,52 @@
+{
+    "types": [
+      {"type": "feat", "section": "Features"},
+      {"type": "fix", "section": "Bug Fixes"},
+      {"type": "chore", "hidden": true},
+      {"type": "docs", "hidden": true},
+      {"type": "style", "hidden": true},
+      {"type": "refactor", "hidden": true},
+      {"type": "perf", "hidden": true},
+      {"type": "test", "hidden": true}
+    ],
+    "bumpFiles": [
+      {
+        "filename": "package.json",
+        "type": "json"
+      },
+      {
+        "filename": "package-lock.json",
+        "type": "json"
+      },
+      {
+        "filename": "packages/core/package.json",
+        "type": "json"
+      },
+      {
+        "filename": "packages/datasource/package.json",
+        "type": "json"
+      },
+      {
+        "filename": "packages/grid/package.json",
+        "type": "json"
+      },
+      {
+        "filename": "packages/router/package.json",
+        "type": "json"
+      },
+      {
+        "filename": "packages/dropdown/package.json",
+        "type": "json"
+      },
+      {
+        "filename": "packages/splitter/package.json",
+        "type": "json"
+      },
+      {
+        "filename": "packages/date/package.json",
+        "type": "json"
+      }
+    ],
+    "commitUrlFormat": "https://github.com/simple-html/simple-html/commits/{{hash}}",
+    "compareUrlFormat": "https://github.com/simple-html/simple-html/compare/{{previousTag}}...{{currentTag}}"
+  }
