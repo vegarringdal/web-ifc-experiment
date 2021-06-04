@@ -1,6 +1,6 @@
 {
   "name": "web-ifc-experiment",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "",
   "scripts": {
     "start": "ts-node dev-run",
