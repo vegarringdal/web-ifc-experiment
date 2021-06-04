@@ -37,7 +37,6 @@ export class AppRoot extends HTMLElement {
         render(this.template(), this);
     }
 
-
     private getIFCDataAsHtml() {
         const { values, keys } = this.data;
 
