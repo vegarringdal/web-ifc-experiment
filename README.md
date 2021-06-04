@@ -10,9 +10,9 @@ What I want to have working (and might fail at getting to work)
 
 Progress Sample [live sample](https://vegarringdal.github.io/web-ifc-experiment/)
 
-* [ ] select items
+* [x] select items
 * [ ] hide items
-* [ ] show data of selected
+* [x] show data of selected
 * [ ] multi select by holding CTRL 
 * [ ] show all (hidden)
 * [ ] invert
