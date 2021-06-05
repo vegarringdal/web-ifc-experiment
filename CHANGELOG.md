@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.2-next.12](https://github.com/simple-html/simple-html/compare/v0.0.2-next.11...v0.0.2-next.12) (2021-06-05)
+
+
+### Features
+
+* show gpu color & hide selected & show all ([659e0e3](https://github.com/simple-html/simple-html/commits/659e0e318a1e75c6b4fac5acd8cfed9d1a31c62d))
+
 ### [0.0.2-next.11](https://github.com/simple-html/simple-html/compare/v0.0.2-next.10...v0.0.2-next.11) (2021-06-05)
 
 
