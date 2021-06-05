@@ -1,82 +1,82 @@
 import {
-  clearFolders,
-  addDefaultIndex,
-  client,
-  postcssPlugin,
-  single,
-  minifyHTMLLiteralsPlugin,
-  copySync,
+    clearFolders,
+    addDefaultIndex,
+    client,
+    postcssPlugin,
+    single,
+    minifyHTMLLiteralsPlugin,
+    copySync
 } from "esbuild-helpers";
 
 clearFolders("dist");
-copySync('node_modules/web-ifc/web-ifc.wasm', 'docs')
+copySync("node_modules/web-ifc/web-ifc.wasm", "docs");
 
 // helpers so ifcjs does not make esbuild think its nodejs only
 const SkipPathAndFs = {
-  name: 'skip-path-and-fs',
-  setup(build: any) {
-    let filter = /^(path)|(fs)/
-    build.onResolve({ filter }, (args: any) => { return { path: args.path, external: true } })
-  },
-}
-
+    name: "skip-path-and-fs",
+    setup(build: any) {
+        const filter = /^(path)|(fs)/;
+        build.onResolve({ filter }, (args: any) => {
+            return { path: args.path, external: true };
+        });
+    }
+};
 
 /**
  * css so we dont need to wait for postcss unless we change css..
  */
-single(
-  null,
-  {
+single(null, {
     color: true,
     define: {
-      DEVELOPMENT: "true",
+        DEVELOPMENT: "true"
     },
     entryPoints: ["./src/index.css"],
     outfile: "./docs/index.css",
     plugins: [
-      postcssPlugin([require("tailwindcss")({
-        purge: {
-          enabled: true,
-          content: ["./src/**/*.ts"],
-        }
-      })]),
+        postcssPlugin([
+            // eslint-disable-next-line @typescript-eslint/no-var-requires
+            require("tailwindcss")({
+                purge: {
+                    enabled: true,
+                    content: ["./src/**/*.ts"]
+                }
+            })
+        ])
     ],
     logLevel: "error",
-    incremental: false,
-  }
-);
+    incremental: false
+});
 
 /**
  * client bundle
  */
-client(
-  null,
-  {
+client(null, {
     color: true,
     define: {
-      DEVELOPMENT: "false",
+        DEVELOPMENT: "false",
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        VERSION: `"${require("./package-lock.json").version}"`
     },
     entryPoints: ["./src/index.ts"],
     outfile: "./docs/index.js",
-    plugins: [minifyHTMLLiteralsPlugin(),SkipPathAndFs],
+    plugins: [minifyHTMLLiteralsPlugin(), SkipPathAndFs],
     minify: true,
     bundle: true,
     platform: "browser",
     sourcemap: false,
     logLevel: "error",
-    incremental: false,
-  }
-);
+    incremental: false
+});
 
 /**
  * index file for project
  */
 addDefaultIndex({
-  publicFolders: [],
-  hbr: false,
-  distFolder: "docs",
-  entry: "./index.js",
-  indexTemplate: /*html*/ `<!DOCTYPE html>
+    publicFolders: [],
+    hbr: false,
+    distFolder: "docs",
+    entry: "./index.js",
+    indexTemplate: /*html*/ `<!DOCTYPE html>
         <html lang="en">
           <head>
             <meta charset="UTF-8" />
@@ -89,5 +89,5 @@ addDefaultIndex({
             <app-root></app-root>
           </body>
           </html>
-          `,
+          `
 });
