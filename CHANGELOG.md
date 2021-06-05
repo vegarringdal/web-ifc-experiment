@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.2-next.11](https://github.com/simple-html/simple-html/compare/v0.0.2-next.10...v0.0.2-next.11) (2021-06-05)
+
+
+### Features
+
+* deselect with contr key and not select when rotating ([11d3a4a](https://github.com/simple-html/simple-html/commits/11d3a4ac3453dcd52d959572660555bfc0686aa8))
+* multi select by holding contr down ([e95461d](https://github.com/simple-html/simple-html/commits/e95461d501d11255394b05696a66dae5a816112c))
+* print version to console ([1db59ed](https://github.com/simple-html/simple-html/commits/1db59ed9077582db7981868ce6450f58424bb27d))
+
 ### [0.0.2-next.10](https://github.com/simple-html/simple-html/compare/v0.0.2-next.9...v0.0.2-next.10) (2021-06-05)
 
 ### [0.0.2-next.9](https://github.com/simple-html/simple-html/compare/v0.0.2-next.8...v0.0.2-next.9) (2021-06-05)
