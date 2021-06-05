@@ -70,6 +70,41 @@ export class AppRoot extends HTMLElement {
                 open file
             </label>
 
+            <button
+                class="inline-block p-2 m-2 bg-indigo-300 z-10 relative"
+                @click=${() => {
+                    this.viewController.hideSelected();
+                }}
+            >
+                Hide Selected
+            </button>
+            <button
+                class="inline-block p-2 m-2 bg-indigo-300 z-10 relative"
+                @click=${() => {
+                    this.viewController.showAll();
+                }}
+            >
+                Show all
+            </button>
+
+            <button
+                class="inline-block p-2 m-2 bg-indigo-300 z-10 relative"
+                @click=${() => {
+                    this.viewController.debugShowPickingColors();
+                }}
+            >
+                showGPU color
+            </button>
+
+            <button
+                class="inline-block p-2 m-2 bg-indigo-300 z-10 relative"
+                @click=${() => {
+                    this.viewController.debugHidePickingColors();
+                }}
+            >
+                hideGPU color
+            </button>
+
             <div class="bottom-0 right-0 absolute bg-indigo-300 m-2 p-2 flex flex-col">
                 ${this.getIFCDataAsHtml()}
             </div>

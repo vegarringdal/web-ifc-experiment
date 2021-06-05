@@ -16,7 +16,7 @@ import {
 import { MathUtils } from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { MeshExtended } from "./MeshExtended";
-import { propertyMap, propertyMapType } from "./propertyMap";
+import { propertyMap } from "./propertyMap";
 import { readAndParseIFC } from "./readAndParseIFC";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore --types missing atm
@@ -39,7 +39,7 @@ export class ViewController {
     listeners: Set<listener>;
 
     selectedElements = new Map<number, selectionMapType>();
-    hiddenElements = new Map<number, propertyMapType>();
+    hiddenElements = new Map<number, selectionMapType>();
 
     constructor(canvas: string | HTMLCanvasElement) {
         this.listeners = new Set<listener>();
@@ -237,7 +237,7 @@ export class ViewController {
         }
     }
 
-    private __showElement(elementRef: selectionMapType) {
+    private __deselectElement(elementRef: selectionMapType) {
         this.scene.children.forEach((e: MeshExtended) => {
             if (e.meshID === elementRef.meshID) {
                 const group = e.geometry.groups[elementRef.group];
@@ -252,6 +252,76 @@ export class ViewController {
                 }
                 colorAtt.needsUpdate = true;
             }
+        });
+    }
+
+    private __hideElement(elementRef: selectionMapType) {
+        this.scene.children.forEach((e: MeshExtended) => {
+            if (e.meshID === elementRef.meshID) {
+                const group = e.geometry.groups[elementRef.group];
+                const attribute = e.geometry.attributes.hidden;
+                const index = e.geometry.index.array;
+
+                for (let i = group.start; i < group.start + group.count; i++) {
+                    const p = index[i];
+                    (attribute as any).array[p] = 1;
+                }
+                attribute.needsUpdate = true;
+            }
+        });
+    }
+
+    private __showElement(elementRef: selectionMapType) {
+        this.scene.children.forEach((e: MeshExtended) => {
+            if (e.meshID === elementRef.meshID) {
+                const group = e.geometry.groups[elementRef.group];
+                const attribute = e.geometry.attributes.hidden;
+                const index = e.geometry.index.array;
+
+                for (let i = group.start; i < group.start + group.count; i++) {
+                    const p = index[i];
+                    (attribute as any).array[p] = 0;
+                }
+                attribute.needsUpdate = true;
+            }
+        });
+    }
+
+    public debugShowPickingColors() {
+        this.scene.children.forEach((e: MeshExtended) => {
+            if (e.pickable) {
+                e.pickable();
+            }
+        });
+    }
+
+    public debugHidePickingColors() {
+        this.scene.children.forEach((e: MeshExtended) => {
+            if (e.unpickable) {
+                e.unpickable();
+            }
+        });
+    }
+
+    public hideSelected() {
+        const selectedElements = Array.from(this.selectedElements);
+        this.selectedElements.clear();
+        selectedElements.forEach(([, elementRef]) => {
+            // we do this to reset colors..
+            this.__deselectElement(elementRef);
+        });
+        selectedElements.forEach(([id, elementRef]) => {
+            this.hiddenElements.set(id, elementRef);
+            this.__hideElement(elementRef);
+        });
+    }
+
+    public showAll() {
+        const hiddenElements = Array.from(this.hiddenElements);
+        this.hiddenElements.clear();
+        hiddenElements.forEach(([id, elementRef]) => {
+            this.hiddenElements.set(id, elementRef);
+            this.__showElement(elementRef);
         });
     }
 
@@ -282,13 +352,13 @@ export class ViewController {
                     const selectedElements = Array.from(this.selectedElements);
                     this.selectedElements.clear();
                     selectedElements.forEach(([, elementRef]) => {
-                        this.__showElement(elementRef);
+                        this.__deselectElement(elementRef);
                     });
                 } else {
                     if (this.selectedElements.has(id)) {
                         const elementRef = this.selectedElements.get(id);
                         this.selectedElements.delete(id);
-                        this.__showElement(elementRef);
+                        this.__deselectElement(elementRef);
                         // end
                         return;
                     }
