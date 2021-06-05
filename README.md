@@ -11,10 +11,10 @@ What I want to have working (and might fail at getting to work)
 Progress Sample [live sample](https://vegarringdal.github.io/web-ifc-experiment/)
 
 * [x] select items
-* [ ] hide items
+* [x] hide items
 * [x] show data of selected
 * [x] multi select by holding CTRL 
-* [ ] show all (hidden)
+* [x] show all (hidden)
 * [ ] invert
 
 
