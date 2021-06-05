@@ -23,6 +23,7 @@ import { readAndParseIFC } from "./readAndParseIFC";
 import Stats from "stats.js/src/Stats.js";
 
 type listener = { handleEvent: (e: any) => void };
+type selectionMapType = { meshID: number; group: number; color: Color };
 export class ViewController {
     renderer: WebGLRenderer;
     scene: Scene;
@@ -35,10 +36,10 @@ export class ViewController {
     threeCanvas: HTMLCanvasElement;
 
     selectionColor = new Color("red");
-    lastSelectedObjectColor = new Color();
-    lastSelectedGroup: any;
-    lastSelectedId: propertyMapType;
     listeners: Set<listener>;
+
+    selectedElements = new Map<number, selectionMapType>();
+    hiddenElements = new Map<number, propertyMapType>();
 
     constructor(canvas: string | HTMLCanvasElement) {
         this.listeners = new Set<listener>();
@@ -237,7 +238,7 @@ export class ViewController {
     }
 
     private __addClickEvent() {
-        this.threeCanvas.onpointerdown = (event: any) => {
+        this.threeCanvas.onpointerdown = (event: MouseEvent) => {
             if (event.button != 0) return;
 
             const mouse = new Vector2();
@@ -249,64 +250,64 @@ export class ViewController {
             const selectedID = propertyMap.get(id);
 
             // next part is just spagetti still and not very dynamic, on my todo..
+            let addToSelection = false;
+            if (event.ctrlKey) {
+                addToSelection = true;
+            }
 
-            // last color
+            if (!addToSelection) {
+                const selectedElements = Array.from(this.selectedElements);
+                this.selectedElements.clear();
+                selectedElements.forEach(([, elementRef]) => {
+                    this.scene.children.forEach((e: MeshExtended) => {
+                        if (e.meshID === elementRef.meshID) {
+                            console.log("found existing");
+                            const group = e.geometry.groups[elementRef.group];
+                            const colorAtt = e.geometry.attributes.color;
+                            const index = e.geometry.index.array;
 
-            this.scene.children.forEach((e: MeshExtended) => {
-                if (this.lastSelectedId && e.meshID === this.lastSelectedId.meshID) {
-                    console.log("found existing");
-                    const group = e.geometry.groups[this.lastSelectedId.group];
-                    const colorAtt = e.geometry.attributes.color;
-                    const index = e.geometry.index.array;
-
-                    for (let i = group.start; i < group.start + group.count; i++) {
-                        const p = index[i] * 4;
-                        (colorAtt as any).array[p] = this.lastSelectedObjectColor.r as any;
-                        (colorAtt as any).array[p + 1] = this.lastSelectedObjectColor.g as any;
-                        (colorAtt as any).array[p + 2] = this.lastSelectedObjectColor.b as any;
-                    }
-                    colorAtt.needsUpdate = true;
-                } else {
-                    if (this.lastSelectedId) {
-                        console.log(
-                            e.meshID,
-                            e.meshID === this.lastSelectedId.meshID,
-                            this.lastSelectedId.meshID
-                        );
-                    }
-                }
-            });
-
-            this.lastSelectedId = null;
-            this.lastSelectedGroup = null;
-            this.lastSelectedObjectColor = new Color();
+                            for (let i = group.start; i < group.start + group.count; i++) {
+                                const p = index[i] * 4;
+                                (colorAtt as any).array[p] = elementRef.color.r;
+                                (colorAtt as any).array[p + 1] = elementRef.color.g;
+                                (colorAtt as any).array[p + 2] = elementRef.color.b;
+                            }
+                            colorAtt.needsUpdate = true;
+                        }
+                    });
+                });
+            }
 
             // new color
             this.scene.children.forEach((e: MeshExtended) => {
                 if (selectedID && e.meshID === selectedID.meshID) {
-                    this.lastSelectedId = selectedID;
                     const group = e.geometry.groups[selectedID.group];
-                    this.lastSelectedGroup = group;
                     const colorAtt = e.geometry.attributes.color;
                     const index = e.geometry.index.array;
-
+                    const currentColor = new Color();
                     {
                         const i = group.start;
                         const x = index[i] * 4;
-                        this.lastSelectedObjectColor.r = (colorAtt as any).array[x];
+                        currentColor.r = (colorAtt as any).array[x];
                     }
 
                     {
                         const i = group.start;
                         const x = index[i] * 4;
-                        this.lastSelectedObjectColor.g = (colorAtt as any).array[x + 1];
+                        currentColor.g = (colorAtt as any).array[x + 1];
                     }
 
                     {
                         const i = group.start;
                         const x = index[i] * 4;
-                        this.lastSelectedObjectColor.b = (colorAtt as any).array[x + 2];
+                        currentColor.b = (colorAtt as any).array[x + 2];
                     }
+
+                    this.selectedElements.set(id, {
+                        color: currentColor,
+                        meshID: selectedID.meshID,
+                        group: selectedID.group
+                    });
 
                     for (let i = group.start; i < group.start + group.count; i++) {
                         const p = index[i] * 4;
