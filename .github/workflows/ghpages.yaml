@@ -20,6 +20,7 @@ jobs:
           npm run build
  
       - name: Deploy 🚀
-        uses: actions-js/push@main
+        uses: actions-js/push@master
         with:
+          branch: 'main'
           github_token: ${{ secrets.DEV_CODE }}
