@@ -13,7 +13,7 @@ Progress Sample [live sample](https://vegarringdal.github.io/web-ifc-experiment/
 * [x] select items
 * [ ] hide items
 * [x] show data of selected
-* [ ] multi select by holding CTRL 
+* [x] multi select by holding CTRL 
 * [ ] show all (hidden)
 * [ ] invert
 
