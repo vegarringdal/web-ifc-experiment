@@ -21,6 +21,5 @@ jobs:
  
       - name: Deploy 🚀
         uses: actions-js/push@main
-        message: "chore: update ghpages"
         with:
-          github_token: ${{ secrets.ACTION }}
+          github_token: ${{ secrets.DEV_CODE }}
