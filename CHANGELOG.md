@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.2-next.18](https://github.com/simple-html/simple-html/compare/v0.0.2-next.17...v0.0.2-next.18) (2021-06-06)
+
+
+### Features
+
+* wireless spacemouse support ([d3fcc3f](https://github.com/simple-html/simple-html/commits/d3fcc3ff2a82c0e5287762c6c29246f9d8f07991))
+
 ### [0.0.2-next.17](https://github.com/simple-html/simple-html/compare/v0.0.2-next.16...v0.0.2-next.17) (2021-06-06)
 
 ### [0.0.2-next.16](https://github.com/simple-html/simple-html/compare/v0.0.2-next.15...v0.0.2-next.16) (2021-06-06)
