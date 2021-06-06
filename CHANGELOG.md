@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.2-next.13](https://github.com/simple-html/simple-html/compare/v0.0.2-next.12...v0.0.2-next.13) (2021-06-06)
+
+
+### Features
+
+* add space navigator as option ([a1a5b8c](https://github.com/simple-html/simple-html/commits/a1a5b8c997d09b8379ce59f04ad38a2a22442266))
+
 ### [0.0.2-next.12](https://github.com/simple-html/simple-html/compare/v0.0.2-next.11...v0.0.2-next.12) (2021-06-05)
 
 
