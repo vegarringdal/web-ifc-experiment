@@ -17,6 +17,8 @@ Progress Sample [live sample](https://vegarringdal.github.io/web-ifc-experiment/
 * [x] show all (hidden)
 * [x] invert
 * [x] use spacenavigator
+* [x] set focus to selected
+* [ ] some selection three
 
 
 ## how to use
