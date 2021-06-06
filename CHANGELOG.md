@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.2-next.17](https://github.com/simple-html/simple-html/compare/v0.0.2-next.16...v0.0.2-next.17) (2021-06-06)
+
 ### [0.0.2-next.16](https://github.com/simple-html/simple-html/compare/v0.0.2-next.15...v0.0.2-next.16) (2021-06-06)
 
 
