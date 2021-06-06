@@ -1,7 +1,6 @@
 import * as WebIFC from "web-ifc/web-ifc-api";
 import { propertyMap } from "./propertyMap";
 import { getNewMeshId } from "./getNewMeshId";
-import { getItemProperties } from "./getItemProperties";
 import { convertToThreeBufferGeometry } from "./convertToThreeBufferGeometry";
 import { Color } from "three";
 import { getCurrentColorId, getNewColorId } from "./colorId";
@@ -17,6 +16,7 @@ export function getAllGeometry(modelID: number, ifcAPI: WebIFC.IfcAPI) {
         const flatMesh = flatMeshes.get(i);
         const productId = flatMesh.expressID;
         const flatMeshGeometries = flatMesh.geometries;
+        const properties = ifcAPI.GetLine(modelID, productId, false);
         for (let j = 0; j < flatMeshGeometries.size(); j++) {
             const flatMeshGeometry = flatMeshGeometries.get(j);
 
@@ -32,7 +32,7 @@ export function getAllGeometry(modelID: number, ifcAPI: WebIFC.IfcAPI) {
                     colorID
                 );
                 geometry.userData.id = productId;
-                geometry.userData.ifcData = getItemProperties(productId, modelID, ifcAPI);
+                geometry.userData.ifcData = properties;
                 geometries.push(geometry);
             } else {
                 const geometry = convertToThreeBufferGeometry(
@@ -42,7 +42,7 @@ export function getAllGeometry(modelID: number, ifcAPI: WebIFC.IfcAPI) {
                     colorID
                 );
                 geometry.userData.id = productId;
-                geometry.userData.ifcData = getItemProperties(productId, modelID, ifcAPI);
+                geometry.userData.ifcData = properties;
                 geometriesWithAlpha.push(geometry);
             }
 
