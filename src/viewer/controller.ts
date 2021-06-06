@@ -24,7 +24,7 @@ import Stats from "stats.js/src/Stats.js";
 import { SpaceNavigator } from "./spaceNavigator";
 
 type listener = { handleEvent: (e: any) => void };
-type selectionMapType = { meshID: number; group: number; color: Color };
+type selectionMapType = { id: number; meshID: number; group: number; color: Color };
 export class ViewController {
     private renderer: WebGLRenderer;
     private scene: Scene;
@@ -355,6 +355,79 @@ export class ViewController {
         });
     }
 
+    public invertSelection() {
+        // first part will be to remove current selection
+        const selectedElements = Array.from(this.selectedElements);
+        this.selectedElements.clear();
+        selectedElements.forEach(([, elementRef]) => {
+            // we do this to reset colors..
+            this.__deselectElement(elementRef);
+        });
+
+        const selected = selectedElements.map(([, elementRef]) => elementRef.id);
+
+        this.scene.children.forEach((e: MeshExtended) => {
+            if (e.meshID) {
+                e.geometry.groups.forEach((group, i) => {
+                    const colorAtt = e.geometry.attributes.color;
+                    const index = e.geometry.index.array;
+
+                    let id;
+                    {
+                        // get the picking ID
+                        const i = group.start;
+                        const x = index[i] * 4;
+                        const arr = e.geometry.attributes.colorpicking.array;
+
+                        id = new Color(arr[x], arr[x + 1], arr[x + 2]).getHex();
+                    }
+
+                    if (selected.indexOf(id) !== -1) {
+                        return;
+                    }
+
+                    // get existing colors, so we can set it back later
+                    const currentColor = new Color();
+                    {
+                        const i = group.start;
+                        const x = index[i] * 4;
+                        currentColor.r = colorAtt.array[x];
+                    }
+
+                    {
+                        const i = group.start;
+                        const x = index[i] * 4;
+                        currentColor.g = colorAtt.array[x + 1];
+                    }
+
+                    {
+                        const i = group.start;
+                        const x = index[i] * 4;
+                        currentColor.b = colorAtt.array[x + 2];
+                    }
+
+                    // store state
+
+                    this.selectedElements.set(id, {
+                        id: id,
+                        color: currentColor,
+                        meshID: e.meshID,
+                        group: i
+                    });
+
+                    for (let i = group.start; i < group.start + group.count; i++) {
+                        const p = index[i] * 4;
+                        (colorAtt as any).array[p] = this.selectionColor.r;
+                        (colorAtt as any).array[p + 1] = this.selectionColor.g;
+                        (colorAtt as any).array[p + 2] = this.selectionColor.b;
+                    }
+                });
+
+                e.geometry.attributes.color.needsUpdate = true;
+            }
+        });
+    }
+
     public showAll() {
         const hiddenElements = Array.from(this.hiddenElements);
         this.hiddenElements.clear();
@@ -431,6 +504,7 @@ export class ViewController {
 
                         // store state
                         this.selectedElements.set(id, {
+                            id: id,
                             color: currentColor,
                             meshID: selectedID.meshID,
                             group: selectedID.group

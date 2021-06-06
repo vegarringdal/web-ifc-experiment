@@ -15,7 +15,8 @@ Progress Sample [live sample](https://vegarringdal.github.io/web-ifc-experiment/
 * [x] show data of selected
 * [x] multi select by holding CTRL 
 * [x] show all (hidden)
-* [ ] invert
+* [x] invert
+* [x] use spacenavigator
 
 
 ## how to use
