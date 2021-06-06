@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.2-next.14](https://github.com/simple-html/simple-html/compare/v0.0.2-next.13...v0.0.2-next.14) (2021-06-06)
+
+
+### Features
+
+* invert selection ([8c20e51](https://github.com/simple-html/simple-html/commits/8c20e511e7da9811bae919230a38a97efc9355ac))
+
 ### [0.0.2-next.13](https://github.com/simple-html/simple-html/compare/v0.0.2-next.12...v0.0.2-next.13) (2021-06-06)
 
 
