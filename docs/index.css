@@ -375,6 +375,9 @@ video {
   --tw-drop-shadow: var(--tw-empty, );
   filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
 }
+.invert {
+  --tw-invert: invert(100%);
+}
 app-root {
   position: absolute;
   top: 0;
