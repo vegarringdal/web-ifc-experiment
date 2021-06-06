@@ -359,7 +359,6 @@ export class ViewController {
                         const elementRef = this.selectedElements.get(id);
                         this.selectedElements.delete(id);
                         this.__deselectElement(elementRef);
-                        // end
                         return;
                     }
                 }
@@ -370,25 +369,28 @@ export class ViewController {
                         const group = e.geometry.groups[selectedID.group];
                         const colorAtt = e.geometry.attributes.color;
                         const index = e.geometry.index.array;
+
+                        // get existing colors, so we can set it back later
                         const currentColor = new Color();
                         {
                             const i = group.start;
                             const x = index[i] * 4;
-                            currentColor.r = (colorAtt as any).array[x];
+                            currentColor.r = colorAtt.array[x];
                         }
 
                         {
                             const i = group.start;
                             const x = index[i] * 4;
-                            currentColor.g = (colorAtt as any).array[x + 1];
+                            currentColor.g = colorAtt.array[x + 1];
                         }
 
                         {
                             const i = group.start;
                             const x = index[i] * 4;
-                            currentColor.b = (colorAtt as any).array[x + 2];
+                            currentColor.b = colorAtt.array[x + 2];
                         }
 
+                        // store state
                         this.selectedElements.set(id, {
                             color: currentColor,
                             meshID: selectedID.meshID,
@@ -397,16 +399,14 @@ export class ViewController {
 
                         for (let i = group.start; i < group.start + group.count; i++) {
                             const p = index[i] * 4;
-                            (colorAtt as any).array[p] = this.selectionColor.r as any;
-                            (colorAtt as any).array[p + 1] = this.selectionColor.g as any;
-                            (colorAtt as any).array[p + 2] = this.selectionColor.b as any;
+                            (colorAtt as any).array[p] = this.selectionColor.r;
+                            (colorAtt as any).array[p + 1] = this.selectionColor.g;
+                            (colorAtt as any).array[p + 2] = this.selectionColor.b;
                         }
+                        // TODO: look at update range
                         colorAtt.needsUpdate = true;
-                        e.geometry.computeVertexNormals();
                     }
                 });
-
-                this.renderer.render(this.scene, this.camera);
             };
         };
     }
