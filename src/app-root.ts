@@ -105,6 +105,24 @@ export class AppRoot extends HTMLElement {
                 hideGPU color
             </button>
 
+            <button
+                class="inline-block p-2 m-2 bg-indigo-300 z-10 relative"
+                @click=${() => {
+                    this.viewController.enableSpaceNavigator();
+                }}
+            >
+                enable SpaceNavigator
+            </button>
+
+            <button
+                class="inline-block p-2 m-2 bg-indigo-300 z-10 relative"
+                @click=${() => {
+                    this.viewController.disableSpaceNavigator();
+                }}
+            >
+                disable SpaceNavigator
+            </button>
+
             <div class="bottom-0 right-0 absolute bg-indigo-300 m-2 p-2 flex flex-col">
                 ${this.getIFCDataAsHtml()}
             </div>

@@ -21,25 +21,29 @@ import { readAndParseIFC } from "./readAndParseIFC";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore --types missing atm
 import Stats from "stats.js/src/Stats.js";
+import { SpaceNavigator } from "./spaceNavigator";
 
 type listener = { handleEvent: (e: any) => void };
 type selectionMapType = { meshID: number; group: number; color: Color };
 export class ViewController {
-    renderer: WebGLRenderer;
-    scene: Scene;
-    camera: PerspectiveCamera;
-    controls: OrbitControls;
-    ambientLight: AmbientLight;
-    directionalLight2: any;
-    directionalLight1: any;
-    monitors: Stats;
-    threeCanvas: HTMLCanvasElement;
+    private renderer: WebGLRenderer;
+    private scene: Scene;
+    private camera: PerspectiveCamera;
+    private controls: OrbitControls;
+    private ambientLight: AmbientLight;
+    private directionalLight2: any;
+    private directionalLight1: any;
+    private monitors: Stats;
+    private threeCanvas: HTMLCanvasElement;
 
-    selectionColor = new Color("red");
-    listeners: Set<listener>;
+    private selectionColor = new Color("red");
+    private listeners: Set<listener>;
 
-    selectedElements = new Map<number, selectionMapType>();
-    hiddenElements = new Map<number, selectionMapType>();
+    private selectedElements = new Map<number, selectionMapType>();
+    private hiddenElements = new Map<number, selectionMapType>();
+
+    private spaceNavigatorEnabled: boolean;
+    private spaceNavigator: SpaceNavigator;
 
     constructor(canvas: string | HTMLCanvasElement) {
         this.listeners = new Set<listener>();
@@ -47,7 +51,7 @@ export class ViewController {
         this.__addScene();
         this.__addCamera();
         this.__addControls();
-        this.__addControls();
+        this.__AddSpaceNavigator();
         this.__addLights();
         this.__addWindowResizer();
         this.__addStats();
@@ -59,8 +63,15 @@ export class ViewController {
         if (this.monitors) {
             this.monitors.begin();
         }
+        if (this.spaceNavigatorEnabled) {
+            this.spaceNavigator.update();
+            this.camera.position.copy(this.spaceNavigator.position);
+            this.camera.rotation.copy(this.spaceNavigator.rotation);
+            this.camera.updateProjectionMatrix();
+        } else {
+            this.controls.update();
+        }
 
-        this.controls.update();
         this.renderer.render(this.scene, this.camera);
 
         if (this.monitors) {
@@ -68,6 +79,34 @@ export class ViewController {
         }
 
         requestAnimationFrame(() => this.animationLoop());
+    }
+
+    public enableSpaceNavigator() {
+        // TODO: I should move postition from orbit controls over to this
+        this.spaceNavigatorEnabled = true;
+    }
+
+    public disableSpaceNavigator() {
+        this.spaceNavigatorEnabled = false;
+    }
+
+    private __AddSpaceNavigator() {
+        this.spaceNavigator = new SpaceNavigator({
+            rollEnabled: false,
+            movementEnabled: true,
+            lookEnabled: true,
+            invertPitch: false,
+            fovEnabled: false,
+            fovMin: 2,
+            fovMax: 115,
+            rotationSensitivity: 0.05,
+            movementEasing: 3,
+            movementAcceleration: 700,
+            fovSensitivity: 0.01,
+            fovEasing: 3,
+            fovAcceleration: 5,
+            invertScroll: false
+        });
     }
 
     private __addRender(canvas: string | HTMLCanvasElement) {
