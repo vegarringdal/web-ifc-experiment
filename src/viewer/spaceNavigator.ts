@@ -365,7 +365,8 @@ export class SpaceNavigator {
                 if (
                     gamepadName &&
                     (gamepadName.toLowerCase().indexOf("spacenavigator") > -1 ||
-                        gamepadName.toLowerCase().indexOf("space navigator") > -1)
+                        gamepadName.toLowerCase().indexOf("space navigator") > -1 ||
+                        gamepadName.toLowerCase().indexOf("spacemouse wireless") > -1)
                 ) {
                     this_.spaceNavigatorId = i;
                 }
