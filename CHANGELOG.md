@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.2-next.16](https://github.com/simple-html/simple-html/compare/v0.0.2-next.15...v0.0.2-next.16) (2021-06-06)
+
+
+### Features
+
+* set focus to last selected (camera) ([368312e](https://github.com/simple-html/simple-html/commits/368312e1a5604d456f7f19c3c349b730df173dea))
+
+
+### Bug Fixes
+
+* dont try and read file if user cancels ([526ce6b](https://github.com/simple-html/simple-html/commits/526ce6bc1310af919d891ea15bdfd763be1c8f02))
+
 ### [0.0.2-next.15](https://github.com/simple-html/simple-html/compare/v0.0.2-next.14...v0.0.2-next.15) (2021-06-06)
 
 ### [0.0.2-next.14](https://github.com/simple-html/simple-html/compare/v0.0.2-next.13...v0.0.2-next.14) (2021-06-06)

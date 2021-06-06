@@ -9,14 +9,17 @@ import {
     WebGLRenderTarget,
     Mesh,
     Box3,
-    Vector3
+    Vector3,
+    BufferGeometry,
+    BufferAttribute,
+    MeshBasicMaterial
 } from "three";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore --types missing atm
 import { MathUtils } from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { MeshExtended } from "./MeshExtended";
-import { propertyMap } from "./propertyMap";
+import { propertyMap, propertyMapType } from "./propertyMap";
 import { readAndParseIFC } from "./readAndParseIFC";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore --types missing atm
@@ -44,6 +47,8 @@ export class ViewController {
 
     private spaceNavigatorEnabled: boolean;
     private spaceNavigator: SpaceNavigator;
+    private lastSelectedCenter: Vector3;
+    public lastSelectedBoxSize: number;
 
     constructor(canvas: string | HTMLCanvasElement) {
         this.listeners = new Set<listener>();
@@ -204,6 +209,7 @@ export class ViewController {
         this.camera.near = 1;
         this.camera.far = boxSize * 100;
         // set target to newest loaded model
+
         this.controls.target.copy(boxCenter);
         this.controls.update();
     }
@@ -437,6 +443,45 @@ export class ViewController {
         });
     }
 
+    private __getCenterAndSize(clickedMesh: MeshExtended, prop: propertyMapType) {
+        const group = clickedMesh.geometry.groups[prop.group];
+        const positionAtt = clickedMesh.geometry.attributes.position;
+        const index = clickedMesh.geometry.index.array;
+        const bg = new BufferGeometry();
+        const newIndex = (index as any).slice(group.start, group.start + group.count);
+        const positions: number[] = [];
+        for (let i = group.start; i < group.start + group.count; i++) {
+            const p = index[i] * 3;
+            positions.push(positionAtt.array[p]);
+            positions.push(positionAtt.array[p + 1]);
+            positions.push(positionAtt.array[p + 2]);
+        }
+        const x: any = newIndex;
+        const min = Math.min(...x);
+
+        for (let i = 0; i < newIndex.length; i++) {
+            newIndex[i] = newIndex[i] - min;
+        }
+
+        bg.setAttribute("position", new BufferAttribute(new Float32Array(positions), 3, true));
+        bg.setIndex(new BufferAttribute(newIndex, 1));
+        const mesh = new Mesh(bg, new MeshBasicMaterial({ color: 0x00ff00 }));
+        mesh.applyMatrix4(clickedMesh.matrixWorld);
+        mesh.updateWorldMatrix(true, true);
+        const box = new Box3().setFromObject(mesh);
+        const boxSize = box.getSize(new Vector3()).length();
+        const boxCenter = box.getCenter(new Vector3());
+        this.lastSelectedCenter = boxCenter;
+        this.lastSelectedBoxSize = boxSize;
+    }
+
+    public focusOnLastSelected() {
+        if (this.lastSelectedCenter) {
+            this.controls.target.copy(this.lastSelectedCenter);
+            this.controls.update();
+        }
+    }
+
     private __addClickEvent() {
         this.threeCanvas.onpointerdown = (event: MouseEvent) => {
             if (event.button != 0) return;
@@ -482,6 +527,8 @@ export class ViewController {
                         const colorAtt = e.geometry.attributes.color;
                         const index = e.geometry.index.array;
 
+                        this.__getCenterAndSize(e, selectedID);
+
                         // get existing colors, so we can set it back later
                         const currentColor = new Color();
                         {
@@ -516,6 +563,7 @@ export class ViewController {
                             (colorAtt as any).array[p + 1] = this.selectionColor.g;
                             (colorAtt as any).array[p + 2] = this.selectionColor.b;
                         }
+
                         // TODO: look at update range
                         colorAtt.needsUpdate = true;
                     }
