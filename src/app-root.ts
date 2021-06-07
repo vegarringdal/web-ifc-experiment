@@ -4,6 +4,7 @@ import { ViewController } from "viewer/controller";
 export class AppRoot extends HTMLElement {
     viewController: ViewController;
     data: { keys: any[]; values: any[] } = null;
+    buttonsHidden = true;
 
     public connectedCallback() {
         this.render();
@@ -68,125 +69,177 @@ export class AppRoot extends HTMLElement {
         }
     }
 
+    public showButtonsTemplate() {
+        if (this.buttonsHidden) {
+            return html`
+                <div class="flex flex-col" style="max-width:150px">
+                    <button
+                        class="inline-block p-2 m-2 bg-indigo-800 text-white z-10 relative"
+                        @click=${() => {
+                            this.buttonsHidden = false;
+                            this.render();
+                        }}
+                    >
+                        Show Options
+                    </button>
+                </div>
+            `;
+        }
+
+        // if not, we show all..
+
+        return html`
+            <!--   template -->
+            <div class="flex flex-col" style="max-width:200px">
+                <button
+                    class="inline-block p-2 m-2 bg-indigo-800 text-white z-10 relative"
+                    @click=${() => {
+                        this.buttonsHidden = true;
+                        this.render();
+                    }}
+                >
+                    Hide Options
+                </button>
+
+                <button
+                    class="inline-block p-2 m-2 bg-indigo-800 text-white z-10 relative"
+                    @click=${() => {
+                        this.viewController.clearScene();
+                    }}
+                >
+                    Clear Scene
+                </button>
+
+                <label
+                    class="inline-block p-2 m-2 bg-indigo-800 text-white z-10 relative text-center"
+                >
+                    <input
+                        type="file"
+                        class="hidden"
+                        @change=${async (e: any) => {
+                            await this.viewController.readFile(e.target.files[0], false);
+                            e.target.value = ""; // reset so we can load same file name again..
+                        }}
+                    />
+                    Open File
+                </label>
+
+                <label
+                    class="inline-block p-2 m-2 bg-indigo-800 text-white z-10 relative text-center"
+                >
+                    <input
+                        type="file"
+                        class="hidden"
+                        @change=${async (e: any) => {
+                            await this.viewController.readFile(e.target.files[0], true);
+                            e.target.value = ""; // reset so we can load same file name again..
+                        }}
+                    />
+                    Open File (prop)
+                </label>
+
+                <button
+                    class="inline-block p-2 m-2 bg-indigo-800 text-white z-10 relative"
+                    @click=${() => {
+                        this.viewController.debugShowPickingColors();
+                    }}
+                >
+                    Show GPU Color
+                </button>
+
+                <button
+                    class="inline-block p-2 m-2 bg-indigo-800 text-white z-10 relative"
+                    @click=${() => {
+                        this.viewController.debugHidePickingColors();
+                    }}
+                >
+                    Hide GPU Color
+                </button>
+
+                <button
+                    class="inline-block p-2 m-2 bg-indigo-800 text-white z-10 relative"
+                    @click=${() => {
+                        this.viewController.enableSpaceNavigator();
+                    }}
+                >
+                    Enable SpaceNavigator
+                </button>
+
+                <button
+                    class="inline-block p-2 m-2 bg-indigo-800 text-white z-10 relative"
+                    @click=${() => {
+                        this.viewController.disableSpaceNavigator();
+                    }}
+                >
+                    Disable SpaceNavigator
+                </button>
+
+                <button
+                    class="inline-block p-2 m-2 bg-indigo-800 text-white z-10 relative"
+                    @click=${() => {
+                        this.viewController.toggleWireframe();
+                    }}
+                >
+                    Toggle Wireframe
+                </button>
+
+                <button
+                    class="inline-block p-2 m-2 bg-indigo-800 text-white z-10 relative"
+                    @click=${() => {
+                        this.viewController.hideSelected();
+                    }}
+                >
+                    Hide Selected
+                </button>
+                <button
+                    class="inline-block p-2 m-2 bg-indigo-800 text-white z-10 relative"
+                    @click=${() => {
+                        this.viewController.showAll();
+                    }}
+                >
+                    Show All
+                </button>
+
+                <button
+                    class="inline-block p-2 m-2 bg-indigo-800 text-white z-10 relative"
+                    @click=${() => {
+                        this.viewController.invertSelection();
+                    }}
+                >
+                    Invert Selection
+                </button>
+
+                <button
+                    class="inline-block p-2 m-2 bg-indigo-800 text-white z-10 relative"
+                    @click=${() => {
+                        // just for fun combine calls
+                        this.viewController.invertSelection();
+                        this.viewController.hideSelected();
+                        this.viewController.focusOnLastSelected();
+                    }}
+                >
+                    Hide not selected
+                </button>
+
+                <button
+                    class="inline-block p-2 m-2 bg-indigo-800 text-white z-10 relative"
+                    @click=${() => {
+                        this.viewController.focusOnLastSelected();
+                    }}
+                >
+                    Focus on last selected
+                </button>
+            </div>
+        `;
+    }
+
     // this is helper for app-root innerHtml
     public template() {
         return html`
             <!--   template -->
             <canvas class="top-0 absolute w-full h-full" id="3dview"> </canvas>
-            <label class="inline-block p-2 m-2 bg-indigo-300 z-10 relative">
-                <input
-                    type="file"
-                    class="hidden"
-                    @change=${async (e: any) => {
-                        await this.viewController.readFile(e.target.files[0], false);
-                        e.target.value = ""; // reset so we can load same file name again..
-                    }}
-                />
-                open file
-            </label>
-
-            <label class="inline-block p-2 m-2 bg-indigo-300 z-10 relative">
-                <input
-                    type="file"
-                    class="hidden"
-                    @change=${async (e: any) => {
-                        await this.viewController.readFile(e.target.files[0], true);
-                        e.target.value = ""; // reset so we can load same file name again..
-                    }}
-                />
-                open file with propertySet
-            </label>
-
-            <button
-                class="inline-block p-2 m-2 bg-indigo-300 z-10 relative"
-                @click=${() => {
-                    this.viewController.hideSelected();
-                }}
-            >
-                Hide Selected
-            </button>
-            <button
-                class="inline-block p-2 m-2 bg-indigo-300 z-10 relative"
-                @click=${() => {
-                    this.viewController.showAll();
-                }}
-            >
-                Show all
-            </button>
-
-            <button
-                class="inline-block p-2 m-2 bg-indigo-300 z-10 relative"
-                @click=${() => {
-                    this.viewController.debugShowPickingColors();
-                }}
-            >
-                showGPU color
-            </button>
-
-            <button
-                class="inline-block p-2 m-2 bg-indigo-300 z-10 relative"
-                @click=${() => {
-                    this.viewController.debugHidePickingColors();
-                }}
-            >
-                hideGPU color
-            </button>
-
-            <button
-                class="inline-block p-2 m-2 bg-indigo-300 z-10 relative"
-                @click=${() => {
-                    this.viewController.enableSpaceNavigator();
-                }}
-            >
-                enable SpaceNavigator
-            </button>
-
-            <button
-                class="inline-block p-2 m-2 bg-indigo-300 z-10 relative"
-                @click=${() => {
-                    this.viewController.disableSpaceNavigator();
-                }}
-            >
-                disable SpaceNavigator
-            </button>
-
-            <button
-                class="inline-block p-2 m-2 bg-indigo-300 z-10 relative"
-                @click=${() => {
-                    this.viewController.invertSelection();
-                }}
-            >
-                invert selection
-            </button>
-
-            <button
-                class="inline-block p-2 m-2 bg-indigo-300 z-10 relative"
-                @click=${() => {
-                    this.viewController.focusOnLastSelected();
-                }}
-            >
-                focus on last selected
-            </button>
-
-            <button
-                class="inline-block p-2 m-2 bg-indigo-300 z-10 relative"
-                @click=${() => {
-                    this.viewController.clearScene();
-                }}
-            >
-                clearScene
-            </button>
-
-            <button
-                class="inline-block p-2 m-2 bg-indigo-300 z-10 relative"
-                @click=${() => {
-                    this.viewController.toggleWireframe();
-                }}
-            >
-                toggleWireframe
-            </button>
-
-            <div class="bottom-0 right-0 absolute bg-indigo-300 m-2 p-2 flex flex-col">
+            ${this.showButtonsTemplate()}
+            <div class="bottom-0 right-0 absolute bg-indigo-800 text-white m-2 p-2 flex flex-col">
                 ${this.getIFCDataAsHtml(this.data)}
             </div>
         `;
