@@ -179,8 +179,8 @@ export class ViewController {
         document.body.appendChild(this.monitors.dom);
     }
 
-    public async readFile(file: File) {
-        const { meshWithAlpha, meshWithoutAlpha } = await readAndParseIFC(file);
+    public async readFile(file: File, loadPropertySets: boolean) {
+        const { meshWithAlpha, meshWithoutAlpha } = await readAndParseIFC(file, loadPropertySets);
 
         if (meshWithAlpha) this.scene.add(meshWithAlpha);
         if (meshWithoutAlpha) this.scene.add(meshWithoutAlpha);

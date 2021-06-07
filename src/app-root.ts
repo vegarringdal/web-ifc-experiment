@@ -3,7 +3,7 @@ import { ViewController } from "viewer/controller";
 
 export class AppRoot extends HTMLElement {
     viewController: ViewController;
-    data: { keys: any[]; values: any[] } = { keys: [], values: [] };
+    data: { keys: any[]; values: any[] } = null;
 
     public connectedCallback() {
         this.render();
@@ -15,19 +15,10 @@ export class AppRoot extends HTMLElement {
         // only event I have atm is from grip click event...
         if (e?.data) {
             // just store them as key/values for now
-            const keys = Object.keys(e.data);
-            const values = keys.map((x) => {
-                if (e.data[x]?.value) {
-                    return e.data[x]?.value;
-                } else {
-                    return e.data[x];
-                }
-            });
 
-            keys.unshift("element type");
-            values.unshift(e.data?.constructor?.name);
+            e.data["element type"] = e.data?.constructor?.name;
 
-            this.data = { keys, values };
+            this.data = e.data;
             this.render();
         }
     }
@@ -37,16 +28,39 @@ export class AppRoot extends HTMLElement {
         render(this.template(), this);
     }
 
-    private getIFCDataAsHtml() {
-        const { values, keys } = this.data;
+    private getIFCDataAsHtml(data: Record<string, any>) {
+        if (!data) {
+            return "";
+        }
+
+        function getKeyValue(data: Record<string, any>) {
+            const keys = Object.keys(data);
+            const values = keys.map((x) => {
+                if (data[x]?.value) {
+                    return data[x]?.value;
+                } else {
+                    return data[x];
+                }
+            });
+            return { values, keys };
+        }
+
+        const { values, keys } = getKeyValue(data);
 
         if (keys.length) {
             return html`
                 <div class="text-center bg-indigo-500">Data:</div>
-                ${keys.map((key, i) => {
-                    return html`<div>
-                        <span class="font-semibold">${key}:</span><span>${values[i]}</span>
-                    </div>`;
+                ${keys.map((key: string, i: number) => {
+                    if (key === "PropertySet") {
+                        return html`<div>
+                            <span class="font-semibold">IfcPropertySets:</span
+                            ><span>${values[i].length}</span>
+                        </div>`;
+                    } else {
+                        return html`<div>
+                            <span class="font-semibold">${key}:</span><span>${values[i]}</span>
+                        </div>`;
+                    }
                 })}
             `;
         } else {
@@ -64,10 +78,21 @@ export class AppRoot extends HTMLElement {
                     type="file"
                     class="hidden"
                     @change=${async (e: any) => {
-                        this.viewController.readFile(e.target.files[0]);
+                        this.viewController.readFile(e.target.files[0], false);
                     }}
                 />
                 open file
+            </label>
+
+            <label class="inline-block p-2 m-2 bg-indigo-300 z-10 relative">
+                <input
+                    type="file"
+                    class="hidden"
+                    @change=${async (e: any) => {
+                        this.viewController.readFile(e.target.files[0], true);
+                    }}
+                />
+                open file with propertySet
             </label>
 
             <button
@@ -142,7 +167,7 @@ export class AppRoot extends HTMLElement {
             </button>
 
             <div class="bottom-0 right-0 absolute bg-indigo-300 m-2 p-2 flex flex-col">
-                ${this.getIFCDataAsHtml()}
+                ${this.getIFCDataAsHtml(this.data)}
             </div>
         `;
     }

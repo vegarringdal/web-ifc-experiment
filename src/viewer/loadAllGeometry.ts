@@ -6,10 +6,11 @@ import { material } from "./material";
 import { MeshExtended } from "./MeshExtended";
 import { getAllGeometry } from "./getAllGeometry";
 
-export function loadAllGeometry(modelID: number, ifcAPI: WebIFC.IfcAPI) {
+export function loadAllGeometry(modelID: number, ifcAPI: WebIFC.IfcAPI, loadPropertySets: boolean) {
     const { geometries, geometriesWithAlpha, normalMeshId, alphaMeshId } = getAllGeometry(
         modelID,
-        ifcAPI
+        ifcAPI,
+        loadPropertySets
     );
 
     let meshWithoutAlpha: MeshExtended;

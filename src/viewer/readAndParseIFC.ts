@@ -3,7 +3,8 @@ import { loadAllGeometry } from "./loadAllGeometry";
 import { MeshExtended } from "./MeshExtended";
 
 export function readAndParseIFC(
-    file: File
+    file: File,
+    loadPropertySets: boolean
 ): Promise<{ meshWithAlpha: MeshExtended; meshWithoutAlpha: MeshExtended }> {
     return new Promise(async (resolve, reject) => {
         let ifcAPI = new WebIFC.IfcAPI();
@@ -17,7 +18,7 @@ export function readAndParseIFC(
                 const data = new Uint8Array(uIntArrayBuffer);
                 const modelID = ifcAPI.OpenModel(data);
 
-                const c = loadAllGeometry(modelID, ifcAPI);
+                const c = loadAllGeometry(modelID, ifcAPI, loadPropertySets);
                 ifcAPI.CloseModel(modelID); // dont know if this really do much,..
                 ifcAPI = null;
                 // return all geometry

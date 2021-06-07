@@ -4,19 +4,29 @@ import { getNewMeshId } from "./getNewMeshId";
 import { convertToThreeBufferGeometry } from "./convertToThreeBufferGeometry";
 import { Color } from "three";
 import { getCurrentColorId, getNewColorId } from "./colorId";
+import { getAllPropertySets } from "./getAllProperties";
 
-export function getAllGeometry(modelID: number, ifcAPI: WebIFC.IfcAPI) {
+export function getAllGeometry(modelID: number, ifcAPI: WebIFC.IfcAPI, loadPropertySets: boolean) {
     const flatMeshes = ifcAPI.LoadAllGeometry(modelID);
     const geometries = [];
     const geometriesWithAlpha = [];
     const normalMeshId = getNewMeshId();
     const alphaMeshId = getNewMeshId();
     const color = new Color();
+
+    // this can take a lot of memory..
+    let propertySet = {};
+    if (loadPropertySets) {
+        propertySet = getAllPropertySets(modelID, ifcAPI);
+    }
+
     for (let i = 0; i < flatMeshes.size(); i++) {
         const flatMesh = flatMeshes.get(i);
         const productId = flatMesh.expressID;
         const flatMeshGeometries = flatMesh.geometries;
         const properties = ifcAPI.GetLine(modelID, productId, false);
+        properties.PropertySet = propertySet[productId] || [];
+
         for (let j = 0; j < flatMeshGeometries.size(); j++) {
             const flatMeshGeometry = flatMeshGeometries.get(j);
 
