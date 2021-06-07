@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.2-next.19](https://github.com/simple-html/simple-html/compare/v0.0.2-next.18...v0.0.2-next.19) (2021-06-07)
+
+
+### Features
+
+* clear scene ([0315077](https://github.com/simple-html/simple-html/commits/0315077bbf9076df9f5e98bcd98e783f03fec2ea))
+* load propertySet in controller fileload args ([ffbf131](https://github.com/simple-html/simple-html/commits/ffbf13122b9a2fa100ea45378f1ae24dc4cd6856))
+* toggle wireframe ([fded8b9](https://github.com/simple-html/simple-html/commits/fded8b9a790d554a10b70c35b5b4cafaa343d053))
+
 ### [0.0.2-next.18](https://github.com/simple-html/simple-html/compare/v0.0.2-next.17...v0.0.2-next.18) (2021-06-06)
 
 
