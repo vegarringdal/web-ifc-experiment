@@ -22,10 +22,10 @@ export function getAllGeometry(modelID: number, ifcAPI: WebIFC.IfcAPI, loadPrope
 
     for (let i = 0; i < flatMeshes.size(); i++) {
         const flatMesh = flatMeshes.get(i);
-        const productId = flatMesh.expressID;
+        const expressID = flatMesh.expressID;
         const flatMeshGeometries = flatMesh.geometries;
-        const properties = ifcAPI.GetLine(modelID, productId, false);
-        properties.PropertySet = propertySet[productId] || [];
+        const properties = ifcAPI.GetLine(modelID, expressID, false) || {};
+        properties.PropertySet = propertySet[expressID] || [];
 
         for (let j = 0; j < flatMeshGeometries.size(); j++) {
             const flatMeshGeometry = flatMeshGeometries.get(j);
@@ -41,8 +41,6 @@ export function getAllGeometry(modelID: number, ifcAPI: WebIFC.IfcAPI, loadPrope
                     flatMeshGeometry,
                     colorID
                 );
-                geometry.userData.id = productId;
-                geometry.userData.ifcData = properties;
                 geometries.push(geometry);
             } else {
                 const geometry = convertToThreeBufferGeometry(
@@ -51,12 +49,12 @@ export function getAllGeometry(modelID: number, ifcAPI: WebIFC.IfcAPI, loadPrope
                     flatMeshGeometry,
                     colorID
                 );
-                geometry.userData.id = productId;
-                geometry.userData.ifcData = properties;
                 geometriesWithAlpha.push(geometry);
             }
 
             propertyMap.set(getCurrentColorId(), {
+                expressID,
+                properties,
                 meshID: flatMeshGeometry.color.w === 1 ? normalMeshId : alphaMeshId,
                 group:
                     flatMeshGeometry.color.w === 1

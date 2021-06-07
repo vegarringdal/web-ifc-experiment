@@ -266,18 +266,10 @@ export class ViewController {
 
     private __triggerSelectEvent(id: number) {
         if (id) {
-            const selectedID = propertyMap.get(id);
-            this.scene.children.forEach((e: MeshExtended) => {
-                if (selectedID && e.meshID === selectedID.meshID) {
-                    const userdata = e.geometry?.userData?.mergedUserData;
-                    if (Array.isArray(userdata)) {
-                        const data = userdata[selectedID.group];
-                        const listeners = Array.from(this.listeners);
-                        listeners.forEach((l) => {
-                            l.handleEvent({ type: "modelClick", data: data?.ifcData });
-                        });
-                    }
-                }
+            const data = propertyMap.get(id);
+            const listeners = Array.from(this.listeners);
+            listeners.forEach((l) => {
+                l.handleEvent({ type: "modelClick", data });
             });
         }
     }

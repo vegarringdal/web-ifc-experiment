@@ -16,9 +16,9 @@ export class AppRoot extends HTMLElement {
         if (e?.data) {
             // just store them as key/values for now
 
-            e.data["element type"] = e.data?.constructor?.name;
+            e.data.properties["element type"] = e.data?.properties?.constructor?.name;
 
-            this.data = e.data;
+            this.data = e.data.properties;
             this.render();
         }
     }
