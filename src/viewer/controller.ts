@@ -26,33 +26,34 @@ import { readAndParseIFC } from "./readAndParseIFC";
 import Stats from "stats.js/src/Stats.js";
 import { SpaceNavigator } from "./spaceNavigator";
 import { resetColorId } from "./colorId";
+import { material } from "./material";
 
 type listener = { handleEvent: (e: any) => void };
 type selectionMapType = { id: number; meshID: number; group: number; color: Color };
 export class ViewController {
-    private renderer: WebGLRenderer;
-    private scene: Scene;
-    private camera: PerspectiveCamera;
-    private controls: OrbitControls;
-    private ambientLight: AmbientLight;
-    private directionalLight2: any;
-    private directionalLight1: any;
-    private monitors: Stats;
-    private threeCanvas: HTMLCanvasElement;
+    private __renderer: WebGLRenderer;
+    private __scene: Scene;
+    private __camera: PerspectiveCamera;
+    private __controls: OrbitControls;
+    private __ambientLight: AmbientLight;
+    private __directionalLight2: any;
+    private __directionalLight1: any;
+    private __monitors: Stats;
+    private __threeCanvas: HTMLCanvasElement;
 
-    private selectionColor = new Color("red");
-    private listeners: Set<listener>;
+    private __selectionColor = new Color("red");
+    private __listeners: Set<listener>;
 
-    private selectedElements = new Map<number, selectionMapType>();
-    private hiddenElements = new Map<number, selectionMapType>();
+    private __selectedElements = new Map<number, selectionMapType>();
+    private __hiddenElements = new Map<number, selectionMapType>();
 
-    private spaceNavigatorEnabled: boolean;
-    private spaceNavigator: SpaceNavigator;
-    private lastSelectedCenter: Vector3;
-    public lastSelectedBoxSize: number;
+    private __spaceNavigatorEnabled: boolean;
+    private __spaceNavigator: SpaceNavigator;
+    private __lastSelectedCenter: Vector3;
+    public __lastSelectedBoxSize: number;
 
     constructor(canvas: string | HTMLCanvasElement) {
-        this.listeners = new Set<listener>();
+        this.__listeners = new Set<listener>();
         this.__addRender(canvas);
         this.__addScene();
         this.__addCamera();
@@ -66,22 +67,22 @@ export class ViewController {
     }
 
     private animationLoop() {
-        if (this.monitors) {
-            this.monitors.begin();
+        if (this.__monitors) {
+            this.__monitors.begin();
         }
-        if (this.spaceNavigatorEnabled) {
-            this.spaceNavigator.update();
-            this.camera.position.copy(this.spaceNavigator.position);
-            this.camera.rotation.copy(this.spaceNavigator.rotation);
-            this.camera.updateProjectionMatrix();
+        if (this.__spaceNavigatorEnabled) {
+            this.__spaceNavigator.update();
+            this.__camera.position.copy(this.__spaceNavigator.position);
+            this.__camera.rotation.copy(this.__spaceNavigator.rotation);
+            this.__camera.updateProjectionMatrix();
         } else {
-            this.controls.update();
+            this.__controls.update();
         }
 
-        this.renderer.render(this.scene, this.camera);
+        this.__renderer.render(this.__scene, this.__camera);
 
-        if (this.monitors) {
-            this.monitors.end();
+        if (this.__monitors) {
+            this.__monitors.end();
         }
 
         requestAnimationFrame(() => this.animationLoop());
@@ -89,15 +90,15 @@ export class ViewController {
 
     public enableSpaceNavigator() {
         // TODO: I should move postition from orbit controls over to this
-        this.spaceNavigatorEnabled = true;
+        this.__spaceNavigatorEnabled = true;
     }
 
     public disableSpaceNavigator() {
-        this.spaceNavigatorEnabled = false;
+        this.__spaceNavigatorEnabled = false;
     }
 
     private __AddSpaceNavigator() {
-        this.spaceNavigator = new SpaceNavigator({
+        this.__spaceNavigator = new SpaceNavigator({
             rollEnabled: false,
             movementEnabled: true,
             lookEnabled: true,
@@ -117,74 +118,79 @@ export class ViewController {
 
     private __addRender(canvas: string | HTMLCanvasElement) {
         if (typeof canvas === "string") {
-            this.threeCanvas = document.getElementById("3dview") as HTMLCanvasElement;
-            this.renderer = new WebGLRenderer({
+            this.__threeCanvas = document.getElementById("3dview") as HTMLCanvasElement;
+            this.__renderer = new WebGLRenderer({
                 antialias: true,
-                canvas: this.threeCanvas
+                canvas: this.__threeCanvas
             });
         } else {
-            this.threeCanvas = canvas;
-            this.renderer = new WebGLRenderer({
+            this.__threeCanvas = canvas;
+            this.__renderer = new WebGLRenderer({
                 antialias: true,
                 canvas: canvas
             });
         }
 
-        this.renderer.setSize(window.innerWidth, window.innerHeight);
-        this.renderer.setPixelRatio(window.devicePixelRatio);
+        this.__renderer.setSize(window.innerWidth, window.innerHeight);
+        this.__renderer.setPixelRatio(window.devicePixelRatio);
     }
 
     private __addScene() {
-        this.scene = new Scene();
-        this.scene.background = new Color("black");
+        this.__scene = new Scene();
+        this.__scene.background = new Color("black");
     }
 
     private __addCamera() {
-        this.camera = new PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+        this.__camera = new PerspectiveCamera(
+            60,
+            window.innerWidth / window.innerHeight,
+            0.1,
+            1000
+        );
 
         //  this.camera.position.z = 5;
     }
 
     private __addControls() {
-        this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+        this.__controls = new OrbitControls(this.__camera, this.__renderer.domElement);
     }
 
     private __addLights() {
-        this.directionalLight1 = new DirectionalLight(0xffeeff, 0.8);
-        this.directionalLight1.position.set(1, 1, 1);
-        this.scene.add(this.directionalLight1);
+        this.__directionalLight1 = new DirectionalLight(0xffeeff, 0.8);
+        this.__directionalLight1.position.set(1, 1, 1);
+        this.__scene.add(this.__directionalLight1);
 
-        this.directionalLight2 = new DirectionalLight(0xffffff, 0.8);
-        this.directionalLight2.position.set(-1, 0.5, -1);
-        this.scene.add(this.directionalLight2);
+        this.__directionalLight2 = new DirectionalLight(0xffffff, 0.8);
+        this.__directionalLight2.position.set(-1, 0.5, -1);
+        this.__scene.add(this.__directionalLight2);
 
-        this.ambientLight = new AmbientLight(0xffffee, 0.25);
-        this.scene.add(this.ambientLight);
+        this.__ambientLight = new AmbientLight(0xffffee, 0.25);
+        this.__scene.add(this.__ambientLight);
     }
 
     private __addWindowResizer() {
         window.addEventListener("resize", () => {
-            this.camera.aspect = window.innerWidth / window.innerHeight;
-            this.camera.updateProjectionMatrix();
-            this.renderer.setSize(window.innerWidth, window.innerHeight);
+            this.__camera.aspect = window.innerWidth / window.innerHeight;
+            this.__camera.updateProjectionMatrix();
+            this.__renderer.setSize(window.innerWidth, window.innerHeight);
         });
     }
 
     private __addStats() {
-        this.monitors = new Stats();
-        this.monitors.showPanel(0);
-        this.monitors.dom.style.left = null;
-        this.monitors.dom.style.right = "0px";
-        (this.monitors.dom.children[1] as HTMLElement).style.display = "block";
-        (this.monitors.dom.children[2] as HTMLElement).style.display = "block";
-        document.body.appendChild(this.monitors.dom);
+        this.__monitors = new Stats();
+        this.__monitors.showPanel(0);
+        this.__monitors.dom.style.left = null;
+        this.__monitors.dom.style.right = "0px";
+        (this.__monitors.dom.children[1] as HTMLElement).style.display = "block";
+        (this.__monitors.dom.children[2] as HTMLElement).style.display = "block";
+        document.body.appendChild(this.__monitors.dom);
     }
 
     public async readFile(file: File, loadPropertySets: boolean) {
         const { meshWithAlpha, meshWithoutAlpha } = await readAndParseIFC(file, loadPropertySets);
 
-        if (meshWithAlpha) this.scene.add(meshWithAlpha);
-        if (meshWithoutAlpha) this.scene.add(meshWithoutAlpha);
+        if (meshWithAlpha) this.__scene.add(meshWithAlpha);
+        if (meshWithoutAlpha) this.__scene.add(meshWithoutAlpha);
         if (meshWithAlpha || meshWithoutAlpha) {
             this.fitModelToFrame(meshWithoutAlpha || meshWithAlpha);
         }
@@ -196,36 +202,36 @@ export class ViewController {
         const boxCenter = box.getCenter(new Vector3());
 
         const halfSizeToFitOnScreen = boxSize * 0.5;
-        const halfFovY = MathUtils.degToRad(this.camera.fov * 0.5);
+        const halfFovY = MathUtils.degToRad(this.__camera.fov * 0.5);
         const distance = halfSizeToFitOnScreen / Math.tan(halfFovY);
 
         const direction = new Vector3()
-            .subVectors(this.camera.position, boxCenter)
+            .subVectors(this.__camera.position, boxCenter)
             .multiply(new Vector3(1, 0, 1))
             .normalize();
 
-        this.camera.position.copy(direction.multiplyScalar(distance).add(boxCenter));
-        this.camera.updateProjectionMatrix();
-        this.camera.lookAt(boxCenter.x, boxCenter.y, boxCenter.z);
-        this.camera.near = 1;
-        this.camera.far = boxSize * 100;
+        this.__camera.position.copy(direction.multiplyScalar(distance).add(boxCenter));
+        this.__camera.updateProjectionMatrix();
+        this.__camera.lookAt(boxCenter.x, boxCenter.y, boxCenter.z);
+        this.__camera.near = 1;
+        this.__camera.far = boxSize * 100;
         // set target to newest loaded model
 
-        this.controls.target.copy(boxCenter);
-        this.controls.update();
+        this.__controls.target.copy(boxCenter);
+        this.__controls.update();
     }
 
     private __getClickId(mouse: Vector2) {
         // activate our picking material
-        this.scene.children.forEach((e: MeshExtended) => {
+        this.__scene.children.forEach((e: MeshExtended) => {
             if (e.pickable) {
                 e.pickable();
             }
         });
 
-        this.camera.setViewOffset(
-            this.renderer.domElement.width,
-            this.renderer.domElement.height,
+        this.__camera.setViewOffset(
+            this.__renderer.domElement.width,
+            this.__renderer.domElement.height,
             (mouse.x * window.devicePixelRatio) | 0,
             (mouse.y * window.devicePixelRatio) | 0,
             1,
@@ -235,54 +241,54 @@ export class ViewController {
         // render the scene
         const pickingTexture = new WebGLRenderTarget(1, 1);
         const pixelBuffer = new Uint8Array(4);
-        this.renderer.setRenderTarget(pickingTexture);
-        this.renderer.render(this.scene, this.camera);
+        this.__renderer.setRenderTarget(pickingTexture);
+        this.__renderer.render(this.__scene, this.__camera);
 
-        this.renderer.readRenderTargetPixels(pickingTexture, 0, 0, 1, 1, pixelBuffer);
+        this.__renderer.readRenderTargetPixels(pickingTexture, 0, 0, 1, 1, pixelBuffer);
 
         //interpret the pixel as an ID
         const id = (pixelBuffer[0] << 16) | (pixelBuffer[1] << 8) | pixelBuffer[2];
 
-        this.camera.clearViewOffset();
+        this.__camera.clearViewOffset();
 
         // deactivate picking material
-        this.scene.children.forEach((e: MeshExtended) => {
+        this.__scene.children.forEach((e: MeshExtended) => {
             // just reset
             if (e.unpickable) {
                 e.unpickable();
             }
         });
 
-        this.renderer.setRenderTarget(null);
+        this.__renderer.setRenderTarget(null);
         return id;
     }
 
     public addEventListener(context: listener) {
-        this.listeners.add(context);
+        this.__listeners.add(context);
     }
 
     public removeEventListener(context: listener) {
-        this.listeners.delete(context);
+        this.__listeners.delete(context);
     }
 
     public clearScene() {
         propertyMap.clear();
         resetColorId();
         const toRemove: MeshExtended[] = [];
-        this.scene.children.forEach((mesh: MeshExtended) => {
+        this.__scene.children.forEach((mesh: MeshExtended) => {
             if (mesh.meshID) {
                 mesh.geometry.dispose();
                 mesh.remove();
                 toRemove.push(mesh);
             }
         });
-        toRemove.map((m) => this.scene.remove(m));
+        toRemove.map((m) => this.__scene.remove(m));
     }
 
     private __triggerSelectEvent(id: number) {
         if (id) {
             const data = propertyMap.get(id);
-            const listeners = Array.from(this.listeners);
+            const listeners = Array.from(this.__listeners);
             listeners.forEach((l) => {
                 l.handleEvent({ type: "modelClick", data });
             });
@@ -290,7 +296,7 @@ export class ViewController {
     }
 
     private __deselectElement(elementRef: selectionMapType) {
-        this.scene.children.forEach((e: MeshExtended) => {
+        this.__scene.children.forEach((e: MeshExtended) => {
             if (e.meshID === elementRef.meshID) {
                 const group = e.geometry.groups[elementRef.group];
                 const colorAtt = e.geometry.attributes.color;
@@ -308,7 +314,7 @@ export class ViewController {
     }
 
     private __hideElement(elementRef: selectionMapType) {
-        this.scene.children.forEach((e: MeshExtended) => {
+        this.__scene.children.forEach((e: MeshExtended) => {
             if (e.meshID === elementRef.meshID) {
                 const group = e.geometry.groups[elementRef.group];
                 const attribute = e.geometry.attributes.hidden;
@@ -324,7 +330,7 @@ export class ViewController {
     }
 
     private __showElement(elementRef: selectionMapType) {
-        this.scene.children.forEach((e: MeshExtended) => {
+        this.__scene.children.forEach((e: MeshExtended) => {
             if (e.meshID === elementRef.meshID) {
                 const group = e.geometry.groups[elementRef.group];
                 const attribute = e.geometry.attributes.hidden;
@@ -340,7 +346,7 @@ export class ViewController {
     }
 
     public debugShowPickingColors() {
-        this.scene.children.forEach((e: MeshExtended) => {
+        this.__scene.children.forEach((e: MeshExtended) => {
             if (e.pickable) {
                 e.pickable();
             }
@@ -348,7 +354,7 @@ export class ViewController {
     }
 
     public debugHidePickingColors() {
-        this.scene.children.forEach((e: MeshExtended) => {
+        this.__scene.children.forEach((e: MeshExtended) => {
             if (e.unpickable) {
                 e.unpickable();
             }
@@ -356,22 +362,30 @@ export class ViewController {
     }
 
     public hideSelected() {
-        const selectedElements = Array.from(this.selectedElements);
-        this.selectedElements.clear();
+        const selectedElements = Array.from(this.__selectedElements);
+        this.__selectedElements.clear();
         selectedElements.forEach(([, elementRef]) => {
             // we do this to reset colors..
             this.__deselectElement(elementRef);
         });
         selectedElements.forEach(([id, elementRef]) => {
-            this.hiddenElements.set(id, elementRef);
+            this.__hiddenElements.set(id, elementRef);
             this.__hideElement(elementRef);
         });
     }
 
+    public toggleWireframe(force: boolean = null) {
+        if (force !== null) {
+            material.wireframe = force;
+        } else {
+            material.wireframe = material.wireframe ? false : true;
+        }
+    }
+
     public invertSelection() {
         // first part will be to remove current selection
-        const selectedElements = Array.from(this.selectedElements);
-        this.selectedElements.clear();
+        const selectedElements = Array.from(this.__selectedElements);
+        this.__selectedElements.clear();
         selectedElements.forEach(([, elementRef]) => {
             // we do this to reset colors..
             this.__deselectElement(elementRef);
@@ -379,7 +393,7 @@ export class ViewController {
 
         const selected = selectedElements.map(([, elementRef]) => elementRef.id);
 
-        this.scene.children.forEach((e: MeshExtended) => {
+        this.__scene.children.forEach((e: MeshExtended) => {
             if (e.meshID) {
                 e.geometry.groups.forEach((group, i) => {
                     const colorAtt = e.geometry.attributes.color;
@@ -421,7 +435,7 @@ export class ViewController {
 
                     // store state
 
-                    this.selectedElements.set(id, {
+                    this.__selectedElements.set(id, {
                         id: id,
                         color: currentColor,
                         meshID: e.meshID,
@@ -430,9 +444,9 @@ export class ViewController {
 
                     for (let i = group.start; i < group.start + group.count; i++) {
                         const p = index[i] * 4;
-                        (colorAtt as any).array[p] = this.selectionColor.r;
-                        (colorAtt as any).array[p + 1] = this.selectionColor.g;
-                        (colorAtt as any).array[p + 2] = this.selectionColor.b;
+                        (colorAtt as any).array[p] = this.__selectionColor.r;
+                        (colorAtt as any).array[p + 1] = this.__selectionColor.g;
+                        (colorAtt as any).array[p + 2] = this.__selectionColor.b;
                     }
                 });
 
@@ -442,10 +456,10 @@ export class ViewController {
     }
 
     public showAll() {
-        const hiddenElements = Array.from(this.hiddenElements);
-        this.hiddenElements.clear();
+        const hiddenElements = Array.from(this.__hiddenElements);
+        this.__hiddenElements.clear();
         hiddenElements.forEach(([id, elementRef]) => {
-            this.hiddenElements.set(id, elementRef);
+            this.__hiddenElements.set(id, elementRef);
             this.__showElement(elementRef);
         });
     }
@@ -478,26 +492,26 @@ export class ViewController {
         const box = new Box3().setFromObject(mesh);
         const boxSize = box.getSize(new Vector3()).length();
         const boxCenter = box.getCenter(new Vector3());
-        this.lastSelectedCenter = boxCenter;
-        this.lastSelectedBoxSize = boxSize;
+        this.__lastSelectedCenter = boxCenter;
+        this.__lastSelectedBoxSize = boxSize;
     }
 
     public focusOnLastSelected() {
-        if (this.lastSelectedCenter) {
-            this.controls.target.copy(this.lastSelectedCenter);
-            this.controls.update();
+        if (this.__lastSelectedCenter) {
+            this.__controls.target.copy(this.__lastSelectedCenter);
+            this.__controls.update();
         }
     }
 
     private __addClickEvent() {
-        this.threeCanvas.onpointerdown = (event: MouseEvent) => {
+        this.__threeCanvas.onpointerdown = (event: MouseEvent) => {
             if (event.button != 0) return;
 
             setTimeout(() => {
-                this.threeCanvas.onpointerup = null;
+                this.__threeCanvas.onpointerup = null;
             }, 300);
 
-            this.threeCanvas.onpointerup = () => {
+            this.__threeCanvas.onpointerup = () => {
                 const mouse = new Vector2();
                 mouse.x = event.clientX;
                 mouse.y = event.clientY;
@@ -513,22 +527,22 @@ export class ViewController {
                 }
 
                 if (!addToSelection) {
-                    const selectedElements = Array.from(this.selectedElements);
-                    this.selectedElements.clear();
+                    const selectedElements = Array.from(this.__selectedElements);
+                    this.__selectedElements.clear();
                     selectedElements.forEach(([, elementRef]) => {
                         this.__deselectElement(elementRef);
                     });
                 } else {
-                    if (this.selectedElements.has(id)) {
-                        const elementRef = this.selectedElements.get(id);
-                        this.selectedElements.delete(id);
+                    if (this.__selectedElements.has(id)) {
+                        const elementRef = this.__selectedElements.get(id);
+                        this.__selectedElements.delete(id);
                         this.__deselectElement(elementRef);
                         return;
                     }
                 }
 
                 // new color
-                this.scene.children.forEach((e: MeshExtended) => {
+                this.__scene.children.forEach((e: MeshExtended) => {
                     if (selectedID && e.meshID === selectedID.meshID) {
                         const group = e.geometry.groups[selectedID.group];
                         const colorAtt = e.geometry.attributes.color;
@@ -557,7 +571,7 @@ export class ViewController {
                         }
 
                         // store state
-                        this.selectedElements.set(id, {
+                        this.__selectedElements.set(id, {
                             id: id,
                             color: currentColor,
                             meshID: selectedID.meshID,
@@ -566,9 +580,9 @@ export class ViewController {
 
                         for (let i = group.start; i < group.start + group.count; i++) {
                             const p = index[i] * 4;
-                            (colorAtt as any).array[p] = this.selectionColor.r;
-                            (colorAtt as any).array[p + 1] = this.selectionColor.g;
-                            (colorAtt as any).array[p + 2] = this.selectionColor.b;
+                            (colorAtt as any).array[p] = this.__selectionColor.r;
+                            (colorAtt as any).array[p + 1] = this.__selectionColor.g;
+                            (colorAtt as any).array[p + 2] = this.__selectionColor.b;
                         }
 
                         // TODO: look at update range

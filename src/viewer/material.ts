@@ -3,6 +3,7 @@ import { DoubleSide, MeshStandardMaterial } from "three";
 export const material = new MeshStandardMaterial({
     vertexColors: true,
     transparent: true,
+    wireframe: false,
     side: DoubleSide
 });
 material.onBeforeCompile = (shader) => {

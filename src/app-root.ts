@@ -177,6 +177,15 @@ export class AppRoot extends HTMLElement {
                 clearScene
             </button>
 
+            <button
+                class="inline-block p-2 m-2 bg-indigo-300 z-10 relative"
+                @click=${() => {
+                    this.viewController.toggleWireframe();
+                }}
+            >
+                toggleWireframe
+            </button>
+
             <div class="bottom-0 right-0 absolute bg-indigo-300 m-2 p-2 flex flex-col">
                 ${this.getIFCDataAsHtml(this.data)}
             </div>
