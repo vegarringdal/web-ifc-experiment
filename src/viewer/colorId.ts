@@ -8,3 +8,7 @@ export function getNewColorId() {
 export function getCurrentColorId() {
     return colorI;
 }
+
+export function resetColorId() {
+    colorI = 0;
+}

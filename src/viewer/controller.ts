@@ -25,6 +25,7 @@ import { readAndParseIFC } from "./readAndParseIFC";
 // @ts-ignore --types missing atm
 import Stats from "stats.js/src/Stats.js";
 import { SpaceNavigator } from "./spaceNavigator";
+import { resetColorId } from "./colorId";
 
 type listener = { handleEvent: (e: any) => void };
 type selectionMapType = { id: number; meshID: number; group: number; color: Color };
@@ -262,6 +263,20 @@ export class ViewController {
 
     public removeEventListener(context: listener) {
         this.listeners.delete(context);
+    }
+
+    public clearScene() {
+        propertyMap.clear();
+        resetColorId();
+        const toRemove: MeshExtended[] = [];
+        this.scene.children.forEach((mesh: MeshExtended) => {
+            if (mesh.meshID) {
+                mesh.geometry.dispose();
+                mesh.remove();
+                toRemove.push(mesh);
+            }
+        });
+        toRemove.map((m) => this.scene.remove(m));
     }
 
     private __triggerSelectEvent(id: number) {

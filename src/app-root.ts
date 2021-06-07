@@ -78,7 +78,8 @@ export class AppRoot extends HTMLElement {
                     type="file"
                     class="hidden"
                     @change=${async (e: any) => {
-                        this.viewController.readFile(e.target.files[0], false);
+                        await this.viewController.readFile(e.target.files[0], false);
+                        e.target.value = ""; // reset so we can load same file name again..
                     }}
                 />
                 open file
@@ -89,7 +90,8 @@ export class AppRoot extends HTMLElement {
                     type="file"
                     class="hidden"
                     @change=${async (e: any) => {
-                        this.viewController.readFile(e.target.files[0], true);
+                        await this.viewController.readFile(e.target.files[0], true);
+                        e.target.value = ""; // reset so we can load same file name again..
                     }}
                 />
                 open file with propertySet
@@ -164,6 +166,15 @@ export class AppRoot extends HTMLElement {
                 }}
             >
                 focus on last selected
+            </button>
+
+            <button
+                class="inline-block p-2 m-2 bg-indigo-300 z-10 relative"
+                @click=${() => {
+                    this.viewController.clearScene();
+                }}
+            >
+                clearScene
             </button>
 
             <div class="bottom-0 right-0 absolute bg-indigo-300 m-2 p-2 flex flex-col">
