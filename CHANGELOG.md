@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.2-next.21](https://github.com/simple-html/simple-html/compare/v0.0.2-next.20...v0.0.2-next.21) (2021-06-07)
+
+
+### Bug Fixes
+
+* make it possible to hide buttons and hide not selected button added ([e081af1](https://github.com/simple-html/simple-html/commits/e081af1f432bd6683bf48e2b84899a11535e46f5))
+
 ### [0.0.2-next.20](https://github.com/simple-html/simple-html/compare/v0.0.2-next.19...v0.0.2-next.20) (2021-06-07)
 
 ### [0.0.2-next.19](https://github.com/simple-html/simple-html/compare/v0.0.2-next.18...v0.0.2-next.19) (2021-06-07)
