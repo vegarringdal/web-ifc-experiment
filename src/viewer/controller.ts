@@ -17,7 +17,7 @@ import {
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore --types missing atm
 import { MathUtils } from "three";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { OrbitControls } from "./orbitControls";
 import { MeshExtended } from "./MeshExtended";
 import { propertyMap, propertyMapType } from "./propertyMap";
 import { readAndParseIFC } from "./readAndParseIFC";
