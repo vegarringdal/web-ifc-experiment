@@ -1,0 +1,16 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            /*
+             * run "npm start" then start this and you can debug client side in vscode
+             * you need extensions installed and chrome
+             */
+            "type": "chrome",
+            "request": "launch",
+            "name": "Chrome debug",
+            "url": "http://localhost",
+            "webRoot": "${workspaceFolder}//dist"
+        }
+    ]
+}
