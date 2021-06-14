@@ -10,4 +10,3 @@ const checker_client = TypeChecker({
 
 checker_client.printSettings();
 checker_client.inspectAndPrint();
-
