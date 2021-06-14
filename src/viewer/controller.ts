@@ -12,7 +12,8 @@ import {
     Vector3,
     BufferGeometry,
     BufferAttribute,
-    MeshBasicMaterial
+    MeshBasicMaterial,
+    GridHelper
 } from "three";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore --types missing atm
@@ -27,6 +28,11 @@ import Stats from "stats.js/src/Stats.js";
 import { SpaceNavigator } from "./spaceNavigator";
 import { resetColorId } from "./colorId";
 import { material } from "./material";
+import { PlaneHelperX, planes } from "./planeHelperX";
+import { planeState, planeStateType } from "./planeState";
+import { materialPicking } from "./materialPicking";
+
+export type { planeStateType } from "./planeState";
 
 type listener = { handleEvent: (e: any) => void };
 type selectionMapType = { id: number; meshID: number; group: number; color: Color };
@@ -50,7 +56,10 @@ export class ViewController {
     private __spaceNavigatorEnabled: boolean;
     private __spaceNavigator: SpaceNavigator;
     private __lastSelectedCenter: Vector3;
+    private __planeHelpers: PlaneHelperX[] = [];
     public __lastSelectedBoxSize: number;
+    __gridHelper: GridHelper;
+    __gr: any;
 
     constructor(canvas: string | HTMLCanvasElement) {
         this.__listeners = new Set<listener>();
@@ -63,7 +72,135 @@ export class ViewController {
         this.__addWindowResizer();
         this.__addStats();
         this.__addClickEvent();
+        this.__addClipping();
+        this.__addPlane();
         this.animationLoop();
+    }
+
+    private __addPlane(divisions = 50) {
+        this.__gridHelper = new GridHelper(100, divisions);
+        this.__scene.add(this.__gridHelper);
+        this.__gridHelper.visible = false;
+    }
+
+    public enablePlane() {
+        this.__gridHelper.visible = true;
+    }
+
+    public disablePlane() {
+        this.__gridHelper.visible = false;
+    }
+
+    public togglePlane() {
+        this.__gridHelper.visible = this.__gridHelper.visible ? false : true;
+    }
+
+    private __addClipping() {
+        this.__renderer.localClippingEnabled = true;
+
+        this.__planeHelpers.push(new PlaneHelperX(planes[0], 100, 0xff0000));
+        this.__planeHelpers.push(new PlaneHelperX(planes[1], 100, 0x00ff00));
+        this.__planeHelpers.push(new PlaneHelperX(planes[2], 100, 0x0000ff));
+        this.__planeHelpers.forEach((x) => {
+            x.visible = false;
+            this.__scene.add(x);
+        });
+
+        function makeCopy<T>(x: T): T {
+            return JSON.parse(JSON.stringify(x));
+        }
+
+        let planeStateOld: planeStateType = makeCopy(planeState.getValue());
+        planeState.subscribe(this, () => {
+            const currentState = planeState.getValue();
+
+            if (currentState.x_plane_neg !== planeStateOld.x_plane_neg) {
+                planeState.setValue({ x_plane_neg: !currentState.x_plane_neg });
+                planes[0].negate();
+            }
+
+            if (currentState.y_plane_neg !== planeStateOld.y_plane_neg) {
+                planeState.setValue({ y_plane_neg: !currentState.y_plane_neg });
+                planes[1].negate();
+            }
+
+            if (currentState.z_plane_neg !== planeStateOld.z_plane_neg) {
+                planeState.setValue({ z_plane_neg: !currentState.z_plane_neg });
+                planes[2].negate();
+            }
+
+            if (currentState.x_plane_visible !== planeStateOld.x_plane_visible) {
+                this.__planeHelpers[0].visible = currentState.x_plane_visible;
+            }
+
+            if (currentState.y_plane_visible !== planeStateOld.y_plane_visible) {
+                this.__planeHelpers[1].visible = currentState.y_plane_visible;
+            }
+
+            if (currentState.z_plane_visible !== planeStateOld.z_plane_visible) {
+                this.__planeHelpers[2].visible = currentState.z_plane_visible;
+            }
+
+            if (currentState.x_plane_offset !== planeStateOld.x_plane_offset) {
+                planes[0].constant = currentState.x_plane_offset;
+            }
+
+            if (currentState.y_plane_offset !== planeStateOld.y_plane_offset) {
+                planes[1].constant = currentState.y_plane_offset;
+            }
+
+            if (currentState.z_plane_offset !== planeStateOld.z_plane_offset) {
+                planes[2].constant = currentState.z_plane_offset;
+            }
+
+            if (
+                currentState.x_plane_enable !== planeStateOld.x_plane_enable ||
+                currentState.y_plane_enable !== planeStateOld.y_plane_enable ||
+                currentState.z_plane_enable !== planeStateOld.z_plane_enable
+            ) {
+                this.__scene.children.forEach((c: MeshExtended) => {
+                    if (c.meshID) {
+                        const p = [];
+
+                        if (currentState.x_plane_enable) {
+                            p.push(planes[0]);
+                        }
+
+                        if (currentState.y_plane_enable) {
+                            p.push(planes[1]);
+                        }
+
+                        if (currentState.z_plane_enable) {
+                            p.push(planes[2]);
+                        }
+                    }
+                });
+
+                const p = [];
+
+                if (currentState.x_plane_enable) {
+                    p.push(planes[0]);
+                }
+
+                if (currentState.y_plane_enable) {
+                    p.push(planes[1]);
+                }
+
+                if (currentState.z_plane_enable) {
+                    p.push(planes[2]);
+                }
+                material.clippingPlanes = p;
+                materialPicking.clippingPlanes = p;
+                /*     }
+                }); */
+            }
+
+            planeStateOld = makeCopy(planeState.getValue());
+        });
+    }
+
+    public getClippingState() {
+        return planeState;
     }
 
     private animationLoop() {

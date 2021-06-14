@@ -1,3 +1,4 @@
+import { clippingControlX, clippingControlY, clippingControlZ } from "clippingControl";
 import { html, render } from "lit-html";
 import { ViewController } from "viewer/controller";
 
@@ -5,6 +6,7 @@ export class AppRoot extends HTMLElement {
     viewController: ViewController;
     data: { keys: any[]; values: any[] } = null;
     buttonsHidden = true;
+    showClipping: boolean;
 
     public connectedCallback() {
         this.render();
@@ -229,8 +231,55 @@ export class AppRoot extends HTMLElement {
                 >
                     Focus on last selected
                 </button>
+
+                <button
+                    class="inline-block p-2 m-2 bg-indigo-800 text-white z-10 relative"
+                    @click=${() => {
+                        this.viewController.togglePlane();
+                    }}
+                >
+                    Toggle plane</button
+                ><!--  -->
             </div>
         `;
+    }
+
+    public showClippingTools() {
+        if (this.buttonsHidden && this.showClipping) {
+            return html` <div class="bottom-0 absolute" style="width:350px">
+                <div class="flex flex-col" style="max-width:150px">
+                    <button
+                        class="inline-block p-2 m-2 bg-indigo-800 text-white z-10 relative"
+                        @click=${() => {
+                            this.showClipping = false;
+                            this.render();
+                        }}
+                    >
+                        Hide
+                    </button>
+                </div>
+                ${clippingControlX(() => this.render)} ${clippingControlY(() => this.render)}
+                ${clippingControlZ(() => this.render)}
+            </div>`;
+        } else {
+            if (this.buttonsHidden && !this.showClipping) {
+                return html`
+                    <div class="flex flex-col" style="max-width:150px">
+                        <button
+                            class="inline-block p-2 m-2 bg-indigo-800 text-white z-10 relative"
+                            @click=${() => {
+                                this.showClipping = true;
+                                this.render();
+                            }}
+                        >
+                            Show clipping
+                        </button>
+                    </div>
+                `;
+            } else {
+                return "";
+            }
+        }
     }
 
     // this is helper for app-root innerHtml
@@ -242,6 +291,7 @@ export class AppRoot extends HTMLElement {
             <div class="bottom-0 right-0 absolute bg-indigo-800 text-white m-2 p-2 flex flex-col">
                 ${this.getIFCDataAsHtml(this.data)}
             </div>
+            ${this.showClippingTools()}
         `;
     }
 }

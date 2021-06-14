@@ -24,6 +24,8 @@ Progress Sample [live sample](https://vegarringdal.github.io/web-ifc-experiment/
 * [x] toggel /show GPU picking colors
 * [x] enable wireframe on material
 * [ ] some selection three
+* [x] simple clipping tools
+* [x] simple ground plane
 
 
 ## how to use

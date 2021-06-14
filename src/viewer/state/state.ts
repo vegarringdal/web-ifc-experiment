@@ -197,7 +197,7 @@ const State = class<T> {
      * @param context must be object
      * @param callback
      */
-    public subscribe(context: Record<string, unknown>, callback: () => void): void {
+    public subscribe(context: any, callback: () => void): void {
         // for following the event we just use the internal event handler
         subscribe(this.getStateKey(), context, callback);
     }
