@@ -75,8 +75,6 @@ export class ViewController {
             this.__camera.position.copy(this.__spaceNavigator.position);
             this.__camera.rotation.copy(this.__spaceNavigator.rotation);
             this.__camera.updateProjectionMatrix();
-        } else {
-            this.__controls.update();
         }
 
         this.__renderer.render(this.__scene, this.__camera);
