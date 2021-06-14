@@ -17,12 +17,16 @@ export function readAndParseIFC(
 
                 const data = new Uint8Array(uIntArrayBuffer);
                 const modelID = ifcAPI.OpenModel(data);
+                try {
+                    const c = loadAllGeometry(modelID, ifcAPI, loadPropertySets);
+                    ifcAPI.CloseModel(modelID); // dont know if this really do much,..
+                    ifcAPI = null;
+                    resolve(c);
+                } catch (err) {
+                    reject(err);
+                }
 
-                const c = loadAllGeometry(modelID, ifcAPI, loadPropertySets);
-                ifcAPI.CloseModel(modelID); // dont know if this really do much,..
-                ifcAPI = null;
                 // return all geometry
-                resolve(c);
             };
 
             reader.onerror = (err) => {
