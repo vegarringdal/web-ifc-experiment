@@ -301,13 +301,18 @@ export class ViewController {
         document.body.appendChild(this.__monitors.dom);
     }
 
-    public async readFile(file: File, loadPropertySets: boolean) {
-        const { meshWithAlpha, meshWithoutAlpha } = await readAndParseIFC(file, loadPropertySets);
+    public async readFile(file: File[], loadPropertySets: boolean) {
+        for (let i = 0; i < file.length; i++) {
+            const { meshWithAlpha, meshWithoutAlpha } = await readAndParseIFC(
+                file[i],
+                loadPropertySets
+            );
 
-        if (meshWithAlpha) this.__scene.add(meshWithAlpha);
-        if (meshWithoutAlpha) this.__scene.add(meshWithoutAlpha);
-        if (meshWithAlpha || meshWithoutAlpha) {
-            this.fitModelToFrame(meshWithoutAlpha || meshWithAlpha);
+            if (meshWithAlpha) this.__scene.add(meshWithAlpha);
+            if (meshWithoutAlpha) this.__scene.add(meshWithoutAlpha);
+            if (meshWithAlpha || meshWithoutAlpha) {
+                this.fitModelToFrame(meshWithoutAlpha || meshWithAlpha);
+            }
         }
     }
 

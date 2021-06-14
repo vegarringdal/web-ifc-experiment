@@ -147,8 +147,9 @@ export class AppRoot extends HTMLElement {
                     <input
                         type="file"
                         class="hidden"
+                        multiple
                         @change=${async (e: any) => {
-                            await this.viewController.readFile(e.target.files[0], false);
+                            await this.viewController.readFile(e.target.files, false);
                             e.target.value = ""; // reset so we can load same file name again..
                         }}
                     />
@@ -161,8 +162,9 @@ export class AppRoot extends HTMLElement {
                     <input
                         type="file"
                         class="hidden"
+                        multiple
                         @change=${async (e: any) => {
-                            await this.viewController.readFile(e.target.files[0], true);
+                            await this.viewController.readFile(e.target.files, true);
                             e.target.value = ""; // reset so we can load same file name again..
                         }}
                     />
