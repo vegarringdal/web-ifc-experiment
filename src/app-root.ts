@@ -4,7 +4,7 @@ import { ViewController } from "viewer/controller";
 
 export class AppRoot extends HTMLElement {
     viewController: ViewController;
-    data: { keys: any[]; values: any[] } = null;
+    data: any = null;
     buttonsHidden = true;
     showClipping: boolean;
 
@@ -15,14 +15,43 @@ export class AppRoot extends HTMLElement {
     }
 
     handleEvent(e: any) {
-        // only event I have atm is from grip click event...
         if (e?.data) {
-            // just store them as key/values for now
+            if ((window as any).callserver) {
+                // little hack if someone want to test api calls
+                //just go into console and add url to window.callserver = "https etc"
+                this.data = { status: "loading from server" };
+                this.callServer(e?.data?.properties?.Tag?.value);
+                this.render();
+            } else {
+                e.data.properties["element type"] = e.data?.properties?.constructor?.name;
+                this.data = e.data.properties;
+                this.render();
+            }
+        }
+    }
 
-            e.data.properties["element type"] = e.data?.properties?.constructor?.name;
-
-            this.data = e.data.properties;
+    // call api helper
+    // experiment som work colleague need to test a api
+    async callServer(tag: string) {
+        const urlparams = new URLSearchParams();
+        urlparams.append("tag", tag);
+        try {
+            const response = await fetch(`${(window as any).callserver}?${urlparams}`, {
+                method: "GET",
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            });
+            const data = await response.json();
+            if (data) {
+                this.data = await response.json();
+                this.render();
+            }
+        } catch (err) {
+            this.data = { status: "failed to fetch data" };
             this.render();
+            console.log(err);
         }
     }
 
