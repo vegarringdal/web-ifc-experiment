@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.2-next.22](https://github.com/simple-html/simple-html/compare/v0.0.2-next.21...v0.0.2-next.22) (2021-06-14)
+
+
+### Features
+
+* add launch config for debugger from vscode ([6feaa97](https://github.com/simple-html/simple-html/commits/6feaa9740a35144aa0d7b0a61c76d6544aaf1d20))
+* simple ground plane and clipping tools first draft ([a32c0ae](https://github.com/simple-html/simple-html/commits/a32c0ae3f620616f9aa3ab34e39ca5be9876ef26))
+
+
+### Bug Fixes
+
+* remove controller code ([3d16aa4](https://github.com/simple-html/simple-html/commits/3d16aa4a23bb1b0d9fe3a7b373cdc19855d0304f))
+
 ### [0.0.2-next.21](https://github.com/simple-html/simple-html/compare/v0.0.2-next.20...v0.0.2-next.21) (2021-06-07)
 
 
