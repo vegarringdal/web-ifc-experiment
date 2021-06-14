@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.2-next.23](https://github.com/simple-html/simple-html/compare/v0.0.2-next.22...v0.0.2-next.23) (2021-06-14)
+
+
+### Features
+
+* simple data fetch from server side, just for fun atm ([2d5e756](https://github.com/simple-html/simple-html/commits/2d5e756fd2dc68c353bd7486afdb6df723b2e532))
+
 ### [0.0.2-next.22](https://github.com/simple-html/simple-html/compare/v0.0.2-next.21...v0.0.2-next.22) (2021-06-14)
 
 
