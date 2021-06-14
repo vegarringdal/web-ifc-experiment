@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.2-next.24](https://github.com/simple-html/simple-html/compare/v0.0.2-next.23...v0.0.2-next.24) (2021-06-14)
+
+
+### Features
+
+* select multiple files and load ([4c215d9](https://github.com/simple-html/simple-html/commits/4c215d9e78f41319986fd29902cfbf5c03c5d044))
+
+
+### Bug Fixes
+
+* handle errors on ifc files better, just print to console and not stop ([56105e1](https://github.com/simple-html/simple-html/commits/56105e1b22c4aa989a6a9af8e948af729fc9dab3))
+
 ### [0.0.2-next.23](https://github.com/simple-html/simple-html/compare/v0.0.2-next.22...v0.0.2-next.23) (2021-06-14)
 
 
