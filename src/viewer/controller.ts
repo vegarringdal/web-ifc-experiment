@@ -158,24 +158,6 @@ export class ViewController {
                 currentState.y_plane_enable !== planeStateOld.y_plane_enable ||
                 currentState.z_plane_enable !== planeStateOld.z_plane_enable
             ) {
-                this.__scene.children.forEach((c: MeshExtended) => {
-                    if (c.meshID) {
-                        const p = [];
-
-                        if (currentState.x_plane_enable) {
-                            p.push(planes[0]);
-                        }
-
-                        if (currentState.y_plane_enable) {
-                            p.push(planes[1]);
-                        }
-
-                        if (currentState.z_plane_enable) {
-                            p.push(planes[2]);
-                        }
-                    }
-                });
-
                 const p = [];
 
                 if (currentState.x_plane_enable) {
@@ -191,8 +173,6 @@ export class ViewController {
                 }
                 material.clippingPlanes = p;
                 materialPicking.clippingPlanes = p;
-                /*     }
-                }); */
             }
 
             planeStateOld = makeCopy(planeState.getValue());
