@@ -5,6 +5,7 @@ import { convertToThreeBufferGeometry } from "./convertToThreeBufferGeometry";
 import { Color } from "three";
 import { getCurrentColorId, getNewColorId } from "./colorId";
 import { getAllPropertySets } from "./getAllProperties";
+import { getNewCollectionId } from "./collectionId";
 
 export function getAllGeometry(modelID: number, ifcAPI: WebIFC.IfcAPI, loadPropertySets: boolean) {
     const flatMeshes = ifcAPI.LoadAllGeometry(modelID);
@@ -26,6 +27,8 @@ export function getAllGeometry(modelID: number, ifcAPI: WebIFC.IfcAPI, loadPrope
         const flatMeshGeometries = flatMesh.geometries;
         const properties = ifcAPI.GetLine(modelID, expressID, false) || {};
         properties.PropertySet = propertySet[expressID] || [];
+
+        const collectionID = getNewCollectionId();
 
         for (let j = 0; j < flatMeshGeometries.size(); j++) {
             const flatMeshGeometry = flatMeshGeometries.get(j);
@@ -55,6 +58,7 @@ export function getAllGeometry(modelID: number, ifcAPI: WebIFC.IfcAPI, loadPrope
             propertyMap.set(getCurrentColorId(), {
                 expressID,
                 properties,
+                collectionID,
                 meshID: flatMeshGeometry.color.w === 1 ? normalMeshId : alphaMeshId,
                 group:
                     flatMeshGeometry.color.w === 1

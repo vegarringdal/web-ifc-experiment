@@ -31,6 +31,8 @@ import { material } from "./material";
 import { PlaneHelperX, planes } from "./planeHelperX";
 import { planeState, planeStateType } from "./planeState";
 import { materialPicking } from "./materialPicking";
+import { resetCollectionId } from "./collectionId";
+import { resetMeshId } from "./getNewMeshId";
 
 export type { planeStateType } from "./planeState";
 
@@ -404,6 +406,8 @@ export class ViewController {
     public clearScene() {
         propertyMap.clear();
         resetColorId();
+        resetCollectionId();
+        resetMeshId();
         const toRemove: MeshExtended[] = [];
         this.__scene.children.forEach((mesh: MeshExtended) => {
             if (mesh.meshID) {

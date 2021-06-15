@@ -4,3 +4,7 @@ export function getNewMeshId() {
     meshID++;
     return meshID;
 }
+
+export function resetMeshId() {
+    meshID = 0;
+}
