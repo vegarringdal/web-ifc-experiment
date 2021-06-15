@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.2-next.26](https://github.com/simple-html/simple-html/compare/v0.0.2-next.25...v0.0.2-next.26) (2021-06-15)
+
+
+### Bug Fixes
+
+* firefox does not have memory stats on chrome ([cc88288](https://github.com/simple-html/simple-html/commits/cc8828842bc1c4cbc1d9b7352a076015e51d2526))
+
 ### [0.0.2-next.25](https://github.com/simple-html/simple-html/compare/v0.0.2-next.24...v0.0.2-next.25) (2021-06-14)
 
 ### [0.0.2-next.24](https://github.com/simple-html/simple-html/compare/v0.0.2-next.23...v0.0.2-next.24) (2021-06-14)
