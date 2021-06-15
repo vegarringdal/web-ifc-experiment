@@ -687,8 +687,9 @@ export class ViewController {
                         if (meshIds.indexOf(e.meshID) !== -1) {
                             collection.forEach((partId) => {
                                 const propertyMesh = propertyMap.get(partId);
-                                const group = e.geometry.groups[propertyMesh.group];
-                                if (group) {
+
+                                if (propertyMesh.meshID === e.meshID) {
+                                    const group = e.geometry.groups[propertyMesh.group];
                                     const colorAtt = e.geometry.attributes.color;
                                     const index = e.geometry.index.array;
 
