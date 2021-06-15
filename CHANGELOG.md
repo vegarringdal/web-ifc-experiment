@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.2-next.27](https://github.com/simple-html/simple-html/compare/v0.0.2-next.26...v0.0.2-next.27) (2021-06-15)
+
+
+### Features
+
+* minor fixes to rest api integration and make url nicer ([cc40349](https://github.com/simple-html/simple-html/commits/cc4034950dece8ed867a3d1b568c15b5e5e9a223))
+
 ### [0.0.2-next.26](https://github.com/simple-html/simple-html/compare/v0.0.2-next.25...v0.0.2-next.26) (2021-06-15)
 
 
