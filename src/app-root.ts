@@ -1,6 +1,7 @@
 import { clippingControlX, clippingControlY, clippingControlZ } from "clippingControl";
 import { html, render } from "lit-html";
 import { ViewController } from "viewer/controller";
+import { isValidHttpUrl } from "viewer/isvalidhttpurl";
 
 export class AppRoot extends HTMLElement {
     viewController: ViewController;
@@ -38,14 +39,14 @@ export class AppRoot extends HTMLElement {
         try {
             const response = await fetch(`${(window as any).callserver}?${urlparams}`, {
                 method: "GET",
-                credentials: "include",
+                // credentials: "include",
                 headers: {
                     "Content-Type": "application/json"
                 }
             });
             const data = await response.json();
             if (data) {
-                this.data = await response.json();
+                this.data = data;
                 this.render();
             }
         } catch (err) {
@@ -87,6 +88,11 @@ export class AppRoot extends HTMLElement {
                         return html`<div>
                             <span class="font-semibold">IfcPropertySets:</span
                             ><span>${values[i].length}</span>
+                        </div>`;
+                    } else if (isValidHttpUrl(values[i]) === true) {
+                        debugger;
+                        return html`<div>
+                            <span class="font-semibold">${key}:</span><a href=${values[i]}>Link</a>
                         </div>`;
                     } else {
                         return html`<div>
