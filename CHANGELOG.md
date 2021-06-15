@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.2-next.28](https://github.com/simple-html/simple-html/compare/v0.0.2-next.27...v0.0.2-next.28) (2021-06-15)
+
+
+### Features
+
+* collection map so I know what geometry that belongs together so I can highlight all ([62a2b63](https://github.com/simple-html/simple-html/commits/62a2b6333a6215284351851253d18083d422d3d8))
+* select entire collection (all with same ifc in file, not just geometry parts) ([1c07537](https://github.com/simple-html/simple-html/commits/1c075377f61b234f3e9c718052b64075c01cba57))
+
+
+### Bug Fixes
+
+* isvalidURL - check if value is string before using it ([47ea7c0](https://github.com/simple-html/simple-html/commits/47ea7c0ae54f333c6387a146a48ab408a0e85830))
+* selection ([e6d44dd](https://github.com/simple-html/simple-html/commits/e6d44dde80eadc1bdd10ff55d70d424e214e6ff4))
+
 ### [0.0.2-next.27](https://github.com/simple-html/simple-html/compare/v0.0.2-next.26...v0.0.2-next.27) (2021-06-15)
 
 
