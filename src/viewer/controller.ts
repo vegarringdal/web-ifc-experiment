@@ -296,8 +296,13 @@ export class ViewController {
         this.__monitors.showPanel(0);
         this.__monitors.dom.style.left = null;
         this.__monitors.dom.style.right = "0px";
-        (this.__monitors.dom.children[1] as HTMLElement).style.display = "block";
-        (this.__monitors.dom.children[2] as HTMLElement).style.display = "block";
+        if (this.__monitors.dom.children[1]) {
+            (this.__monitors.dom.children[1] as HTMLElement).style.display = "block";
+        }
+        if (this.__monitors.dom.children[2] as HTMLElement) {
+            (this.__monitors.dom.children[2] as HTMLElement).style.display = "block";
+        }
+
         document.body.appendChild(this.__monitors.dom);
     }
 
