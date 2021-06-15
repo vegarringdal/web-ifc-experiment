@@ -33,6 +33,7 @@ import { planeState, planeStateType } from "./planeState";
 import { materialPicking } from "./materialPicking";
 import { resetCollectionId } from "./collectionId";
 import { resetMeshId } from "./getNewMeshId";
+import { collectionMap } from "./collectionMap";
 
 export type { planeStateType } from "./planeState";
 
@@ -651,78 +652,93 @@ export class ViewController {
                 mouse.y = event.clientY;
 
                 const id = this.__getClickId(mouse);
-                this.__triggerSelectEvent(id);
-                const selectedID = propertyMap.get(id);
+                if (id) {
+                    this.__triggerSelectEvent(id);
+                    const clickedPropertyMesh = propertyMap.get(id);
+                    const collection = collectionMap.get(clickedPropertyMesh.collectionID);
 
-                // next part is just spagetti still and not very dynamic, on my todo..
-                let addToSelection = false;
-                if (event.ctrlKey) {
-                    addToSelection = true;
-                }
-
-                if (!addToSelection) {
-                    const selectedElements = Array.from(this.__selectedElements);
-                    this.__selectedElements.clear();
-                    selectedElements.forEach(([, elementRef]) => {
-                        this.__deselectElement(elementRef);
-                    });
-                } else {
-                    if (this.__selectedElements.has(id)) {
-                        const elementRef = this.__selectedElements.get(id);
-                        this.__selectedElements.delete(id);
-                        this.__deselectElement(elementRef);
-                        return;
+                    // next part is just spagetti still and not very dynamic, on my todo..
+                    let addToSelection = false;
+                    if (event.ctrlKey) {
+                        addToSelection = true;
                     }
-                }
 
-                // new color
-                this.__scene.children.forEach((e: MeshExtended) => {
-                    if (selectedID && e.meshID === selectedID.meshID) {
-                        const group = e.geometry.groups[selectedID.group];
-                        const colorAtt = e.geometry.attributes.color;
-                        const index = e.geometry.index.array;
-
-                        this.__getCenterAndSize(e, selectedID);
-
-                        // get existing colors, so we can set it back later
-                        const currentColor = new Color();
-                        {
-                            const i = group.start;
-                            const x = index[i] * 4;
-                            currentColor.r = colorAtt.array[x];
-                        }
-
-                        {
-                            const i = group.start;
-                            const x = index[i] * 4;
-                            currentColor.g = colorAtt.array[x + 1];
-                        }
-
-                        {
-                            const i = group.start;
-                            const x = index[i] * 4;
-                            currentColor.b = colorAtt.array[x + 2];
-                        }
-
-                        // store state
-                        this.__selectedElements.set(id, {
-                            id: id,
-                            color: currentColor,
-                            meshID: selectedID.meshID,
-                            group: selectedID.group
+                    if (!addToSelection) {
+                        const selectedElements = Array.from(this.__selectedElements);
+                        this.__selectedElements.clear();
+                        selectedElements.forEach(([, elementRef]) => {
+                            this.__deselectElement(elementRef);
                         });
-
-                        for (let i = group.start; i < group.start + group.count; i++) {
-                            const p = index[i] * 4;
-                            (colorAtt as any).array[p] = this.__selectionColor.r;
-                            (colorAtt as any).array[p + 1] = this.__selectionColor.g;
-                            (colorAtt as any).array[p + 2] = this.__selectionColor.b;
-                        }
-
-                        // TODO: look at update range
-                        colorAtt.needsUpdate = true;
+                    } else {
+                        collection.forEach((partId) => {
+                            if (this.__selectedElements.has(partId)) {
+                                const elementRef = this.__selectedElements.get(partId);
+                                this.__selectedElements.delete(partId);
+                                this.__deselectElement(elementRef);
+                                return;
+                            }
+                        });
                     }
-                });
+
+                    // new color
+                    const meshIds = collection.map((x) => propertyMap.get(x).meshID);
+
+                    this.__scene.children.forEach((e: MeshExtended) => {
+                        if (meshIds.indexOf(e.meshID) !== -1) {
+                            collection.forEach((partId) => {
+                                const propertyMesh = propertyMap.get(partId);
+                                const group = e.geometry.groups[propertyMesh.group];
+                                if (group) {
+                                    const colorAtt = e.geometry.attributes.color;
+                                    const index = e.geometry.index.array;
+
+                                    if (id === partId) {
+                                        //not really optimal..
+                                        this.__getCenterAndSize(e, clickedPropertyMesh);
+                                    }
+
+                                    // get existing colors, so we can set it back later
+                                    const currentColor = new Color();
+                                    {
+                                        const i = group.start;
+                                        const x = index[i] * 4;
+                                        currentColor.r = colorAtt.array[x];
+                                    }
+
+                                    {
+                                        const i = group.start;
+                                        const x = index[i] * 4;
+                                        currentColor.g = colorAtt.array[x + 1];
+                                    }
+
+                                    {
+                                        const i = group.start;
+                                        const x = index[i] * 4;
+                                        currentColor.b = colorAtt.array[x + 2];
+                                    }
+
+                                    // store state
+                                    this.__selectedElements.set(partId, {
+                                        id: partId,
+                                        color: currentColor,
+                                        meshID: propertyMesh.meshID,
+                                        group: propertyMesh.group
+                                    });
+
+                                    for (let i = group.start; i < group.start + group.count; i++) {
+                                        const p = index[i] * 4;
+                                        (colorAtt as any).array[p] = this.__selectionColor.r;
+                                        (colorAtt as any).array[p + 1] = this.__selectionColor.g;
+                                        (colorAtt as any).array[p + 2] = this.__selectionColor.b;
+                                    }
+
+                                    // TODO: look at update range
+                                    colorAtt.needsUpdate = true;
+                                }
+                            });
+                        }
+                    });
+                }
             };
         };
     }
