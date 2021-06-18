@@ -437,28 +437,13 @@ export class ViewController {
                 const colorAtt = e.geometry.attributes.color;
                 const index = e.geometry.index.array;
 
-                let low = index[group.start] * 4;
-                let high = index[group.start] * 4;
                 for (let i = group.start; i < group.start + group.count; i++) {
                     const p = index[i] * 4;
-
-                    if (p < low) {
-                        low = p;
-                    }
-                    if (p + 2 > high) {
-                        high = p + 2;
-                    }
                     (colorAtt as any).array[p] = elementRef.color.r;
                     (colorAtt as any).array[p + 1] = elementRef.color.g;
                     (colorAtt as any).array[p + 2] = elementRef.color.b;
                 }
-
-                (colorAtt as any).updateRange = {
-                    offset: low,
-                    count: high - low
-                };
                 colorAtt.needsUpdate = true;
-                this.__renderer.render(this.__scene, this.__camera);
             }
         });
     }
@@ -545,8 +530,6 @@ export class ViewController {
 
         this.__scene.children.forEach((e: MeshExtended) => {
             if (e.meshID) {
-                let low = 1000000000000;
-                let high = 0;
                 e.geometry.groups.forEach((group, i) => {
                     const colorAtt = e.geometry.attributes.color;
                     const index = e.geometry.index.array;
@@ -596,22 +579,12 @@ export class ViewController {
 
                     for (let i = group.start; i < group.start + group.count; i++) {
                         const p = index[i] * 4;
-
-                        if (p < low) {
-                            low = p;
-                        }
-                        if (p + 2 > high) {
-                            high = p + 2;
-                        }
                         (colorAtt as any).array[p] = this.__selectionColor.r;
                         (colorAtt as any).array[p + 1] = this.__selectionColor.g;
                         (colorAtt as any).array[p + 2] = this.__selectionColor.b;
                     }
                 });
-                (e.geometry.attributes.color as any).updateRange = {
-                    offset: low,
-                    count: high - low
-                };
+
                 e.geometry.attributes.color.needsUpdate = true;
             }
         });
@@ -712,8 +685,6 @@ export class ViewController {
 
                     this.__scene.children.forEach((e: MeshExtended) => {
                         if (meshIds.indexOf(e.meshID) !== -1) {
-                            let low = 10000000000000;
-                            let high = 0;
                             collection.forEach((partId) => {
                                 const propertyMesh = propertyMap.get(partId);
 
@@ -757,26 +728,15 @@ export class ViewController {
 
                                     for (let i = group.start; i < group.start + group.count; i++) {
                                         const p = index[i] * 4;
-
-                                        if (p < low) {
-                                            low = p;
-                                        }
-                                        if (p + 2 > high) {
-                                            high = p + 2;
-                                        }
-
                                         (colorAtt as any).array[p] = this.__selectionColor.r;
                                         (colorAtt as any).array[p + 1] = this.__selectionColor.g;
                                         (colorAtt as any).array[p + 2] = this.__selectionColor.b;
                                     }
+
+                                    // TODO: look at update range
+                                    colorAtt.needsUpdate = true;
                                 }
                             });
-                            (e.geometry.attributes.color as any).updateRange = {
-                                offset: low,
-                                count: high - low
-                            };
-                            e.geometry.attributes.color.needsUpdate = true;
-                            this.__renderer.render(this.__scene, this.__camera);
                         }
                     });
                 }
