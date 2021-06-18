@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.2-next.31](https://github.com/simple-html/simple-html/compare/v0.0.2-next.30...v0.0.2-next.31) (2021-06-18)
+
+
+### Bug Fixes
+
+* speed up selection a little (will try and use buffers directly) ([c13576b](https://github.com/simple-html/simple-html/commits/c13576b123f641011b47ee956de7a85c667cf305))
+* use faster material ([1dfcf2b](https://github.com/simple-html/simple-html/commits/1dfcf2b9d882aede986db9836965a8e58e6c9755))
+
 ### [0.0.2-next.30](https://github.com/simple-html/simple-html/compare/v0.0.2-next.29...v0.0.2-next.30) (2021-06-18)
 
 
