@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.2-next.29](https://github.com/simple-html/simple-html/compare/v0.0.2-next.28...v0.0.2-next.29) (2021-06-18)
+
+
+### Features
+
+* test with update range on color ([122bf3e](https://github.com/simple-html/simple-html/commits/122bf3e5450f72cb779e1fa41dd8f066058813b0))
+
 ### [0.0.2-next.28](https://github.com/simple-html/simple-html/compare/v0.0.2-next.27...v0.0.2-next.28) (2021-06-15)
 
 
