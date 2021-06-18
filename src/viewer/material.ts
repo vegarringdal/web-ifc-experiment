@@ -1,6 +1,6 @@
-import { DoubleSide, MeshStandardMaterial } from "three";
+import { DoubleSide, MeshLambertMaterial } from "three";
 
-export const material = new MeshStandardMaterial({
+export const material = new MeshLambertMaterial({
     vertexColors: true,
     transparent: true,
     wireframe: false,

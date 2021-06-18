@@ -2,7 +2,6 @@ import { DoubleSide, MeshBasicMaterial } from "three";
 
 export const materialPicking = new MeshBasicMaterial({
     vertexColors: true,
-    transparent: true,
     side: DoubleSide
 });
 materialPicking.onBeforeCompile = (shader) => {
