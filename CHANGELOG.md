@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.2-next.30](https://github.com/simple-html/simple-html/compare/v0.0.2-next.29...v0.0.2-next.30) (2021-06-18)
+
+
+### Bug Fixes
+
+* broken selection after last range update ([c37ae4e](https://github.com/simple-html/simple-html/commits/c37ae4e49996fef585076b3a2e652056d972ca33))
+
 ### [0.0.2-next.29](https://github.com/simple-html/simple-html/compare/v0.0.2-next.28...v0.0.2-next.29) (2021-06-18)
 
 
