@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.2-next.32](https://github.com/simple-html/simple-html/compare/v0.0.2-next.31...v0.0.2-next.32) (2021-06-18)
+
+
+### Bug Fixes
+
+* revert range experiment - not a good fit ([d557ef3](https://github.com/simple-html/simple-html/commits/d557ef37a249e81723028c709dffe1467c3fef0c))
+
 ### [0.0.2-next.31](https://github.com/simple-html/simple-html/compare/v0.0.2-next.30...v0.0.2-next.31) (2021-06-18)
 
 
