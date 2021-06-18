@@ -443,7 +443,13 @@ export class ViewController {
                     (colorAtt as any).array[p + 1] = elementRef.color.g;
                     (colorAtt as any).array[p + 2] = elementRef.color.b;
                 }
+
+                (colorAtt as any).updateRange = {
+                    offset: index[group.start] * 3,
+                    count: index[group.start + group.count] * 3
+                };
                 colorAtt.needsUpdate = true;
+                this.__renderer.render(this.__scene, this.__camera);
             }
         });
     }
@@ -583,9 +589,14 @@ export class ViewController {
                         (colorAtt as any).array[p + 1] = this.__selectionColor.g;
                         (colorAtt as any).array[p + 2] = this.__selectionColor.b;
                     }
-                });
 
-                e.geometry.attributes.color.needsUpdate = true;
+                    (colorAtt as any).updateRange = {
+                        offset: index[group.start] * 3,
+                        count: index[group.start + group.count] * 3
+                    };
+                    colorAtt.needsUpdate = true;
+                    this.__renderer.render(this.__scene, this.__camera);
+                });
             }
         });
     }
@@ -728,13 +739,18 @@ export class ViewController {
 
                                     for (let i = group.start; i < group.start + group.count; i++) {
                                         const p = index[i] * 4;
+
                                         (colorAtt as any).array[p] = this.__selectionColor.r;
                                         (colorAtt as any).array[p + 1] = this.__selectionColor.g;
                                         (colorAtt as any).array[p + 2] = this.__selectionColor.b;
                                     }
 
-                                    // TODO: look at update range
+                                    (colorAtt as any).updateRange = {
+                                        offset: index[group.start] * 3,
+                                        count: index[group.start + group.count] * 3
+                                    };
                                     colorAtt.needsUpdate = true;
+                                    this.__renderer.render(this.__scene, this.__camera);
                                 }
                             });
                         }
