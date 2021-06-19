@@ -1,7 +1,6 @@
 import { DoubleSide, MeshLambertMaterial } from "three";
 
 export const material = new MeshLambertMaterial({
-    vertexColors: true,
     transparent: true,
     wireframe: false,
     side: DoubleSide

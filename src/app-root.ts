@@ -90,7 +90,6 @@ export class AppRoot extends HTMLElement {
                             ><span>${values[i].length}</span>
                         </div>`;
                     } else if (isValidHttpUrl(values[i]) === true) {
-                        debugger;
                         return html`<div>
                             <span class="font-semibold">${key}:</span><a href=${values[i]}>Link</a>
                         </div>`;

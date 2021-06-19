@@ -22,12 +22,11 @@ import { readAndParseIFC } from "./readAndParseIFC";
 // @ts-ignore --types missing atm
 import Stats from "stats.js/src/Stats.js";
 import { SpaceNavigator } from "./spaceNavigator";
-import { resetColorId } from "./colorId";
 import { material } from "./material";
 import { PlaneHelperX, planes } from "./planeHelperX";
 import { planeState, planeStateType } from "./planeState";
-import { resetCollectionId } from "./collectionId";
 import { resetMeshId } from "./getNewMeshId";
+import { resetId } from "./colorId";
 
 export type { planeStateType } from "./planeState";
 
@@ -304,15 +303,20 @@ export class ViewController {
     public async readFile(file: File[], loadPropertySets: boolean) {
         for (let i = 0; i < file.length; i++) {
             try {
-                const { meshWithAlpha, meshWithoutAlpha } = await readAndParseIFC(
+                const { meshWithAlphaArray, meshWithoutAlphaArray } = await readAndParseIFC(
                     file[i],
                     loadPropertySets
                 );
 
-                if (meshWithAlpha) this.__scene.add(meshWithAlpha);
-                if (meshWithoutAlpha) this.__scene.add(meshWithoutAlpha);
-                if (meshWithAlpha || meshWithoutAlpha) {
-                    this.fitModelToFrame(meshWithoutAlpha || meshWithAlpha);
+                meshWithAlphaArray.forEach((geo) => {
+                    this.__scene.add(geo);
+                });
+                meshWithoutAlphaArray.forEach((geo) => {
+                    this.__scene.add(geo);
+                });
+
+                if (meshWithAlphaArray[0]) {
+                    this.fitModelToFrame(meshWithAlphaArray[0]);
                 }
             } catch (err) {
                 console.log(err);
@@ -356,8 +360,7 @@ export class ViewController {
 
     public clearScene() {
         propertyMap.clear();
-        resetColorId();
-        resetCollectionId();
+        resetId();
         resetMeshId();
         const toRemove: MeshExtended[] = [];
         this.__scene.children.forEach((mesh: MeshExtended) => {

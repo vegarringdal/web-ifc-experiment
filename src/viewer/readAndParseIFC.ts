@@ -1,11 +1,11 @@
+import { Mesh } from "three";
 import * as WebIFC from "web-ifc/web-ifc-api";
 import { loadAllGeometry } from "./loadAllGeometry";
-import { MeshExtended } from "./MeshExtended";
 
 export function readAndParseIFC(
     file: File,
     loadPropertySets: boolean
-): Promise<{ meshWithAlpha: MeshExtended; meshWithoutAlpha: MeshExtended }> {
+): Promise<{ meshWithAlphaArray: Mesh[]; meshWithoutAlphaArray: Mesh[] }> {
     return new Promise(async (resolve, reject) => {
         let ifcAPI = new WebIFC.IfcAPI();
         await ifcAPI.Init();

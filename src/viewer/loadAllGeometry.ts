@@ -1,37 +1,42 @@
 import * as WebIFC from "web-ifc/web-ifc-api";
 import { BufferGeometryUtils } from "three/examples/jsm/utils/BufferGeometryUtils";
-import { Mesh } from "three";
-import { material } from "./material";
-import { MeshExtended } from "./MeshExtended";
+import { Color, Mesh, MeshPhongMaterial } from "three";
 import { getAllGeometry } from "./getAllGeometry";
+import { propertyMap } from "./propertyMap";
 
 export function loadAllGeometry(modelID: number, ifcAPI: WebIFC.IfcAPI, loadPropertySets: boolean) {
-    const { geometries, geometriesWithAlpha, normalMeshId, alphaMeshId } = getAllGeometry(
-        modelID,
-        ifcAPI,
-        loadPropertySets
-    );
+    const { mergeMapAlpha, mergeMapNonAlpha } = getAllGeometry(modelID, ifcAPI, loadPropertySets);
 
-    let meshWithoutAlpha: MeshExtended;
-    let meshWithAlpha: MeshExtended;
-
-    if (geometries) {
-        meshWithoutAlpha = new Mesh(
-            BufferGeometryUtils.mergeBufferGeometries(geometries, true),
-            material
-        ) as MeshExtended;
-        meshWithoutAlpha.name = "no alpha";
-        meshWithoutAlpha.meshID = normalMeshId;
+    const meshWithoutAlphaArray: Mesh[] = [];
+    const meshWithAlphaArray: Mesh[] = [];
+    if (mergeMapNonAlpha && mergeMapNonAlpha.size) {
+        Array.from(mergeMapNonAlpha).forEach(([, geometries]) => {
+            const id = geometries[0].userData.id;
+            const properties = propertyMap.get(id);
+            const color = new Color(properties.color.x, properties.color.y, properties.color.z);
+            geometries[0].userData.color = null;
+            meshWithoutAlphaArray.push(
+                new Mesh(
+                    BufferGeometryUtils.mergeBufferGeometries(geometries, true),
+                    new MeshPhongMaterial({ color, side: 2 })
+                )
+            );
+        });
     }
 
-    if (geometriesWithAlpha.length) {
-        meshWithAlpha = new Mesh(
-            BufferGeometryUtils.mergeBufferGeometries(geometriesWithAlpha, true),
-            material
-        ) as MeshExtended;
-        meshWithAlpha.name = "alpha";
-        meshWithAlpha.meshID = alphaMeshId;
+    if (mergeMapAlpha && mergeMapAlpha.size) {
+        Array.from(mergeMapAlpha).forEach(([, geometries]) => {
+            const id = geometries[0].userData.id;
+            const properties = propertyMap.get(id);
+            const color = new Color(properties.color.x, properties.color.y, properties.color.z);
+            const material = new MeshPhongMaterial({ color, transparent: true, side: 2 });
+
+            material.opacity = properties.color.w;
+            meshWithAlphaArray.push(
+                new Mesh(BufferGeometryUtils.mergeBufferGeometries(geometries, true), material)
+            );
+        });
     }
 
-    return { meshWithAlpha, meshWithoutAlpha };
+    return { meshWithAlphaArray, meshWithoutAlphaArray };
 }

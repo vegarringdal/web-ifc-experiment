@@ -1,14 +1,14 @@
 let colorI = 0;
 
-export function getNewColorId() {
+export function getId() {
     colorI++;
     return colorI;
 }
 
-export function getCurrentColorId() {
+export function getCurrentID() {
     return colorI;
 }
 
-export function resetColorId() {
+export function resetId() {
     colorI = 0;
 }
