@@ -1,7 +1,6 @@
 import * as WebIFC from "web-ifc/web-ifc-api";
 import { BufferGeometryUtils } from "three/examples/jsm/utils/BufferGeometryUtils";
 import { Mesh } from "three";
-import { materialPicking } from "./materialPicking";
 import { material } from "./material";
 import { MeshExtended } from "./MeshExtended";
 import { getAllGeometry } from "./getAllGeometry";
@@ -23,12 +22,6 @@ export function loadAllGeometry(modelID: number, ifcAPI: WebIFC.IfcAPI, loadProp
         ) as MeshExtended;
         meshWithoutAlpha.name = "no alpha";
         meshWithoutAlpha.meshID = normalMeshId;
-        meshWithoutAlpha.pickable = function () {
-            this.material = materialPicking;
-        };
-        meshWithoutAlpha.unpickable = function () {
-            this.material = material;
-        };
     }
 
     if (geometriesWithAlpha.length) {
@@ -38,12 +31,7 @@ export function loadAllGeometry(modelID: number, ifcAPI: WebIFC.IfcAPI, loadProp
         ) as MeshExtended;
         meshWithAlpha.name = "alpha";
         meshWithAlpha.meshID = alphaMeshId;
-        meshWithAlpha.pickable = function () {
-            this.material = materialPicking;
-        };
-        meshWithAlpha.unpickable = function () {
-            this.material = material;
-        };
+
     }
 
     return { meshWithAlpha, meshWithoutAlpha };

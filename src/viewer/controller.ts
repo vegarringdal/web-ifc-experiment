@@ -6,13 +6,9 @@ import {
     DirectionalLight,
     AmbientLight,
     Vector2,
-    WebGLRenderTarget,
     Mesh,
     Box3,
     Vector3,
-    BufferGeometry,
-    BufferAttribute,
-    MeshBasicMaterial,
     GridHelper
 } from "three";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -20,7 +16,7 @@ import {
 import { MathUtils } from "three";
 import { OrbitControls } from "./orbitControls";
 import { MeshExtended } from "./MeshExtended";
-import { propertyMap, propertyMapType } from "./propertyMap";
+import { propertyMap } from "./propertyMap";
 import { readAndParseIFC } from "./readAndParseIFC";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore --types missing atm
@@ -30,10 +26,9 @@ import { resetColorId } from "./colorId";
 import { material } from "./material";
 import { PlaneHelperX, planes } from "./planeHelperX";
 import { planeState, planeStateType } from "./planeState";
-import { materialPicking } from "./materialPicking";
 import { resetCollectionId } from "./collectionId";
 import { resetMeshId } from "./getNewMeshId";
-import { collectionMap } from "./collectionMap";
+
 
 export type { planeStateType } from "./planeState";
 
@@ -48,21 +43,22 @@ export class ViewController {
     private __directionalLight2: any;
     private __directionalLight1: any;
     private __monitors: Stats;
-    private __threeCanvas: HTMLCanvasElement;
-
-    private __selectionColor = new Color("red");
+    private __threeCanvas: HTMLCanvasElement;  
     private __listeners: Set<listener>;
 
-    private __selectedElements = new Map<number, selectionMapType>();
-    private __hiddenElements = new Map<number, selectionMapType>();
+
 
     private __spaceNavigatorEnabled: boolean;
     private __spaceNavigator: SpaceNavigator;
-    private __lastSelectedCenter: Vector3;
     private __planeHelpers: PlaneHelperX[] = [];
+    private __gridHelper: GridHelper;
+
+    // todo: make private
     public __lastSelectedBoxSize: number;
-    __gridHelper: GridHelper;
-    __gr: any;
+    public __selectionColor = new Color("red");
+    public __selectedElements = new Map<number, selectionMapType>();
+    public __hiddenElements = new Map<number, selectionMapType>();
+    public __lastSelectedCenter: Vector3;
 
     constructor(canvas: string | HTMLCanvasElement) {
         this.__listeners = new Set<listener>();
@@ -175,7 +171,6 @@ export class ViewController {
                     p.push(planes[2]);
                 }
                 material.clippingPlanes = p;
-                materialPicking.clippingPlanes = p;
             }
 
             planeStateOld = makeCopy(planeState.getValue());
@@ -354,48 +349,6 @@ export class ViewController {
         this.__controls.update();
     }
 
-    private __getClickId(mouse: Vector2) {
-        // activate our picking material
-        this.__scene.children.forEach((e: MeshExtended) => {
-            if (e.pickable) {
-                e.pickable();
-            }
-        });
-
-        this.__camera.setViewOffset(
-            this.__renderer.domElement.width,
-            this.__renderer.domElement.height,
-            (mouse.x * window.devicePixelRatio) | 0,
-            (mouse.y * window.devicePixelRatio) | 0,
-            1,
-            1
-        );
-
-        // render the scene
-        const pickingTexture = new WebGLRenderTarget(1, 1);
-        const pixelBuffer = new Uint8Array(4);
-        this.__renderer.setRenderTarget(pickingTexture);
-        this.__renderer.render(this.__scene, this.__camera);
-
-        this.__renderer.readRenderTargetPixels(pickingTexture, 0, 0, 1, 1, pixelBuffer);
-
-        //interpret the pixel as an ID
-        const id = (pixelBuffer[0] << 16) | (pixelBuffer[1] << 8) | pixelBuffer[2];
-
-        this.__camera.clearViewOffset();
-
-        // deactivate picking material
-        this.__scene.children.forEach((e: MeshExtended) => {
-            // just reset
-            if (e.unpickable) {
-                e.unpickable();
-            }
-        });
-
-        this.__renderer.setRenderTarget(null);
-        return id;
-    }
-
     public addEventListener(context: listener) {
         this.__listeners.add(context);
     }
@@ -420,221 +373,11 @@ export class ViewController {
         toRemove.map((m) => this.__scene.remove(m));
     }
 
-    private __triggerSelectEvent(id: number) {
-        if (id) {
-            const data = propertyMap.get(id);
-            const listeners = Array.from(this.__listeners);
-            listeners.forEach((l) => {
-                l.handleEvent({ type: "modelClick", data });
-            });
-        }
-    }
-
-    private __deselectElement(elementRef: selectionMapType) {
-        this.__scene.children.forEach((e: MeshExtended) => {
-            if (e.meshID === elementRef.meshID) {
-                const group = e.geometry.groups[elementRef.group];
-                const colorAtt = e.geometry.attributes.color;
-                const index = e.geometry.index.array;
-
-                for (let i = group.start; i < group.start + group.count; i++) {
-                    const p = index[i] * 4;
-                    (colorAtt as any).array[p] = elementRef.color.r;
-                    (colorAtt as any).array[p + 1] = elementRef.color.g;
-                    (colorAtt as any).array[p + 2] = elementRef.color.b;
-                }
-                colorAtt.needsUpdate = true;
-            }
-        });
-    }
-
-    private __hideElement(elementRef: selectionMapType) {
-        this.__scene.children.forEach((e: MeshExtended) => {
-            if (e.meshID === elementRef.meshID) {
-                const group = e.geometry.groups[elementRef.group];
-                const attribute = e.geometry.attributes.hidden;
-                const index = e.geometry.index.array;
-
-                for (let i = group.start; i < group.start + group.count; i++) {
-                    const p = index[i];
-                    (attribute as any).array[p] = 1;
-                }
-                attribute.needsUpdate = true;
-            }
-        });
-    }
-
-    private __showElement(elementRef: selectionMapType) {
-        this.__scene.children.forEach((e: MeshExtended) => {
-            if (e.meshID === elementRef.meshID) {
-                const group = e.geometry.groups[elementRef.group];
-                const attribute = e.geometry.attributes.hidden;
-                const index = e.geometry.index.array;
-
-                for (let i = group.start; i < group.start + group.count; i++) {
-                    const p = index[i];
-                    (attribute as any).array[p] = 0;
-                }
-                attribute.needsUpdate = true;
-            }
-        });
-    }
-
-    public debugShowPickingColors() {
-        this.__scene.children.forEach((e: MeshExtended) => {
-            if (e.pickable) {
-                e.pickable();
-            }
-        });
-    }
-
-    public debugHidePickingColors() {
-        this.__scene.children.forEach((e: MeshExtended) => {
-            if (e.unpickable) {
-                e.unpickable();
-            }
-        });
-    }
-
-    public hideSelected() {
-        const selectedElements = Array.from(this.__selectedElements);
-        this.__selectedElements.clear();
-        selectedElements.forEach(([, elementRef]) => {
-            // we do this to reset colors..
-            this.__deselectElement(elementRef);
-        });
-        selectedElements.forEach(([id, elementRef]) => {
-            this.__hiddenElements.set(id, elementRef);
-            this.__hideElement(elementRef);
-        });
-    }
-
     public toggleWireframe(force: boolean = null) {
         if (force !== null) {
             material.wireframe = force;
         } else {
             material.wireframe = material.wireframe ? false : true;
-        }
-    }
-
-    public invertSelection() {
-        // first part will be to remove current selection
-        const selectedElements = Array.from(this.__selectedElements);
-        this.__selectedElements.clear();
-        selectedElements.forEach(([, elementRef]) => {
-            // we do this to reset colors..
-            this.__deselectElement(elementRef);
-        });
-
-        const selected = selectedElements.map(([, elementRef]) => elementRef.id);
-
-        this.__scene.children.forEach((e: MeshExtended) => {
-            if (e.meshID) {
-                e.geometry.groups.forEach((group, i) => {
-                    const colorAtt = e.geometry.attributes.color;
-                    const index = e.geometry.index.array;
-
-                    let id;
-                    {
-                        // get the picking ID
-                        const i = group.start;
-                        const x = index[i] * 4;
-                        const arr = e.geometry.attributes.colorpicking.array;
-
-                        id = new Color(arr[x], arr[x + 1], arr[x + 2]).getHex();
-                    }
-
-                    if (selected.indexOf(id) !== -1) {
-                        return;
-                    }
-
-                    // get existing colors, so we can set it back later
-                    const currentColor = new Color();
-                    {
-                        const i = group.start;
-                        const x = index[i] * 4;
-                        currentColor.r = colorAtt.array[x];
-                    }
-
-                    {
-                        const i = group.start;
-                        const x = index[i] * 4;
-                        currentColor.g = colorAtt.array[x + 1];
-                    }
-
-                    {
-                        const i = group.start;
-                        const x = index[i] * 4;
-                        currentColor.b = colorAtt.array[x + 2];
-                    }
-
-                    // store state
-
-                    this.__selectedElements.set(id, {
-                        id: id,
-                        color: currentColor,
-                        meshID: e.meshID,
-                        group: i
-                    });
-
-                    for (let i = group.start; i < group.start + group.count; i++) {
-                        const p = index[i] * 4;
-                        (colorAtt as any).array[p] = this.__selectionColor.r;
-                        (colorAtt as any).array[p + 1] = this.__selectionColor.g;
-                        (colorAtt as any).array[p + 2] = this.__selectionColor.b;
-                    }
-                });
-
-                e.geometry.attributes.color.needsUpdate = true;
-            }
-        });
-    }
-
-    public showAll() {
-        const hiddenElements = Array.from(this.__hiddenElements);
-        this.__hiddenElements.clear();
-        hiddenElements.forEach(([id, elementRef]) => {
-            this.__hiddenElements.set(id, elementRef);
-            this.__showElement(elementRef);
-        });
-    }
-
-    private __getCenterAndSize(clickedMesh: MeshExtended, prop: propertyMapType) {
-        const group = clickedMesh.geometry.groups[prop.group];
-        const positionAtt = clickedMesh.geometry.attributes.position;
-        const index = clickedMesh.geometry.index.array;
-        const bg = new BufferGeometry();
-        const newIndex = (index as any).slice(group.start, group.start + group.count);
-        const positions: number[] = [];
-        for (let i = group.start; i < group.start + group.count; i++) {
-            const p = index[i] * 3;
-            positions.push(positionAtt.array[p]);
-            positions.push(positionAtt.array[p + 1]);
-            positions.push(positionAtt.array[p + 2]);
-        }
-        const x: any = newIndex;
-        const min = Math.min(...x);
-
-        for (let i = 0; i < newIndex.length; i++) {
-            newIndex[i] = newIndex[i] - min;
-        }
-
-        bg.setAttribute("position", new BufferAttribute(new Float32Array(positions), 3, true));
-        bg.setIndex(new BufferAttribute(newIndex, 1));
-        const mesh = new Mesh(bg, new MeshBasicMaterial({ color: 0x00ff00 }));
-        mesh.applyMatrix4(clickedMesh.matrixWorld);
-        mesh.updateWorldMatrix(true, true);
-        const box = new Box3().setFromObject(mesh);
-        const boxSize = box.getSize(new Vector3()).length();
-        const boxCenter = box.getCenter(new Vector3());
-        this.__lastSelectedCenter = boxCenter;
-        this.__lastSelectedBoxSize = boxSize;
-    }
-
-    public focusOnLastSelected() {
-        if (this.__lastSelectedCenter) {
-            this.__controls.target.copy(this.__lastSelectedCenter);
-            this.__controls.update();
         }
     }
 
@@ -651,95 +394,7 @@ export class ViewController {
                 mouse.x = event.clientX;
                 mouse.y = event.clientY;
 
-                const id = this.__getClickId(mouse);
-                if (id) {
-                    this.__triggerSelectEvent(id);
-                    const clickedPropertyMesh = propertyMap.get(id);
-                    const collection = collectionMap.get(clickedPropertyMesh.collectionID);
-
-                    // next part is just spagetti still and not very dynamic, on my todo..
-                    let addToSelection = false;
-                    if (event.ctrlKey) {
-                        addToSelection = true;
-                    }
-
-                    if (!addToSelection) {
-                        const selectedElements = Array.from(this.__selectedElements);
-                        this.__selectedElements.clear();
-                        selectedElements.forEach(([, elementRef]) => {
-                            this.__deselectElement(elementRef);
-                        });
-                    } else {
-                        collection.forEach((partId) => {
-                            if (this.__selectedElements.has(partId)) {
-                                const elementRef = this.__selectedElements.get(partId);
-                                this.__selectedElements.delete(partId);
-                                this.__deselectElement(elementRef);
-                                return;
-                            }
-                        });
-                    }
-
-                    // new color
-                    const meshIds = collection.map((x) => propertyMap.get(x).meshID);
-
-                    this.__scene.children.forEach((e: MeshExtended) => {
-                        if (meshIds.indexOf(e.meshID) !== -1) {
-                            collection.forEach((partId) => {
-                                const propertyMesh = propertyMap.get(partId);
-
-                                if (propertyMesh.meshID === e.meshID) {
-                                    const group = e.geometry.groups[propertyMesh.group];
-                                    const colorAtt = e.geometry.attributes.color;
-                                    const index = e.geometry.index.array;
-
-                                    if (id === partId) {
-                                        //not really optimal..
-                                        this.__getCenterAndSize(e, clickedPropertyMesh);
-                                    }
-
-                                    // get existing colors, so we can set it back later
-                                    const currentColor = new Color();
-                                    {
-                                        const i = group.start;
-                                        const x = index[i] * 4;
-                                        currentColor.r = colorAtt.array[x];
-                                    }
-
-                                    {
-                                        const i = group.start;
-                                        const x = index[i] * 4;
-                                        currentColor.g = colorAtt.array[x + 1];
-                                    }
-
-                                    {
-                                        const i = group.start;
-                                        const x = index[i] * 4;
-                                        currentColor.b = colorAtt.array[x + 2];
-                                    }
-
-                                    // store state
-                                    this.__selectedElements.set(partId, {
-                                        id: partId,
-                                        color: currentColor,
-                                        meshID: propertyMesh.meshID,
-                                        group: propertyMesh.group
-                                    });
-
-                                    for (let i = group.start; i < group.start + group.count; i++) {
-                                        const p = index[i] * 4;
-                                        (colorAtt as any).array[p] = this.__selectionColor.r;
-                                        (colorAtt as any).array[p + 1] = this.__selectionColor.g;
-                                        (colorAtt as any).array[p + 2] = this.__selectionColor.b;
-                                    }
-
-                                    // TODO: look at update range
-                                    colorAtt.needsUpdate = true;
-                                }
-                            });
-                        }
-                    });
-                }
+                // todo
             };
         };
     }

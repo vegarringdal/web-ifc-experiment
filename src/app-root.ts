@@ -177,23 +177,7 @@ export class AppRoot extends HTMLElement {
                     Open File (prop)
                 </label>
 
-                <button
-                    class="inline-block p-2 m-2 bg-indigo-800 text-white z-10 relative"
-                    @click=${() => {
-                        this.viewController.debugShowPickingColors();
-                    }}
-                >
-                    Show GPU Color
-                </button>
-
-                <button
-                    class="inline-block p-2 m-2 bg-indigo-800 text-white z-10 relative"
-                    @click=${() => {
-                        this.viewController.debugHidePickingColors();
-                    }}
-                >
-                    Hide GPU Color
-                </button>
+     
 
                 <button
                     class="inline-block p-2 m-2 bg-indigo-800 text-white z-10 relative"
@@ -222,52 +206,7 @@ export class AppRoot extends HTMLElement {
                     Toggle Wireframe
                 </button>
 
-                <button
-                    class="inline-block p-2 m-2 bg-indigo-800 text-white z-10 relative"
-                    @click=${() => {
-                        this.viewController.hideSelected();
-                    }}
-                >
-                    Hide Selected
-                </button>
-                <button
-                    class="inline-block p-2 m-2 bg-indigo-800 text-white z-10 relative"
-                    @click=${() => {
-                        this.viewController.showAll();
-                    }}
-                >
-                    Show All
-                </button>
-
-                <button
-                    class="inline-block p-2 m-2 bg-indigo-800 text-white z-10 relative"
-                    @click=${() => {
-                        this.viewController.invertSelection();
-                    }}
-                >
-                    Invert Selection
-                </button>
-
-                <button
-                    class="inline-block p-2 m-2 bg-indigo-800 text-white z-10 relative"
-                    @click=${() => {
-                        // just for fun combine calls
-                        this.viewController.invertSelection();
-                        this.viewController.hideSelected();
-                        this.viewController.focusOnLastSelected();
-                    }}
-                >
-                    Hide not selected
-                </button>
-
-                <button
-                    class="inline-block p-2 m-2 bg-indigo-800 text-white z-10 relative"
-                    @click=${() => {
-                        this.viewController.focusOnLastSelected();
-                    }}
-                >
-                    Focus on last selected
-                </button>
+    
 
                 <button
                     class="inline-block p-2 m-2 bg-indigo-800 text-white z-10 relative"

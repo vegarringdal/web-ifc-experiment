@@ -2,11 +2,9 @@ import * as WebIFC from "web-ifc/web-ifc-api";
 import { propertyMap } from "./propertyMap";
 import { getNewMeshId } from "./getNewMeshId";
 import { convertToThreeBufferGeometry } from "./convertToThreeBufferGeometry";
-import { Color } from "three";
-import { getCurrentColorId, getNewColorId } from "./colorId";
+import { getCurrentColorId } from "./colorId";
 import { getAllPropertySets } from "./getAllProperties";
 import { getNewCollectionId } from "./collectionId";
-import { collectionMap } from "./collectionMap";
 
 export function getAllGeometry(modelID: number, ifcAPI: WebIFC.IfcAPI, loadPropertySets: boolean) {
     const flatMeshes = ifcAPI.LoadAllGeometry(modelID);
@@ -14,7 +12,6 @@ export function getAllGeometry(modelID: number, ifcAPI: WebIFC.IfcAPI, loadPrope
     const geometriesWithAlpha = [];
     const normalMeshId = getNewMeshId();
     const alphaMeshId = getNewMeshId();
-    const color = new Color();
 
     // this can take a lot of memory..
     let propertySet = {};
@@ -30,31 +27,18 @@ export function getAllGeometry(modelID: number, ifcAPI: WebIFC.IfcAPI, loadPrope
         properties.PropertySet = propertySet[expressID] || [];
 
         const collectionID = getNewCollectionId();
-        const colorIds = [];
 
         for (let j = 0; j < flatMeshGeometries.size(); j++) {
             const flatMeshGeometry = flatMeshGeometries.get(j);
 
             // generate color id
             // we will use this to reference objects later
-            const colorID = color.setHex(getNewColorId());
-            colorIds.push(getCurrentColorId());
 
             if (flatMeshGeometry.color.w === 1) {
-                const geometry = convertToThreeBufferGeometry(
-                    modelID,
-                    ifcAPI,
-                    flatMeshGeometry,
-                    colorID
-                );
+                const geometry = convertToThreeBufferGeometry(modelID, ifcAPI, flatMeshGeometry);
                 geometries.push(geometry);
             } else {
-                const geometry = convertToThreeBufferGeometry(
-                    modelID,
-                    ifcAPI,
-                    flatMeshGeometry,
-                    colorID
-                );
+                const geometry = convertToThreeBufferGeometry(modelID, ifcAPI, flatMeshGeometry);
                 geometriesWithAlpha.push(geometry);
             }
 
@@ -69,7 +53,6 @@ export function getAllGeometry(modelID: number, ifcAPI: WebIFC.IfcAPI, loadPrope
                         : geometriesWithAlpha.length - 1
             });
         }
-        collectionMap.set(collectionID, colorIds);
     }
     return { geometries, geometriesWithAlpha, normalMeshId, alphaMeshId };
 }
