@@ -4,7 +4,8 @@ import { ifcGeometryToBuffer } from "./ifcGeometryToBuffer";
 export function getBufferGeometry(
     modelID: number,
     ifcAPI: WebIFC.IfcAPI,
-    placedGeometry: WebIFC.PlacedGeometry) {
+    placedGeometry: WebIFC.PlacedGeometry
+) {
     const geometry = ifcAPI.GetGeometry(modelID, placedGeometry.geometryExpressID);
     const verts: number[] = ifcAPI.GetVertexArray(
         geometry.GetVertexData(),

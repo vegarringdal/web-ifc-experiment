@@ -1,9 +1,6 @@
 import { BufferGeometry, BufferAttribute } from "three";
 
-export function ifcGeometryToBuffer(
-    vertexData: number[],
-    indexData: number[],
-) {
+export function ifcGeometryToBuffer(vertexData: number[], indexData: number[]) {
     const geometry = new BufferGeometry();
 
     const positions = [];

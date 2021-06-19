@@ -31,7 +31,6 @@ export function loadAllGeometry(modelID: number, ifcAPI: WebIFC.IfcAPI, loadProp
         ) as MeshExtended;
         meshWithAlpha.name = "alpha";
         meshWithAlpha.meshID = alphaMeshId;
-
     }
 
     return { meshWithAlpha, meshWithoutAlpha };

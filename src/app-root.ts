@@ -177,8 +177,6 @@ export class AppRoot extends HTMLElement {
                     Open File (prop)
                 </label>
 
-     
-
                 <button
                     class="inline-block p-2 m-2 bg-indigo-800 text-white z-10 relative"
                     @click=${() => {
@@ -205,8 +203,6 @@ export class AppRoot extends HTMLElement {
                 >
                     Toggle Wireframe
                 </button>
-
-    
 
                 <button
                     class="inline-block p-2 m-2 bg-indigo-800 text-white z-10 relative"

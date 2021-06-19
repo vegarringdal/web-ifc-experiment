@@ -29,7 +29,6 @@ import { planeState, planeStateType } from "./planeState";
 import { resetCollectionId } from "./collectionId";
 import { resetMeshId } from "./getNewMeshId";
 
-
 export type { planeStateType } from "./planeState";
 
 type listener = { handleEvent: (e: any) => void };
@@ -43,10 +42,8 @@ export class ViewController {
     private __directionalLight2: any;
     private __directionalLight1: any;
     private __monitors: Stats;
-    private __threeCanvas: HTMLCanvasElement;  
+    private __threeCanvas: HTMLCanvasElement;
     private __listeners: Set<listener>;
-
-
 
     private __spaceNavigatorEnabled: boolean;
     private __spaceNavigator: SpaceNavigator;
