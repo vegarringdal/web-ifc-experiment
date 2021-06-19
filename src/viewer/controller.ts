@@ -535,12 +535,20 @@ export class ViewController {
 
                     let id;
                     {
-                        // get the picking ID
-                        const i = group.start;
-                        const x = index[i] * 4;
-                        const arr = e.geometry.attributes.colorpicking.array;
+                        const gl = this.__renderer.getContext();
+                        gl.bindBuffer(
+                            gl.ARRAY_BUFFER,
+                            (e.geometry.attributes.colorpicking as any).buffer
+                        );
 
-                        id = new Color(arr[x], arr[x + 1], arr[x + 2]).getHex();
+                        const viewX = new Float32Array(3);
+                        (gl as any).getBufferSubData(
+                            gl.ARRAY_BUFFER,
+                            index[group.start] * 4 * viewX.BYTES_PER_ELEMENT,
+                            viewX
+                        );
+                        // get the picking ID
+                        id = new Color(viewX[0], viewX[1], viewX[2]).getHex();
                     }
 
                     if (this.__selectedElements.has(id)) {
