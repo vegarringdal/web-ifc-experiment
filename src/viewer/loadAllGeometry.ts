@@ -1,12 +1,17 @@
 import * as WebIFC from "web-ifc/web-ifc-api";
 import { BufferGeometryUtils } from "three/examples/jsm/utils/BufferGeometryUtils";
-import { Mesh } from "three";
+import { GLBufferAttribute, Mesh, WebGLRenderer } from "three";
 import { materialPicking } from "./materialPicking";
 import { material } from "./material";
 import { MeshExtended } from "./MeshExtended";
 import { getAllGeometry } from "./getAllGeometry";
 
-export function loadAllGeometry(modelID: number, ifcAPI: WebIFC.IfcAPI, loadPropertySets: boolean) {
+export function loadAllGeometry(
+    render: WebGLRenderer,
+    modelID: number,
+    ifcAPI: WebIFC.IfcAPI,
+    loadPropertySets: boolean
+) {
     const { geometries, geometriesWithAlpha, normalMeshId, alphaMeshId } = getAllGeometry(
         modelID,
         ifcAPI,
@@ -29,6 +34,16 @@ export function loadAllGeometry(modelID: number, ifcAPI: WebIFC.IfcAPI, loadProp
         meshWithoutAlpha.unpickable = function () {
             this.material = material;
         };
+        const array: any = meshWithoutAlpha.geometry.attributes.color.array;
+
+        const gl = render.getContext();
+
+        const pos = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, pos);
+        gl.bufferData(gl.ARRAY_BUFFER, array, gl.STATIC_DRAW);
+
+        const posAttr1 = new GLBufferAttribute(pos, gl.FLOAT, 4, 4, array.length / 4);
+        meshWithoutAlpha.geometry.setAttribute("color", posAttr1 as any);
     }
 
     if (geometriesWithAlpha.length) {
@@ -44,6 +59,17 @@ export function loadAllGeometry(modelID: number, ifcAPI: WebIFC.IfcAPI, loadProp
         meshWithAlpha.unpickable = function () {
             this.material = material;
         };
+
+        const array: any = meshWithAlpha.geometry.attributes.color.array;
+
+        const gl = render.getContext();
+
+        const pos = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, pos);
+        gl.bufferData(gl.ARRAY_BUFFER, array, gl.STATIC_DRAW);
+
+        const posAttr1 = new GLBufferAttribute(pos, gl.FLOAT, 4, 4, array.length / 4);
+        meshWithAlpha.geometry.setAttribute("color", posAttr1 as any);
     }
 
     return { meshWithAlpha, meshWithoutAlpha };

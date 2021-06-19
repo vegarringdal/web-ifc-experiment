@@ -313,6 +313,7 @@ export class ViewController {
         for (let i = 0; i < file.length; i++) {
             try {
                 const { meshWithAlpha, meshWithoutAlpha } = await readAndParseIFC(
+                    this.__renderer,
                     file[i],
                     loadPropertySets
                 );
@@ -433,7 +434,7 @@ export class ViewController {
     private __deselectElement(elementRef: selectionMapType) {
         this.__scene.children.forEach((e: MeshExtended) => {
             if (e.meshID === elementRef.meshID) {
-                const group = e.geometry.groups[elementRef.group];
+                /* const group = e.geometry.groups[elementRef.group];
                 const colorAtt = e.geometry.attributes.color;
                 const index = e.geometry.index.array;
 
@@ -443,7 +444,7 @@ export class ViewController {
                     (colorAtt as any).array[p + 1] = elementRef.color.g;
                     (colorAtt as any).array[p + 2] = elementRef.color.b;
                 }
-                colorAtt.needsUpdate = true;
+                colorAtt.needsUpdate = true; */
             }
         });
     }
@@ -682,7 +683,9 @@ export class ViewController {
 
                     // new color
                     const meshIds = collection.map((x) => propertyMap.get(x).meshID);
+                    console.time("test");
 
+                    let selected = false;
                     this.__scene.children.forEach((e: MeshExtended) => {
                         if (meshIds.indexOf(e.meshID) !== -1) {
                             collection.forEach((partId) => {
@@ -692,53 +695,49 @@ export class ViewController {
                                     const group = e.geometry.groups[propertyMesh.group];
                                     const colorAtt = e.geometry.attributes.color;
                                     const index = e.geometry.index.array;
-
-                                    if (id === partId) {
+                                    if (id === partId && !selected) {
                                         //not really optimal..
+                                        selected = true;
                                         this.__getCenterAndSize(e, clickedPropertyMesh);
                                     }
 
-                                    // get existing colors, so we can set it back later
-                                    const currentColor = new Color();
-                                    {
-                                        const i = group.start;
-                                        const x = index[i] * 4;
-                                        currentColor.r = colorAtt.array[x];
-                                    }
+                                    const gl = this.__renderer.getContext();
+                                    gl.bindBuffer(gl.ARRAY_BUFFER, (colorAtt as any).buffer);
 
-                                    {
-                                        const i = group.start;
-                                        const x = index[i] * 4;
-                                        currentColor.g = colorAtt.array[x + 1];
-                                    }
-
-                                    {
-                                        const i = group.start;
-                                        const x = index[i] * 4;
-                                        currentColor.b = colorAtt.array[x + 2];
-                                    }
+                                    const viewX = new Float32Array(3);
+                                    (gl as any).getBufferSubData(
+                                        gl.ARRAY_BUFFER,
+                                        group.start * 4 * viewX.BYTES_PER_ELEMENT,
+                                        viewX
+                                    );
 
                                     // store state
                                     this.__selectedElements.set(partId, {
                                         id: partId,
-                                        color: currentColor,
+                                        color: new Color(viewX[0], viewX[1], viewX[2]),
                                         meshID: propertyMesh.meshID,
                                         group: propertyMesh.group
                                     });
+                                    const view = new Float32Array(3);
+                                    view[0] = this.__selectionColor.r;
+                                    view[1] = this.__selectionColor.g;
+                                    view[2] = this.__selectionColor.b;
 
                                     for (let i = group.start; i < group.start + group.count; i++) {
                                         const p = index[i] * 4;
-                                        (colorAtt as any).array[p] = this.__selectionColor.r;
-                                        (colorAtt as any).array[p + 1] = this.__selectionColor.g;
-                                        (colorAtt as any).array[p + 2] = this.__selectionColor.b;
-                                    }
 
-                                    // TODO: look at update range
-                                    colorAtt.needsUpdate = true;
+                                        gl.bufferSubData(
+                                            gl.ARRAY_BUFFER,
+                                            p * view.BYTES_PER_ELEMENT,
+                                            view
+                                        );
+                                    }
                                 }
                             });
+                            e.geometry.attributes.color.needsUpdate = true;
                         }
                     });
+                    console.timeEnd("test");
                 }
             };
         };

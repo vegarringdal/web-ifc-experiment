@@ -1,13 +1,15 @@
+import { WebGLRenderer } from "three";
 import * as WebIFC from "web-ifc/web-ifc-api";
 import { loadAllGeometry } from "./loadAllGeometry";
 import { MeshExtended } from "./MeshExtended";
 
 export function readAndParseIFC(
+    render: WebGLRenderer,
     file: File,
     loadPropertySets: boolean
 ): Promise<{ meshWithAlpha: MeshExtended; meshWithoutAlpha: MeshExtended }> {
     return new Promise(async (resolve, reject) => {
-        let ifcAPI = new WebIFC.IfcAPI();
+        const ifcAPI = new WebIFC.IfcAPI();
         await ifcAPI.Init();
         if (file) {
             const reader = new FileReader();
@@ -18,9 +20,8 @@ export function readAndParseIFC(
                 const data = new Uint8Array(uIntArrayBuffer);
                 const modelID = ifcAPI.OpenModel(data);
                 try {
-                    const c = loadAllGeometry(modelID, ifcAPI, loadPropertySets);
-                    ifcAPI.CloseModel(modelID); // dont know if this really do much,..
-                    ifcAPI = null;
+                    const c = loadAllGeometry(render, modelID, ifcAPI, loadPropertySets);
+
                     resolve(c);
                 } catch (err) {
                     reject(err);
