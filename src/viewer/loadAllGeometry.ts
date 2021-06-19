@@ -34,16 +34,28 @@ export function loadAllGeometry(
         meshWithoutAlpha.unpickable = function () {
             this.material = material;
         };
-        const array: any = meshWithoutAlpha.geometry.attributes.color.array;
 
-        const gl = render.getContext();
+        {
+            const array: any = meshWithoutAlpha.geometry.attributes.color.array;
+            const gl = render.getContext();
+            const pos = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, pos);
+            gl.bufferData(gl.ARRAY_BUFFER, array, gl.DYNAMIC_DRAW);
 
-        const pos = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, pos);
-        gl.bufferData(gl.ARRAY_BUFFER, array, gl.STATIC_DRAW);
+            const attr = new GLBufferAttribute(pos, gl.FLOAT, 4, 4, array.length / 4);
+            meshWithoutAlpha.geometry.setAttribute("color", attr as any);
+        }
 
-        const posAttr1 = new GLBufferAttribute(pos, gl.FLOAT, 4, 4, array.length / 4);
-        meshWithoutAlpha.geometry.setAttribute("color", posAttr1 as any);
+        {
+            const array: any = meshWithoutAlpha.geometry.attributes.normal.array;
+            const gl = render.getContext();
+            const pos = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, pos);
+            gl.bufferData(gl.ARRAY_BUFFER, array, gl.STATIC_DRAW);
+
+            const attr = new GLBufferAttribute(pos, gl.FLOAT, 3, 4, array.length / 3);
+            meshWithoutAlpha.geometry.setAttribute("normal", attr as any);
+        }
     }
 
     if (geometriesWithAlpha.length) {
@@ -59,17 +71,27 @@ export function loadAllGeometry(
         meshWithAlpha.unpickable = function () {
             this.material = material;
         };
+        {
+            const array: any = meshWithAlpha.geometry.attributes.color.array;
+            const gl = render.getContext();
+            const pos = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, pos);
+            gl.bufferData(gl.ARRAY_BUFFER, array, gl.DYNAMIC_DRAW);
 
-        const array: any = meshWithAlpha.geometry.attributes.color.array;
+            const attr = new GLBufferAttribute(pos, gl.FLOAT, 4, 4, array.length / 4);
+            meshWithAlpha.geometry.setAttribute("color", attr as any);
+        }
 
-        const gl = render.getContext();
+        {
+            const array: any = meshWithAlpha.geometry.attributes.normal.array;
+            const gl = render.getContext();
+            const pos = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, pos);
+            gl.bufferData(gl.ARRAY_BUFFER, array, gl.STATIC_DRAW);
 
-        const pos = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, pos);
-        gl.bufferData(gl.ARRAY_BUFFER, array, gl.STATIC_DRAW);
-
-        const posAttr1 = new GLBufferAttribute(pos, gl.FLOAT, 4, 4, array.length / 4);
-        meshWithAlpha.geometry.setAttribute("color", posAttr1 as any);
+            const attr = new GLBufferAttribute(pos, gl.FLOAT, 3, 4, array.length / 3);
+            meshWithAlpha.geometry.setAttribute("normal", attr as any);
+        }
     }
 
     return { meshWithAlpha, meshWithoutAlpha };
