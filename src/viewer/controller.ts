@@ -315,8 +315,8 @@ export class ViewController {
                     this.__scene.add(geo);
                 });
 
-                if (meshWithAlphaArray[0]) {
-                    this.fitModelToFrame(meshWithAlphaArray[0]);
+                if (meshWithoutAlphaArray[0]) {
+                    this.fitModelToFrame(meshWithoutAlphaArray[0]);
                 }
             } catch (err) {
                 console.log(err);
