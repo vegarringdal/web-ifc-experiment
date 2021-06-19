@@ -67,6 +67,17 @@ export function loadAllGeometry(
             const attr = new GLBufferAttribute(pos, gl.FLOAT, 4, 4, array.length / 4);
             meshWithoutAlpha.geometry.setAttribute("colorpicking", attr as any);
         }
+
+        {
+            const array: any = meshWithoutAlpha.geometry.attributes.hidden.array;
+            const gl = render.getContext();
+            const pos = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, pos);
+            gl.bufferData(gl.ARRAY_BUFFER, array, gl.DYNAMIC_DRAW);
+
+            const attr = new GLBufferAttribute(pos, gl.FLOAT, 1, 4, array.length / 1);
+            meshWithoutAlpha.geometry.setAttribute("hidden", attr as any);
+        }
     }
 
     if (geometriesWithAlpha.length) {
@@ -113,6 +124,17 @@ export function loadAllGeometry(
 
             const attr = new GLBufferAttribute(pos, gl.FLOAT, 4, 4, array.length / 4);
             meshWithAlpha.geometry.setAttribute("colorpicking", attr as any);
+        }
+
+        {
+            const array: any = meshWithAlpha.geometry.attributes.hidden.array;
+            const gl = render.getContext();
+            const pos = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, pos);
+            gl.bufferData(gl.ARRAY_BUFFER, array, gl.DYNAMIC_DRAW);
+
+            const attr = new GLBufferAttribute(pos, gl.FLOAT, 1, 4, array.length / 1);
+            meshWithAlpha.geometry.setAttribute("hidden", attr as any);
         }
     }
 

@@ -479,9 +479,16 @@ export class ViewController {
                 const attribute = e.geometry.attributes.hidden;
                 const index = e.geometry.index.array;
 
+                const gl = this.__renderer.getContext();
+                gl.bindBuffer(gl.ARRAY_BUFFER, (attribute as any).buffer);
+
+                const view = new Float32Array(1);
+                view[0] = 0;
+
                 for (let i = group.start; i < group.start + group.count; i++) {
                     const p = index[i];
-                    (attribute as any).array[p] = 0;
+
+                    gl.bufferSubData(gl.ARRAY_BUFFER, p * view.BYTES_PER_ELEMENT, view);
                 }
                 attribute.needsUpdate = true;
             }
@@ -562,9 +569,16 @@ export class ViewController {
 
                         this.__hiddenElements.set(id, ref as any);
 
+                        const gl = this.__renderer.getContext();
+                        gl.bindBuffer(gl.ARRAY_BUFFER, (attribute as any).buffer);
+
+                        const view = new Float32Array(1);
+                        view[0] = 1;
+
                         for (let i = group.start; i < group.start + group.count; i++) {
                             const p = index[i];
-                            (attribute as any).array[p] = 1;
+
+                            gl.bufferSubData(gl.ARRAY_BUFFER, p * view.BYTES_PER_ELEMENT, view);
                         }
                         attribute.needsUpdate = true;
                     }
