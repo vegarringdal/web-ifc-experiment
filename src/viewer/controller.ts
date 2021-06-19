@@ -434,17 +434,24 @@ export class ViewController {
     private __deselectElement(elementRef: selectionMapType) {
         this.__scene.children.forEach((e: MeshExtended) => {
             if (e.meshID === elementRef.meshID) {
-                /* const group = e.geometry.groups[elementRef.group];
+                const group = e.geometry.groups[elementRef.group];
                 const colorAtt = e.geometry.attributes.color;
                 const index = e.geometry.index.array;
 
+                const gl = this.__renderer.getContext();
+                gl.bindBuffer(gl.ARRAY_BUFFER, (colorAtt as any).buffer);
+
+                const view = new Float32Array(3);
+                view[0] = elementRef.color.r;
+                view[1] = elementRef.color.g;
+                view[2] = elementRef.color.b;
+
                 for (let i = group.start; i < group.start + group.count; i++) {
                     const p = index[i] * 4;
-                    (colorAtt as any).array[p] = elementRef.color.r;
-                    (colorAtt as any).array[p + 1] = elementRef.color.g;
-                    (colorAtt as any).array[p + 2] = elementRef.color.b;
+
+                    gl.bufferSubData(gl.ARRAY_BUFFER, p * view.BYTES_PER_ELEMENT, view);
                 }
-                colorAtt.needsUpdate = true; */
+                colorAtt.needsUpdate = true;
             }
         });
     }
@@ -707,7 +714,7 @@ export class ViewController {
                                     const viewX = new Float32Array(3);
                                     (gl as any).getBufferSubData(
                                         gl.ARRAY_BUFFER,
-                                        group.start * 4 * viewX.BYTES_PER_ELEMENT,
+                                        index[group.start] * 4 * viewX.BYTES_PER_ELEMENT,
                                         viewX
                                     );
 
@@ -732,9 +739,9 @@ export class ViewController {
                                             view
                                         );
                                     }
+                                    colorAtt.needsUpdate = true;
                                 }
                             });
-                            e.geometry.attributes.color.needsUpdate = true;
                         }
                     });
                     console.timeEnd("test");
