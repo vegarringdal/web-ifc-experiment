@@ -19,9 +19,9 @@ export function ifcGeometryToBuffer(vertexData: number[], indexData: number[]) {
         hidden.push(0);
     }
 
-    geometry.setAttribute("position", new BufferAttribute(new Float32Array(positions), 3, true));
-    geometry.setAttribute("normal", new BufferAttribute(new Float32Array(normals), 3, true));
-    geometry.setAttribute("hidden", new BufferAttribute(new Float32Array(hidden), 1, true));
+    geometry.setAttribute("position", new BufferAttribute(new Float32Array(positions), 3, false));
+    geometry.setAttribute("normal", new BufferAttribute(new Float32Array(normals), 3, false));
+    geometry.setAttribute("hidden", new BufferAttribute(new Uint8Array(hidden), 4, false));
     geometry.setIndex(new BufferAttribute(indexData, 1));
 
     return geometry;
