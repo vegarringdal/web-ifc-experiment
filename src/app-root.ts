@@ -242,19 +242,8 @@ export class AppRoot extends HTMLElement {
                 <button
                     class="inline-block p-2 m-2 bg-indigo-800 text-white z-10 relative"
                     @click=${() => {
-                        this.viewController.invertSelection();
-                    }}
-                >
-                    Invert Selection
-                </button>
-
-                <button
-                    class="inline-block p-2 m-2 bg-indigo-800 text-white z-10 relative"
-                    @click=${() => {
                         // just for fun combine calls
-                        this.viewController.invertSelection();
-                        this.viewController.hideSelected();
-                        this.viewController.focusOnLastSelected();
+                        this.viewController.hideNotSelected();
                     }}
                 >
                     Hide not selected

@@ -525,21 +525,12 @@ export class ViewController {
         }
     }
 
-    public invertSelection() {
+    public hideNotSelected() {
         // first part will be to remove current selection
-        const selectedElements = Array.from(this.__selectedElements);
-        this.__selectedElements.clear();
-        selectedElements.forEach(([, elementRef]) => {
-            // we do this to reset colors..
-            this.__deselectElement(elementRef);
-        });
-
-        const selected = selectedElements.map(([, elementRef]) => elementRef.id);
 
         this.__scene.children.forEach((e: MeshExtended) => {
             if (e.meshID) {
-                e.geometry.groups.forEach((group, i) => {
-                    const colorAtt = e.geometry.attributes.color;
+                e.geometry.groups.forEach((group) => {
                     const index = e.geometry.index.array;
 
                     let id;
@@ -552,38 +543,23 @@ export class ViewController {
                         id = new Color(arr[x], arr[x + 1], arr[x + 2]).getHex();
                     }
 
-                    if (selected.indexOf(id) !== -1) {
+                    if (this.__selectedElements.has(id)) {
                         return;
                     }
 
-                    const gl = this.__renderer.getContext();
-                    gl.bindBuffer(gl.ARRAY_BUFFER, (colorAtt as any).buffer);
+                    {
+                        const ref = propertyMap.get(id);
+                        const group = e.geometry.groups[ref.group];
+                        const attribute = e.geometry.attributes.hidden;
 
-                    const viewX = new Float32Array(3);
-                    (gl as any).getBufferSubData(
-                        gl.ARRAY_BUFFER,
-                        index[group.start] * 4 * viewX.BYTES_PER_ELEMENT,
-                        viewX
-                    );
+                        this.__hiddenElements.set(id, ref as any);
 
-                    // store state
-                    this.__selectedElements.set(id, {
-                        id: id,
-                        color: new Color(viewX[0], viewX[1], viewX[2]),
-                        meshID: e.meshID,
-                        group: i
-                    });
-                    const view = new Float32Array(3);
-                    view[0] = this.__selectionColor.r;
-                    view[1] = this.__selectionColor.g;
-                    view[2] = this.__selectionColor.b;
-
-                    for (let i = group.start; i < group.start + group.count; i++) {
-                        const p = index[i] * 4;
-
-                        gl.bufferSubData(gl.ARRAY_BUFFER, p * view.BYTES_PER_ELEMENT, view);
+                        for (let i = group.start; i < group.start + group.count; i++) {
+                            const p = index[i];
+                            (attribute as any).array[p] = 1;
+                        }
+                        attribute.needsUpdate = true;
                     }
-                    colorAtt.needsUpdate = true;
                 });
             }
         });
