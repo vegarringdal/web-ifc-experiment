@@ -197,15 +197,6 @@ export class AppRoot extends HTMLElement {
                 <button
                     class="inline-block p-2 m-2 bg-indigo-800 text-white z-10 relative"
                     @click=${() => {
-                        this.viewController.toggleWireframe();
-                    }}
-                >
-                    Toggle Wireframe
-                </button>
-
-                <button
-                    class="inline-block p-2 m-2 bg-indigo-800 text-white z-10 relative"
-                    @click=${() => {
                         this.viewController.togglePlane();
                     }}
                 >

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import {
     WebGLRenderer,
     Scene,
@@ -6,11 +7,22 @@ import {
     DirectionalLight,
     AmbientLight,
     Vector2,
-    Mesh,
     Box3,
     Vector3,
-    GridHelper
+    Mesh,
+    GridHelper,
+    Raycaster,
+    BufferGeometry
 } from "three";
+
+//@ts-ignore
+import { computeBoundsTree, disposeBoundsTree, acceleratedRaycast } from "three-mesh-bvh";
+//@ts-ignore
+BufferGeometry.prototype.computeBoundsTree = computeBoundsTree;
+//@ts-ignore
+BufferGeometry.prototype.disposeBoundsTree = disposeBoundsTree;
+Mesh.prototype.raycast = acceleratedRaycast;
+
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore --types missing atm
 import { MathUtils } from "three";
@@ -22,16 +34,23 @@ import { readAndParseIFC } from "./readAndParseIFC";
 // @ts-ignore --types missing atm
 import Stats from "stats.js/src/Stats.js";
 import { SpaceNavigator } from "./spaceNavigator";
-import { material } from "./material";
 import { PlaneHelperX, planes } from "./planeHelperX";
 import { planeState, planeStateType } from "./planeState";
 import { resetMeshId } from "./getNewMeshId";
 import { resetId } from "./colorId";
+//@ts-ignore
+import { acceleratedRaycast } from "three-mesh-bvh";
 
 export type { planeStateType } from "./planeState";
 
 type listener = { handleEvent: (e: any) => void };
 type selectionMapType = { id: number; meshID: number; group: number; color: Color };
+
+// create raycaster
+const raycaster = new Raycaster();
+(raycaster as any).firstHitOnly = true;
+Mesh.prototype.raycast = acceleratedRaycast;
+
 export class ViewController {
     private __renderer: WebGLRenderer;
     private __scene: Scene;
@@ -55,6 +74,8 @@ export class ViewController {
     public __selectedElements = new Map<number, selectionMapType>();
     public __hiddenElements = new Map<number, selectionMapType>();
     public __lastSelectedCenter: Vector3;
+    private __meshes: Mesh[] = [];
+    __selected: any;
 
     constructor(canvas: string | HTMLCanvasElement) {
         this.__listeners = new Set<listener>();
@@ -153,7 +174,7 @@ export class ViewController {
                 currentState.y_plane_enable !== planeStateOld.y_plane_enable ||
                 currentState.z_plane_enable !== planeStateOld.z_plane_enable
             ) {
-                const p = [];
+                const p: any[] = [];
 
                 if (currentState.x_plane_enable) {
                     p.push(planes[0]);
@@ -166,7 +187,9 @@ export class ViewController {
                 if (currentState.z_plane_enable) {
                     p.push(planes[2]);
                 }
-                material.clippingPlanes = p;
+                this.__meshes.forEach((mesh) => {
+                    (mesh.material as any).clippingPlanes = p;
+                });
             }
 
             planeStateOld = makeCopy(planeState.getValue());
@@ -309,9 +332,11 @@ export class ViewController {
                 );
 
                 meshWithAlphaArray.forEach((geo) => {
+                    this.__meshes.push(geo);
                     this.__scene.add(geo);
                 });
                 meshWithoutAlphaArray.forEach((geo) => {
+                    this.__meshes.push(geo);
                     this.__scene.add(geo);
                 });
 
@@ -373,14 +398,6 @@ export class ViewController {
         toRemove.map((m) => this.__scene.remove(m));
     }
 
-    public toggleWireframe(force: boolean = null) {
-        if (force !== null) {
-            material.wireframe = force;
-        } else {
-            material.wireframe = material.wireframe ? false : true;
-        }
-    }
-
     private __addClickEvent() {
         this.__threeCanvas.onpointerdown = (event: MouseEvent) => {
             if (event.button != 0) return;
@@ -391,10 +408,40 @@ export class ViewController {
 
             this.__threeCanvas.onpointerup = () => {
                 const mouse = new Vector2();
-                mouse.x = event.clientX;
-                mouse.y = event.clientY;
 
-                // todo
+                mouse.x = (event.clientX / this.__renderer.domElement.clientWidth) * 2 - 1;
+                mouse.y = -(event.clientY / this.__renderer.domElement.clientHeight) * 2 + 1;
+
+                raycaster.setFromCamera(mouse, this.__camera);
+                const intersectObjects = raycaster.intersectObjects(this.__meshes);
+
+                if (intersectObjects.length) {
+                    const geometry = (intersectObjects[0].object as Mesh).geometry;
+                    const groups = geometry.groups;
+                    const userData = geometry.userData.mergedUserData;
+                    const faceNo = intersectObjects[0].faceIndex * 3;
+
+                    if (geometry.index) {
+                        this.__selected = null;
+                        for (let i = 0; i < groups.length; i++) {
+                            const limit = groups[i].start + groups[i].count;
+                            if (limit > faceNo) {
+                                this.__selected = {
+                                    mesh: intersectObjects[0].object as Mesh,
+                                    group: geometry.groups[i]
+                                };
+
+                                const prop = propertyMap.get(userData[i].id);
+                                console.log(
+                                    prop.properties.Name,
+                                    prop.properties.expressID,
+                                    prop.properties.__proto__.constructor.name
+                                );
+                                break;
+                            }
+                        }
+                    }
+                }
             };
         };
     }
