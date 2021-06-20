@@ -12,7 +12,8 @@ import {
     Mesh,
     GridHelper,
     Raycaster,
-    BufferGeometry
+    BufferGeometry,
+    Intersection
 } from "three";
 
 //@ts-ignore
@@ -391,6 +392,28 @@ export class ViewController {
         toRemove.map((m) => this.__scene.remove(m));
     }
 
+    private filterClippingPlanes(objs: Intersection[]) {
+        function filter(elem: any) {
+            const clippingPlanes = elem.object.material.clippingPlanes;
+            // if no clippingplane, then its nothing to test
+            if (!clippingPlanes) {
+                return true;
+            }
+
+            // https://stackoverflow.com/questions/41002587/three-js-clipping-and-raycasting/41005143#41005143
+            // todo, look more into, how will this work really
+            // I need to enable coloring first on selected before working more on this
+            let result = false;
+            clippingPlanes.forEach((clippingPlane: any) => {
+                const distance = parseFloat(clippingPlane.distanceToPoint(elem.point));
+                result = distance > 0;
+            });
+
+            return result;
+        }
+        return objs.filter(filter);
+    }
+
     private __addClickEvent() {
         this.__threeCanvas.onpointerdown = (event: MouseEvent) => {
             if (event.button != 0) return;
@@ -401,7 +424,8 @@ export class ViewController {
 
             this.__threeCanvas.onpointerup = () => {
                 const mouse = new Vector2();
-
+                this.__selected = null;
+                let data: any = {};
                 mouse.x = (event.clientX / this.__renderer.domElement.clientWidth) * 2 - 1;
                 mouse.y = -(event.clientY / this.__renderer.domElement.clientHeight) * 2 + 1;
 
@@ -414,8 +438,9 @@ export class ViewController {
                     const userData = geometry.userData.mergedUserData;
                     const faceNo = intersectObjects[0].faceIndex * 3;
 
-                    if (geometry.index) {
-                        this.__selected = null;
+                    const result = this.filterClippingPlanes(intersectObjects);
+
+                    if (geometry.index && result.length) {
                         for (let i = 0; i < groups.length; i++) {
                             const limit = groups[i].start + groups[i].count;
                             if (limit > faceNo) {
@@ -424,17 +449,17 @@ export class ViewController {
                                     group: geometry.groups[i]
                                 };
 
-                                const data = propertyMap.get(userData[i].id);
-
-                                Array.from(this.__listeners).forEach((subscriber) => {
-                                    subscriber.handleEvent({ type: "modelClick", data: data });
-                                });
+                                data = propertyMap.get(userData[i].id);
 
                                 break;
                             }
                         }
                     }
                 }
+
+                Array.from(this.__listeners).forEach((subscriber) => {
+                    subscriber.handleEvent({ type: "modelClick", data: data });
+                });
             };
         };
     }
