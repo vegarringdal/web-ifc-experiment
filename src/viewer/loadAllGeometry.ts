@@ -7,12 +7,11 @@ import { getMaterial } from "./material";
 import { propertyMap } from "./propertyMap";
 
 export function loadAllGeometry(modelID: number, ifcAPI: WebIFC.IfcAPI) {
-    const { mergeMapAlpha, mergeMapNonAlpha } = getAllGeometry(modelID, ifcAPI);
+    const mergeMap = getAllGeometry(modelID, ifcAPI);
 
-    const meshWithoutAlphaArray: Mesh[] = [];
-    const meshWithAlphaArray: Mesh[] = [];
-    if (mergeMapNonAlpha && mergeMapNonAlpha.size) {
-        Array.from(mergeMapNonAlpha).forEach(([, geometries]) => {
+    const meshesPerColor: Mesh[] = [];
+    if (mergeMap && mergeMap.size) {
+        Array.from(mergeMap).forEach(([, geometries]) => {
             const id = geometries[0].userData.id;
             const properties = propertyMap.get(id);
             const mesh = new Mesh(
@@ -24,28 +23,9 @@ export function loadAllGeometry(modelID: number, ifcAPI: WebIFC.IfcAPI) {
             );
             //@ts-ignore
             mesh.geometry.computeBoundsTree();
-            meshWithoutAlphaArray.push(mesh);
+            meshesPerColor.push(mesh);
         });
     }
 
-    if (mergeMapAlpha && mergeMapAlpha.size) {
-        Array.from(mergeMapAlpha).forEach(([, geometries]) => {
-            const id = geometries[0].userData.id;
-
-            const properties = propertyMap.get(id);
-
-            const mesh = new Mesh(
-                BufferGeometryUtils.mergeBufferGeometries(geometries, true),
-                getMaterial(
-                    new Color(properties.color.x, properties.color.y, properties.color.z),
-                    properties.color.w
-                )
-            );
-            //@ts-ignore
-            mesh.geometry.computeBoundsTree();
-            meshWithAlphaArray.push(mesh);
-        });
-    }
-
-    return { meshWithAlphaArray, meshWithoutAlphaArray };
+    return meshesPerColor;
 }

@@ -7,8 +7,7 @@ import { propertyMap } from "./propertyMap";
 
 export function getAllGeometry(modelID: number, ifcAPI: WebIFC.IfcAPI) {
     const flatMeshes = ifcAPI.LoadAllGeometry(modelID);
-    const mergeMapAlpha = new Map<string, BufferGeometry[]>();
-    const mergeMapNonAlpha = new Map<string, BufferGeometry[]>();
+    const mergeMap = new Map<string, BufferGeometry[]>();
     // this can take a lot of memory..
 
     for (let i = 0; i < flatMeshes.size(); i++) {
@@ -19,34 +18,21 @@ export function getAllGeometry(modelID: number, ifcAPI: WebIFC.IfcAPI) {
 
         for (let j = 0; j < flatMeshGeometries.size(); j++) {
             const flatMeshGeometry = flatMeshGeometries.get(j);
-
             const color = flatMeshGeometry.color;
-            const colorID = `${color.x * 255}.${color.y * 255}.${color.z * 255}.${color.w * 255}`;
+            const colorID = `${color.x}.${color.y}.${color.z}.${color.w}`;
 
-            if (flatMeshGeometry.color.w === 1) {
-                const geometry = convertToThreeBufferGeometry(modelID, ifcAPI, flatMeshGeometry);
-                geometry.userData = { id: getId() };
-                const x = mergeMapNonAlpha.get(colorID);
-                if (!x) {
-                    const x = [geometry];
-                    mergeMapNonAlpha.set(colorID, x);
-                } else {
-                    x.push(geometry);
-                }
+            const geometry = convertToThreeBufferGeometry(modelID, ifcAPI, flatMeshGeometry);
+            geometry.userData = { id: getId() };
+            const x = mergeMap.get(colorID);
+            if (!x) {
+                const x = [geometry];
+                mergeMap.set(colorID, x);
             } else {
-                const geometry = convertToThreeBufferGeometry(modelID, ifcAPI, flatMeshGeometry);
-                geometry.userData = { id: getId() };
-                const x = mergeMapAlpha.get(colorID);
-                if (!x) {
-                    const x = [geometry];
-                    mergeMapAlpha.set(colorID, x);
-                } else {
-                    x.push(geometry);
-                }
+                x.push(geometry);
             }
 
             propertyMap.set(getCurrentID(), { properties, color });
         }
     }
-    return { mergeMapAlpha, mergeMapNonAlpha };
+    return mergeMap;
 }

@@ -326,21 +326,15 @@ export class ViewController {
     public async readFile(file: File[]) {
         for (let i = 0; i < file.length; i++) {
             try {
-                const { meshWithAlphaArray, meshWithoutAlphaArray } = await readAndParseIFC(
-                    file[i]
-                );
+                const meshesPerColor = await readAndParseIFC(file[i]);
 
-                meshWithAlphaArray.forEach((geo) => {
-                    this.__meshes.push(geo);
-                    this.__scene.add(geo);
-                });
-                meshWithoutAlphaArray.forEach((geo) => {
+                meshesPerColor.forEach((geo) => {
                     this.__meshes.push(geo);
                     this.__scene.add(geo);
                 });
 
-                if (meshWithoutAlphaArray[0]) {
-                    this.fitModelToFrame(meshWithoutAlphaArray[0]);
+                if (meshesPerColor[0]) {
+                    this.fitModelToFrame(meshesPerColor[0]);
                 }
             } catch (err) {
                 console.log(err);
