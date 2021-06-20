@@ -5,7 +5,7 @@ export function getProperties(modelID: number, ifcAPI: WebIFC.IfcAPI, expressID:
     // I really only need tis for testing and to be able to query database
     return {
         Tag: properties.Tag,
-        expressID: properties.Tag,
+        expressID: properties.expressID,
         Name: properties.Name,
         ElementType: properties?.constructor?.name
     };
