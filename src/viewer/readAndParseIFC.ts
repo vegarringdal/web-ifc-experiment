@@ -3,8 +3,7 @@ import * as WebIFC from "web-ifc/web-ifc-api";
 import { loadAllGeometry } from "./loadAllGeometry";
 
 export function readAndParseIFC(
-    file: File,
-    loadPropertySets: boolean
+    file: File
 ): Promise<{ meshWithAlphaArray: Mesh[]; meshWithoutAlphaArray: Mesh[] }> {
     return new Promise(async (resolve, reject) => {
         let ifcAPI = new WebIFC.IfcAPI();
@@ -18,7 +17,7 @@ export function readAndParseIFC(
                 const data = new Uint8Array(uIntArrayBuffer);
                 const modelID = ifcAPI.OpenModel(data);
                 try {
-                    const c = loadAllGeometry(modelID, ifcAPI, loadPropertySets);
+                    const c = loadAllGeometry(modelID, ifcAPI);
                     ifcAPI.CloseModel(modelID); // dont know if this really do much,..
                     ifcAPI = null;
                     resolve(c);

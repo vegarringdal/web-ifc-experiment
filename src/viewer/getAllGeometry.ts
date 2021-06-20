@@ -2,25 +2,20 @@ import { BufferGeometry } from "three";
 import * as WebIFC from "web-ifc/web-ifc-api";
 import { getCurrentID, getId } from "./colorId";
 import { convertToThreeBufferGeometry } from "./convertToThreeBufferGeometry";
-import { getAllPropertySets } from "./getAllProperties";
+import { getProperties } from "./getProperties";
 import { propertyMap } from "./propertyMap";
 
-export function getAllGeometry(modelID: number, ifcAPI: WebIFC.IfcAPI, loadPropertySets: boolean) {
+export function getAllGeometry(modelID: number, ifcAPI: WebIFC.IfcAPI) {
     const flatMeshes = ifcAPI.LoadAllGeometry(modelID);
     const mergeMapAlpha = new Map<string, BufferGeometry[]>();
     const mergeMapNonAlpha = new Map<string, BufferGeometry[]>();
     // this can take a lot of memory..
-    let propertySet = {};
-    if (loadPropertySets) {
-        propertySet = getAllPropertySets(modelID, ifcAPI);
-    }
 
     for (let i = 0; i < flatMeshes.size(); i++) {
         const flatMesh = flatMeshes.get(i);
         const expressID = flatMesh.expressID;
         const flatMeshGeometries = flatMesh.geometries;
-        const properties = ifcAPI.GetLine(modelID, expressID, false) || {};
-        properties.PropertySet = propertySet[expressID] || [];
+        const properties = getProperties(modelID, ifcAPI, expressID);
 
         for (let j = 0; j < flatMeshGeometries.size(); j++) {
             const flatMeshGeometry = flatMeshGeometries.get(j);

@@ -24,7 +24,6 @@ export class AppRoot extends HTMLElement {
                 this.callServer(e?.data?.properties?.Tag?.value);
                 this.render();
             } else {
-                e.data.properties["element type"] = e.data?.properties?.constructor?.name;
                 this.data = e.data.properties;
                 this.render();
             }
@@ -154,26 +153,11 @@ export class AppRoot extends HTMLElement {
                         class="hidden"
                         multiple
                         @change=${async (e: any) => {
-                            await this.viewController.readFile(e.target.files, false);
+                            await this.viewController.readFile(e.target.files);
                             e.target.value = ""; // reset so we can load same file name again..
                         }}
                     />
                     Open File
-                </label>
-
-                <label
-                    class="inline-block p-2 m-2 bg-indigo-800 text-white z-10 relative text-center"
-                >
-                    <input
-                        type="file"
-                        class="hidden"
-                        multiple
-                        @change=${async (e: any) => {
-                            await this.viewController.readFile(e.target.files, true);
-                            e.target.value = ""; // reset so we can load same file name again..
-                        }}
-                    />
-                    Open File (prop)
                 </label>
 
                 <button

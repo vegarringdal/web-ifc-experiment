@@ -323,12 +323,11 @@ export class ViewController {
         document.body.appendChild(this.__monitors.dom);
     }
 
-    public async readFile(file: File[], loadPropertySets: boolean) {
+    public async readFile(file: File[]) {
         for (let i = 0; i < file.length; i++) {
             try {
                 const { meshWithAlphaArray, meshWithoutAlphaArray } = await readAndParseIFC(
-                    file[i],
-                    loadPropertySets
+                    file[i]
                 );
 
                 meshWithAlphaArray.forEach((geo) => {
@@ -431,12 +430,12 @@ export class ViewController {
                                     group: geometry.groups[i]
                                 };
 
-                                const prop = propertyMap.get(userData[i].id);
-                                console.log(
-                                    prop.properties.Name,
-                                    prop.properties.expressID,
-                                    prop.properties.__proto__.constructor.name
-                                );
+                                const data = propertyMap.get(userData[i].id);
+
+                                Array.from(this.__listeners).forEach((subscriber) => {
+                                    subscriber.handleEvent({ type: "modelClick", data: data });
+                                });
+
                                 break;
                             }
                         }

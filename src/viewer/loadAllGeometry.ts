@@ -6,8 +6,8 @@ import { getAllGeometry } from "./getAllGeometry";
 import { getMaterial } from "./material";
 import { propertyMap } from "./propertyMap";
 
-export function loadAllGeometry(modelID: number, ifcAPI: WebIFC.IfcAPI, loadPropertySets: boolean) {
-    const { mergeMapAlpha, mergeMapNonAlpha } = getAllGeometry(modelID, ifcAPI, loadPropertySets);
+export function loadAllGeometry(modelID: number, ifcAPI: WebIFC.IfcAPI) {
+    const { mergeMapAlpha, mergeMapNonAlpha } = getAllGeometry(modelID, ifcAPI);
 
     const meshWithoutAlphaArray: Mesh[] = [];
     const meshWithAlphaArray: Mesh[] = [];
