@@ -10,21 +10,21 @@ What I want to have working (and might fail at getting to work)
 
 Progress Sample [live sample](https://vegarringdal.github.io/web-ifc-experiment/)
 
-* [x] select items
-* [x] hide items
-* [x] show data of selected
-* [x] multi select by holding CTRL 
-* [x] show all (hidden)
-* [x] invert
+* [ ] select items/picking to get data about item
+  * [ ] and highlight
+* [ ] hide items
+* [ ] show data of selected
+* [ ] multi select by holding CTRL 
+* [ ] show all (hidden)
+* [ ] invert
 * [x] use spacenavigator
-* [x] set focus to selected with button
+* [ ] set focus to selected with button
   * [ ] set focus on selected when you click on a item 
-* [x] load propertysets on fileload (more memory)
-* [x] clear scene (so you can load new, else it will add)
-* [x] toggel /show GPU picking colors
-* [x] enable wireframe on material
+* [ ] clear scene (so you can load new, else it will add)
+* [ ] enable wireframe on material
 * [ ] some selection three
 * [x] simple clipping tools
+  * [ ] with working selection/picking to get data about item
 * [x] simple ground plane
 
 
