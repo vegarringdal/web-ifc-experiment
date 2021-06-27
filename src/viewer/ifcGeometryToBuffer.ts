@@ -32,7 +32,6 @@ export function ifcGeometryToBuffer(
         colorsPicking.push(pickingColor.r);
         colorsPicking.push(pickingColor.g);
         colorsPicking.push(pickingColor.b);
-        colorsPicking.push(1);
 
         hidden.push(0);
     }
@@ -43,7 +42,7 @@ export function ifcGeometryToBuffer(
     geometry.setAttribute("hidden", new BufferAttribute(new Float32Array(hidden), 1, true));
     geometry.setAttribute(
         "colorpicking",
-        new BufferAttribute(new Float32Array(colorsPicking), 4, true)
+        new BufferAttribute(new Float32Array(colorsPicking), 3, true)
     );
     geometry.setIndex(new BufferAttribute(indexData, 1));
 

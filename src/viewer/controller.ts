@@ -538,7 +538,7 @@ export class ViewController {
                     {
                         // get the picking ID
                         const i = group.start;
-                        const x = index[i] * 4;
+                        const x = index[i] * 3;
                         const arr = e.geometry.attributes.colorpicking.array;
 
                         id = new Color(arr[x], arr[x + 1], arr[x + 2]).getHex();
