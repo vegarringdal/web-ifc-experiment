@@ -5,6 +5,7 @@ import { Color, Mesh } from "three";
 import { getAllGeometry } from "./getAllGeometry";
 import { getMaterial } from "./material";
 import { propertyMap } from "./propertyMap";
+import { MeshExtended } from "./MeshExtended";
 
 export function loadAllGeometry(modelID: number, ifcAPI: WebIFC.IfcAPI) {
     const mergeMap = getAllGeometry(modelID, ifcAPI);
@@ -23,6 +24,7 @@ export function loadAllGeometry(modelID: number, ifcAPI: WebIFC.IfcAPI) {
             );
             //@ts-ignore
             mesh.geometry.computeBoundsTree();
+            (mesh as MeshExtended).meshType = "generated";
             meshesPerColor.push(mesh);
         });
     }

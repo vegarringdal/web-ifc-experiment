@@ -13,7 +13,9 @@ import {
     GridHelper,
     Raycaster,
     BufferGeometry,
-    Intersection
+    Intersection,
+    BufferAttribute,
+    MeshBasicMaterial
 } from "three";
 
 //@ts-ignore
@@ -383,7 +385,19 @@ export class ViewController {
         resetMeshId();
         const toRemove: MeshExtended[] = [];
         this.__scene.children.forEach((mesh: MeshExtended) => {
-            if (mesh.meshID) {
+            if (mesh.meshType) {
+                mesh.geometry.dispose();
+                mesh.remove();
+                toRemove.push(mesh);
+            }
+        });
+        toRemove.map((m) => this.__scene.remove(m));
+    }
+
+    public clearSelection() {
+        const toRemove: MeshExtended[] = [];
+        this.__scene.children.forEach((mesh: MeshExtended) => {
+            if (mesh.meshType === "selected") {
                 mesh.geometry.dispose();
                 mesh.remove();
                 toRemove.push(mesh);
@@ -412,6 +426,41 @@ export class ViewController {
             return result;
         }
         return objs.filter(filter);
+    }
+
+    private __addSelected(add: boolean) {
+        if (!add) {
+            this.clearSelection();
+        }
+        const group = this.__selected.group;
+        const positionAtt = this.__selected.mesh.geometry.attributes.position;
+        const index = this.__selected.mesh.geometry.index.array;
+        const bg = new BufferGeometry();
+        const newIndex = (index as any).slice(group.start, group.start + group.count);
+        const positions: number[] = [];
+        for (let i = group.start; i < group.start + group.count; i++) {
+            const p = index[i] * 3;
+            positions.push(positionAtt.array[p]);
+            positions.push(positionAtt.array[p + 1]);
+            positions.push(positionAtt.array[p + 2]);
+        }
+
+        for (let i = 0; i < newIndex.length; i++) {
+            newIndex[i] = i;
+        }
+
+        bg.setAttribute("position", new BufferAttribute(new Float32Array(positions), 3, true));
+        bg.setIndex(new BufferAttribute(newIndex, 1));
+        const mesh = new Mesh(bg, new MeshBasicMaterial({ color: "blue" }));
+        (mesh as MeshExtended).meshType = "selected";
+        const box = new Box3().setFromObject(mesh);
+        const boxSize = box.getSize(new Vector3()).length();
+        const boxCenter = box.getCenter(new Vector3());
+        this.__lastSelectedCenter = boxCenter;
+        this.__lastSelectedBoxSize = boxSize;
+        mesh.geometry.computeVertexNormals();
+        this.__scene.add(mesh);
+        this.__selected.added = mesh;
     }
 
     private __addClickEvent() {
@@ -446,9 +495,10 @@ export class ViewController {
                                     mesh: result[0].object as Mesh,
                                     group: geometry.groups[i]
                                 };
+                                this.__addSelected(event.ctrlKey);
 
                                 data = propertyMap.get(userData[i].id);
-
+                                console.log(data);
                                 break;
                             }
                         }
