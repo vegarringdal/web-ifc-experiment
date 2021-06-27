@@ -431,21 +431,19 @@ export class ViewController {
 
                 raycaster.setFromCamera(mouse, this.__camera);
                 const intersectObjects = raycaster.intersectObjects(this.__meshes);
-
-                if (intersectObjects.length) {
-                    const geometry = (intersectObjects[0].object as Mesh).geometry;
+                const result = this.filterClippingPlanes(intersectObjects);
+                if (result.length) {
+                    const geometry = (result[0].object as Mesh).geometry;
                     const groups = geometry.groups;
                     const userData = geometry.userData.mergedUserData;
-                    const faceNo = intersectObjects[0].faceIndex * 3;
-
-                    const result = this.filterClippingPlanes(intersectObjects);
+                    const faceNo = result[0].faceIndex * 3;
 
                     if (geometry.index && result.length) {
                         for (let i = 0; i < groups.length; i++) {
                             const limit = groups[i].start + groups[i].count;
                             if (limit > faceNo) {
                                 this.__selected = {
-                                    mesh: intersectObjects[0].object as Mesh,
+                                    mesh: result[0].object as Mesh,
                                     group: geometry.groups[i]
                                 };
 
