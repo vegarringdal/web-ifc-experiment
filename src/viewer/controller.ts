@@ -79,6 +79,7 @@ export class ViewController {
     public __lastSelectedCenter: Vector3;
     private __meshes: Mesh[] = [];
     __selected: any;
+    private __translateCenter: Vector3;
 
     constructor(canvas: string | HTMLCanvasElement) {
         this.__listeners = new Set<listener>();
@@ -303,6 +304,14 @@ export class ViewController {
         this.__scene.add(this.__ambientLight);
     }
 
+    private __getCenter(object: any) {
+        if (!this.__translateCenter) {
+            const box = new Box3().setFromObject(object);
+            this.__translateCenter = box.getCenter(new Vector3());
+        }
+        return this.__translateCenter;
+    }
+
     private __addWindowResizer() {
         window.addEventListener("resize", () => {
             this.__camera.aspect = window.innerWidth / window.innerHeight;
@@ -326,22 +335,32 @@ export class ViewController {
         document.body.appendChild(this.__monitors.dom);
     }
 
-    public async readFile(file: File[]) {
+    public async readFile(
+        file: File[],
+        center = false,
+        callback?: (atFileNo: number, noOfFIles: number) => void
+    ) {
         for (let i = 0; i < file.length; i++) {
             try {
                 const meshesPerColor = await readAndParseIFC(file[i]);
 
                 meshesPerColor.forEach((geo) => {
+                    if (center) {
+                        geo.translateY(geo.position.y - this.__getCenter(geo).y);
+                        geo.translateX(geo.position.x - this.__getCenter(geo).x);
+                        geo.translateZ(geo.position.z - this.__getCenter(geo).z + 1); // need +1 to not break
+                    }
+
                     this.__meshes.push(geo);
                     this.__scene.add(geo);
+                    callback(i + 1, file.length);
                 });
-
-                if (meshesPerColor[0]) {
-                    this.fitModelToFrame(meshesPerColor[0]);
-                }
             } catch (err) {
                 console.log(err);
                 console.log("file:", file[i]);
+            }
+            if (this.__meshes[0]) {
+                this.fitModelToFrame(this.__meshes[0]);
             }
         }
     }
@@ -383,6 +402,7 @@ export class ViewController {
         propertyMap.clear();
         resetId();
         resetMeshId();
+        this.__translateCenter = null;
         const toRemove: MeshExtended[] = [];
         this.__scene.children.forEach((mesh: MeshExtended) => {
             if (mesh.meshType) {
@@ -459,6 +479,13 @@ export class ViewController {
         this.__lastSelectedCenter = boxCenter;
         this.__lastSelectedBoxSize = boxSize;
         mesh.geometry.computeVertexNormals();
+
+        if (this.__translateCenter) {
+            mesh.translateY(mesh.position.y - this.__getCenter(mesh).y);
+            mesh.translateX(mesh.position.x - this.__getCenter(mesh).x);
+            mesh.translateZ(mesh.position.z - this.__getCenter(mesh).z + 1);
+        }
+
         this.__scene.add(mesh);
         this.__selected.added = mesh;
     }

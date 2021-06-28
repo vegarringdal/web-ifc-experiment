@@ -8,6 +8,9 @@ export class AppRoot extends HTMLElement {
     data: any = null;
     buttonsHidden = true;
     showClipping: boolean;
+    isLoadingIfcFIle: boolean;
+    loadingIfcFilesTotal: number;
+    loadingFileCount: unknown;
 
     public connectedCallback() {
         this.render();
@@ -153,7 +156,21 @@ export class AppRoot extends HTMLElement {
                         class="hidden"
                         multiple
                         @change=${async (e: any) => {
-                            await this.viewController.readFile(e.target.files);
+                            this.isLoadingIfcFIle = true;
+                            this.loadingIfcFilesTotal = e.target.files.length;
+                            this.render();
+                            await this.viewController.readFile(
+                                e.target.files,
+                                true,
+                                (atFile: number, files: number) => {
+                                    this.loadingFileCount = atFile;
+                                    this.loadingIfcFilesTotal = files;
+                                    this.render();
+                                }
+                            );
+                            this.isLoadingIfcFIle = false;
+                            this.loadingFileCount = 0;
+                            this.loadingIfcFilesTotal = 0;
                             e.target.value = ""; // reset so we can load same file name again..
                         }}
                     />
@@ -228,6 +245,15 @@ export class AppRoot extends HTMLElement {
         }
     }
 
+    isLoading() {
+        if (this.isLoadingIfcFIle) {
+            return html`<div class="bg-indigo-800 bottom-0 left-0 absolute text-white m-2 p-2">
+                Loading file ${this.loadingFileCount} of ${this.loadingIfcFilesTotal} files
+            </div>`;
+        }
+        return "";
+    }
+
     // this is helper for app-root innerHtml
     public template() {
         return html`
@@ -237,7 +263,7 @@ export class AppRoot extends HTMLElement {
             <div class="bottom-0 right-0 absolute bg-indigo-800 text-white m-2 p-2 flex flex-col">
                 ${this.getIFCDataAsHtml(this.data)}
             </div>
-            ${this.showClippingTools()}
+            ${this.isLoading()} ${this.showClippingTools()}
         `;
     }
 }
