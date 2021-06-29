@@ -1,6 +1,6 @@
 import { Mesh } from "three";
 import * as WebIFC from "web-ifc/web-ifc-api";
-import { loadAllGeometry } from "./loadAllGeometry";
+import { loadAndMergeGeometry } from "./loadAndMergeGeometry";
 
 export function readAndParseIFC(file: File): Promise<Mesh[]> {
     return new Promise(async (resolve, reject) => {
@@ -15,7 +15,7 @@ export function readAndParseIFC(file: File): Promise<Mesh[]> {
                 const data = new Uint8Array(uIntArrayBuffer);
                 const modelID = ifcAPI.OpenModel(data);
                 try {
-                    const c = loadAllGeometry(modelID, ifcAPI);
+                    const c = loadAndMergeGeometry(modelID, ifcAPI);
                     ifcAPI.CloseModel(modelID); // dont know if this really do much,..
                     ifcAPI = null;
                     resolve(c);

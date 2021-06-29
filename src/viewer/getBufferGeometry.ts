@@ -1,5 +1,5 @@
 import * as WebIFC from "web-ifc/web-ifc-api";
-import { ifcGeometryToBuffer } from "./ifcGeometryToBuffer";
+import { ifcVertexDataToGeometryAttributes } from "./ifcVertexDataToGeometryAttributes";
 
 export function getBufferGeometry(
     modelID: number,
@@ -15,6 +15,6 @@ export function getBufferGeometry(
         geometry.GetIndexData(),
         geometry.GetIndexDataSize()
     );
-    const bufferGeometry = ifcGeometryToBuffer(verts, indices);
+    const bufferGeometry = ifcVertexDataToGeometryAttributes(verts, indices);
     return bufferGeometry;
 }

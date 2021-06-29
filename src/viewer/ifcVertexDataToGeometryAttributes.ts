@@ -7,7 +7,7 @@ BufferGeometry.prototype.computeBoundsTree = computeBoundsTree;
 //@ts-ignore
 BufferGeometry.prototype.disposeBoundsTree = disposeBoundsTree;
 
-export function ifcGeometryToBuffer(vertexData: number[], indexData: number[]) {
+export function ifcVertexDataToGeometryAttributes(vertexData: number[], indexData: number[]) {
     const geometry = new BufferGeometry();
     const positions = [];
     const normals = [];

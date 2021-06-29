@@ -2,7 +2,7 @@ import { BufferGeometry } from "three";
 import * as WebIFC from "web-ifc/web-ifc-api";
 import { getCurrentID, getId } from "./colorId";
 import { convertToThreeBufferGeometry } from "./convertToThreeBufferGeometry";
-import { getProperties } from "./getProperties";
+import { getPropertiesFromIfcLineWithExpressID } from "./getPropertiesFromIfcLineWithExpressID";
 import { propertyMap } from "./propertyMap";
 
 export function getAllGeometry(modelID: number, ifcAPI: WebIFC.IfcAPI) {
@@ -14,7 +14,7 @@ export function getAllGeometry(modelID: number, ifcAPI: WebIFC.IfcAPI) {
         const flatMesh = flatMeshes.get(i);
         const expressID = flatMesh.expressID;
         const flatMeshGeometries = flatMesh.geometries;
-        const properties = getProperties(modelID, ifcAPI, expressID);
+        const properties = getPropertiesFromIfcLineWithExpressID(modelID, ifcAPI, expressID);
 
         for (let j = 0; j < flatMeshGeometries.size(); j++) {
             const flatMeshGeometry = flatMeshGeometries.get(j);

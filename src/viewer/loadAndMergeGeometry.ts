@@ -11,7 +11,7 @@ import { acceleratedRaycast } from "three-mesh-bvh";
 //@ts-ignore
 Mesh.prototype.raycast = acceleratedRaycast;
 
-export function loadAllGeometry(modelID: number, ifcAPI: WebIFC.IfcAPI) {
+export function loadAndMergeGeometry(modelID: number, ifcAPI: WebIFC.IfcAPI) {
     const mergeMap = getAllGeometry(modelID, ifcAPI);
 
     const meshesPerColor: Mesh[] = [];
