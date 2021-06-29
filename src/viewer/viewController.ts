@@ -199,6 +199,14 @@ export class ViewController {
                 });
             }
 
+            // temp bug fix..
+            planes[0].negate();
+            planes[0].negate();
+            planes[1].negate();
+            planes[1].negate();
+            planes[2].negate();
+            planes[2].negate();
+
             planeStateOld = makeCopy(planeState.getValue());
         });
     }
