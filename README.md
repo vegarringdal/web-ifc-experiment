@@ -2,9 +2,11 @@
 
 This was a repo where I tried gpu picking, but it used to much memory on very large models, so moved away from it
 Parser used is [web-ifc](https://github.com/tomvandig/web-ifc)
+
 Work here might end up as seperate package or part of [web-ifc-viewer](https://github.com/agviegas/web-ifc-viewer)
 
 Warning, this will have a lot of weird stuff :-)
+
 Atm its not something you can install, most work will go into helper viewController class - located under folder scr/viewer
 
 Progress Sample [live sample](https://vegarringdal.github.io/web-ifc-experiment/)
@@ -17,6 +19,7 @@ What I want to have working (and might fail at getting to work):
 * [x] center items when loading (default atm) - uses first file as default for next ones
 * [x] show data of selected
 * [x] multi select by holding CTRL 
+  * [ ] deselect when clicking same item
 * [ ] show all (hidden)
 * [ ] hide not selected
 * [ ] use spacenavigator
@@ -29,6 +32,9 @@ What I want to have working (and might fail at getting to work):
   * [x] with working selection/picking to get data about item
 * [x] simple ground plane
 
+
+Issues:
+- little bit buggy when using clipping and selecting, temp fix: click invert 2 times after moving slider
 
 ## how to use
 
