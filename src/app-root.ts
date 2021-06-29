@@ -1,6 +1,6 @@
 import { clippingControlX, clippingControlY, clippingControlZ } from "clippingControl";
 import { html, render } from "lit-html";
-import { ViewController } from "viewer/controller";
+import { ViewController } from "viewer/viewController";
 import { isValidHttpUrl } from "viewer/isValidHttpUrl";
 
 export class AppRoot extends HTMLElement {
