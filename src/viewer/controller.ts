@@ -51,7 +51,8 @@ type selectionMapType = { id: number; meshID: number; group: number; color: Colo
 
 // create raycaster
 const raycaster = new Raycaster();
-(raycaster as any).firstHitOnly = true;
+
+// update prototype, so selected objects get accelerated raycast
 Mesh.prototype.raycast = acceleratedRaycast;
 
 export class ViewController {
