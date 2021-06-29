@@ -14,8 +14,7 @@ import {
     Raycaster,
     BufferGeometry,
     Intersection,
-    BufferAttribute,
-    MeshBasicMaterial
+    BufferAttribute
 } from "three";
 
 //@ts-ignore
@@ -43,6 +42,7 @@ import { resetMeshId } from "./getNewMeshId";
 import { resetId } from "./colorId";
 //@ts-ignore
 import { acceleratedRaycast } from "three-mesh-bvh";
+import { getMaterial } from "./material";
 
 export type { planeStateType } from "./planeState";
 
@@ -191,8 +191,10 @@ export class ViewController {
                 if (currentState.z_plane_enable) {
                     p.push(planes[2]);
                 }
-                this.__meshes.forEach((mesh) => {
-                    (mesh.material as any).clippingPlanes = p;
+                this.__scene.children.forEach((mesh: MeshExtended) => {
+                    if (mesh.meshType) {
+                        (mesh.material as any).clippingPlanes = p;
+                    }
                 });
             }
 
@@ -471,7 +473,8 @@ export class ViewController {
 
         bg.setAttribute("position", new BufferAttribute(new Float32Array(positions), 3, true));
         bg.setIndex(new BufferAttribute(newIndex, 1));
-        const mesh = new Mesh(bg, new MeshBasicMaterial({ color: "blue" }));
+        const mesh = new Mesh(bg, getMaterial(new Color("blue"), 1));
+        mesh.material.clippingPlanes = this.__selected.mesh.material.clippingPlanes;
         (mesh as MeshExtended).meshType = "selected";
         const box = new Box3().setFromObject(mesh);
         const boxSize = box.getSize(new Vector3()).length();

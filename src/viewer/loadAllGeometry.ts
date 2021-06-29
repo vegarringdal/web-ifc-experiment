@@ -6,6 +6,10 @@ import { getAllGeometry } from "./getAllGeometry";
 import { getMaterial } from "./material";
 import { propertyMap } from "./propertyMap";
 import { MeshExtended } from "./MeshExtended";
+//@ts-ignore
+import { acceleratedRaycast } from "three-mesh-bvh";
+//@ts-ignore
+Mesh.prototype.raycast = acceleratedRaycast;
 
 export function loadAllGeometry(modelID: number, ifcAPI: WebIFC.IfcAPI) {
     const mergeMap = getAllGeometry(modelID, ifcAPI);
