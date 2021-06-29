@@ -1,18 +1,20 @@
 # web-ifc-experiment
 
-This was a repo where I tried gpu picking, but used way more memory, so moved away from it
-Prser used is [web-ifc](https://github.com/tomvandig/web-ifc)
-Work here might end up as seperate packages or part of [web-ifc-viewer](https://github.com/agviegas/web-ifc-viewer)
+This was a repo where I tried gpu picking, but it used to much memory on very large models, so moved away from it
+Parser used is [web-ifc](https://github.com/tomvandig/web-ifc)
+Work here might end up as seperate package or part of [web-ifc-viewer](https://github.com/agviegas/web-ifc-viewer)
 
 Warning, this will have a lot of weird stuff :-)
-
-What I want to have working (and might fail at getting to work)
+Atm its not something you can install, most work will go into helper viewController class - located under folder scr/viewer
 
 Progress Sample [live sample](https://vegarringdal.github.io/web-ifc-experiment/)
 
+What I want to have working (and might fail at getting to work):
 * [x] select items/picking to get data about item
   * [x] and highlight (limited data atm, since I will use database to get data from TAG property)
 * [ ] hide items
+* [x] select many files and load them
+* [x] center items when loading (default atm) - uses first file as default for next ones
 * [x] show data of selected
 * [x] multi select by holding CTRL 
 * [ ] show all (hidden)
