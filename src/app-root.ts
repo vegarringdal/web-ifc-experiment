@@ -254,7 +254,7 @@ export class AppRoot extends HTMLElement {
     isLoading() {
         if (this.isLoadingIfcFIle) {
             return html`<div class="bg-indigo-800 bottom-0 left-0 absolute text-white m-2 p-2">
-                Loading file ${this.loadingFileCount} of ${this.loadingIfcFilesTotal} files
+                Loaded ${this.loadingFileCount} of ${this.loadingIfcFilesTotal} files
             </div>`;
         }
         return "";
