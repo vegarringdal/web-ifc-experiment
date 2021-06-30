@@ -449,10 +449,18 @@ export class ViewController {
             // todo, look more into, how will this work really
             // I need to enable coloring first on selected before working more on this
             let result = false;
+            let count = 0;
             clippingPlanes.forEach((clippingPlane: any) => {
                 const distance = parseFloat(clippingPlane.distanceToPoint(elem.point));
-                result = distance > 0;
+                if (!result) {
+                    if (distance > 0) {
+                        count++;
+                    }
+                }
             });
+            if (count === clippingPlanes.length) {
+                result = true;
+            }
 
             return result;
         }
