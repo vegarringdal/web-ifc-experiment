@@ -1,4 +1,4 @@
-export function isValidHttpUrl(string: string) {
+export function isValidUrl(string: string) {
     if (typeof string !== "string") {
         return false;
     }

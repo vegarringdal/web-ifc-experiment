@@ -1,7 +1,7 @@
 import { clippingControlX, clippingControlY, clippingControlZ } from "clippingControl";
 import { html, render } from "lit-html";
 import { ViewController } from "viewer/viewController";
-import { isValidHttpUrl } from "viewer/isValidHttpUrl";
+import { isValidUrl } from "viewer/isValidUrl";
 
 declare const VERSION: string;
 export class AppRoot extends HTMLElement {
@@ -92,7 +92,7 @@ export class AppRoot extends HTMLElement {
                             <span class="font-semibold">IfcPropertySets:</span
                             ><span>${values[i].length}</span>
                         </div>`;
-                    } else if (isValidHttpUrl(values[i]) === true) {
+                    } else if (isValidUrl(values[i]) === true) {
                         return html`<div>
                             <span class="font-semibold">${key}:</span><a href=${values[i]}>Link</a>
                         </div>`;
