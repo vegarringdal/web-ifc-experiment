@@ -1,12 +1,23 @@
 # Changelog
 
----
+All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-Previous is from GPU picking branch (old main branch), left this experiment
+### [0.0.2-next.35](https://github.com/simple-html/simple-html/compare/v0.0.2-next.32...v0.0.2-next.35) (2021-06-30)
 
-All notable changes to this project will be documented in this file. See
-[standard-version](https://github.com/conventional-changelog/standard-version) for commit
-guidelines.
+
+### Features
+
+* center model so clipping just works, and show loading progress(just file count) ([e8abb2e](https://github.com/simple-html/simple-html/commits/e8abb2e9fdd809d188ee1a6c25a27c3ce41e06ce))
+* show version in gui, so we dont need to open console ([9491699](https://github.com/simple-html/simple-html/commits/9491699a8e685da9060694cd41abf6a66dd60457))
+* simple select (needs more work) ([385e8fc](https://github.com/simple-html/simple-html/commits/385e8fca0b9ecbb455cac740935334e7c4fecf24))
+
+
+### Bug Fixes
+
+* clipping planes ([ce73e26](https://github.com/simple-html/simple-html/commits/ce73e2617a30ad81dd35e73fb7bef2f50fa54b0e))
+* remove firstHitOnly on raycaster ([ca0acbb](https://github.com/simple-html/simple-html/commits/ca0acbb1ae096da31242ae70bf4c344faacc6c18))
+* selected to follow clipping plane rules ([eada0e8](https://github.com/simple-html/simple-html/commits/eada0e88a1a6127199805ecbdf2579e0db4989d4))
+* temp fix for plane clipping bug ([1877ada](https://github.com/simple-html/simple-html/commits/1877adab5231bfcee9c51929bdc2251df1bf3a4f))
 
 ### [0.0.2-next.32](https://github.com/simple-html/simple-html/compare/v0.0.2-next.31...v0.0.2-next.32) (2021-06-18)
 
