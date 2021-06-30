@@ -458,6 +458,7 @@ export class ViewController {
                     }
                 }
             });
+            // all clipping planes need to be OK for element to pass
             if (count === clippingPlanes.length) {
                 result = true;
             }

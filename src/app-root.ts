@@ -3,6 +3,7 @@ import { html, render } from "lit-html";
 import { ViewController } from "viewer/viewController";
 import { isValidHttpUrl } from "viewer/isValidHttpUrl";
 
+declare const VERSION: string;
 export class AppRoot extends HTMLElement {
     viewController: ViewController;
     data: any = null;
@@ -111,6 +112,11 @@ export class AppRoot extends HTMLElement {
         if (this.buttonsHidden) {
             return html`
                 <div class="flex flex-col" style="max-width:150px">
+                    <div
+                        class="inline-block p-2 m-2 bg-indigo-800 text-white z-10 relative text-center"
+                    >
+                        V:${VERSION}
+                    </div>
                     <button
                         class="inline-block p-2 m-2 bg-indigo-800 text-white z-10 relative"
                         @click=${() => {
@@ -263,6 +269,7 @@ export class AppRoot extends HTMLElement {
             <div class="bottom-0 right-0 absolute bg-indigo-800 text-white m-2 p-2 flex flex-col">
                 ${this.getIFCDataAsHtml(this.data)}
             </div>
+
             ${this.isLoading()} ${this.showClippingTools()}
         `;
     }
