@@ -14,7 +14,7 @@ Progress Sample [live sample](https://vegarringdal.github.io/web-ifc-experiment/
 What I want to have working (and might fail at getting to work):
 * [x] select items/picking to get data about item
   * [x] and highlight (limited data atm, since I will use database to get data from TAG property)
-  * [ ] select all elements with same ID  (beore this just parts get highlighted)
+  * [x] select all elements with same ID  (before this, just simple parts get highlighted)
 * [ ] hide items
 * [x] select many files and load them
 * [x] center items when loading (default atm) - uses first file as default for next ones
