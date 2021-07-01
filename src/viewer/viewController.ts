@@ -43,6 +43,7 @@ import { resetId } from "./colorId";
 //@ts-ignore
 import { acceleratedRaycast } from "three-mesh-bvh";
 import { getMaterial } from "./material";
+import { collectionMap } from "./collectionMap";
 
 export type { planeStateType } from "./planeState";
 
@@ -79,7 +80,6 @@ export class ViewController {
     public __hiddenElements = new Map<number, selectionMapType>();
     public __lastSelectedCenter: Vector3;
     private __meshes: Mesh[] = [];
-    __selected: any;
     private __translateCenter: Vector3;
 
     constructor(canvas: string | HTMLCanvasElement) {
@@ -468,13 +468,9 @@ export class ViewController {
         return objs.filter(filter);
     }
 
-    private __addSelected(add: boolean) {
-        if (!add) {
-            this.clearSelection();
-        }
-        const group = this.__selected.group;
-        const positionAtt = this.__selected.mesh.geometry.attributes.position;
-        const index = this.__selected.mesh.geometry.index.array;
+    private __addSelected(generateFromMesh: any, group: any) {
+        const positionAtt = generateFromMesh.geometry.attributes.position;
+        const index = generateFromMesh.geometry.index.array;
         const bg = new BufferGeometry();
         const newIndex = (index as any).slice(group.start, group.start + group.count);
         const positions: number[] = [];
@@ -491,15 +487,18 @@ export class ViewController {
 
         bg.setAttribute("position", new BufferAttribute(new Float32Array(positions), 3, true));
         bg.setIndex(new BufferAttribute(newIndex, 1));
+
         const mesh = new Mesh(bg, getMaterial(new Color("blue"), 1));
-        mesh.material.clippingPlanes = this.__selected.mesh.material.clippingPlanes;
+        mesh.material.clippingPlanes = generateFromMesh.material.clippingPlanes;
+        mesh.geometry.computeVertexNormals();
         (mesh as MeshExtended).meshType = "selected";
+
         const box = new Box3().setFromObject(mesh);
         const boxSize = box.getSize(new Vector3()).length();
         const boxCenter = box.getCenter(new Vector3());
+
         this.__lastSelectedCenter = boxCenter;
         this.__lastSelectedBoxSize = boxSize;
-        mesh.geometry.computeVertexNormals();
 
         if (this.__translateCenter) {
             mesh.translateY(mesh.position.y - this.__getCenter(mesh).y);
@@ -508,7 +507,6 @@ export class ViewController {
         }
 
         this.__scene.add(mesh);
-        this.__selected.added = mesh;
     }
 
     private __addClickEvent() {
@@ -521,12 +519,12 @@ export class ViewController {
 
             this.__threeCanvas.onpointerup = () => {
                 const mouse = new Vector2();
-                this.__selected = null;
                 let data: any = {};
                 mouse.x = (event.clientX / this.__renderer.domElement.clientWidth) * 2 - 1;
                 mouse.y = -(event.clientY / this.__renderer.domElement.clientHeight) * 2 + 1;
 
                 raycaster.setFromCamera(mouse, this.__camera);
+
                 const intersectObjects = raycaster.intersectObjects(this.__meshes);
                 const result = this.filterClippingPlanes(intersectObjects);
                 if (result.length) {
@@ -539,14 +537,50 @@ export class ViewController {
                         for (let i = 0; i < groups.length; i++) {
                             const limit = groups[i].start + groups[i].count;
                             if (limit > faceNo) {
-                                this.__selected = {
-                                    mesh: result[0].object as Mesh,
-                                    group: geometry.groups[i]
-                                };
-                                this.__addSelected(event.ctrlKey);
 
+                                if (!event.ctrlKey) {
+                                    this.clearSelection();
+                                }
+
+                                // data we send back in event
                                 data = propertyMap.get(userData[i].id);
-                                console.log(data);
+
+                                // next part is to get all elements and highligh them
+                                const collectionID = data.collectionID;
+                                const collection = collectionMap.get(collectionID);
+                                for (let y = 0; y < collection.length; y = y + 2) {
+                                    const id = collection[y];
+                                    const groupIndex = collection[y + 1];
+                                    const ref = propertyMap.get(id);
+
+                                    const colorID = `${ref.color.x}.${ref.color.y}.${ref.color.z}.${ref.color.w}`;
+
+                                    // loop all meshes and find the one with the same color id
+                                    this.__meshes.forEach((currentMesh) => {
+                                        const currentMeshColorID = `${
+                                            (currentMesh.material as any).color.r
+                                        }.${(currentMesh.material as any).color.g}.${
+                                            (currentMesh.material as any).color.b
+                                        }.${(currentMesh.material as any).opacity}`;
+
+                                        if (colorID === currentMeshColorID) {
+                                            // if mesh is OK, then get the correct group
+                                            const currentMeshGroup =
+                                                currentMesh.geometry.userData.mergedUserData[
+                                                    groupIndex
+                                                ];
+
+                                            if (currentMeshGroup.id === id) {
+                                                // if ID is okmm then geenrate mesh and add it to the scene
+                                                this.__addSelected(
+                                                    currentMesh,
+                                                    currentMesh.geometry.groups[groupIndex]
+                                                );
+                                            }
+                                        }
+                                    });
+                                }
+
                                 break;
                             }
                         }

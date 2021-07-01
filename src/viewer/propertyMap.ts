@@ -1,5 +1,8 @@
+import { Vector4 } from "three";
+
 export type propertyMapType = {
-    color: { x: number; y: number; z: number; w: number };
     properties: any;
+    color: Vector4;
+    collectionID: number;
 };
 export const propertyMap = new Map<number, propertyMapType>();
