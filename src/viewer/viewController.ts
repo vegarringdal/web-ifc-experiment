@@ -40,20 +40,14 @@ import { PlaneHelperX, planes } from "./planeHelperX";
 import { planeState, planeStateType } from "./planeState";
 import { resetMeshId } from "./getNewMeshId";
 import { resetId } from "./colorId";
-//@ts-ignore
-import { acceleratedRaycast } from "three-mesh-bvh";
 import { getMaterial } from "./material";
 import { collectionMap } from "./collectionMap";
 
 export type { planeStateType } from "./planeState";
-
 type listener = { handleEvent: (e: any) => void };
-type selectionMapType = { id: number; meshID: number; group: number; color: Color };
 
 // create raycaster
 const raycaster = new Raycaster();
-
-// update prototype, so selected objects get accelerated raycast
 Mesh.prototype.raycast = acceleratedRaycast;
 
 export class ViewController {
@@ -67,20 +61,14 @@ export class ViewController {
     private __monitors: Stats;
     private __threeCanvas: HTMLCanvasElement;
     private __listeners: Set<listener>;
-
     private __spaceNavigatorEnabled: boolean;
     private __spaceNavigator: SpaceNavigator;
     private __planeHelpers: PlaneHelperX[] = [];
     private __gridHelper: GridHelper;
-
-    // todo: make private
-    public __lastSelectedBoxSize: number;
-    public __selectionColor = new Color("red");
-    public __selectedElements = new Map<number, selectionMapType>();
-    public __hiddenElements = new Map<number, selectionMapType>();
-    public __lastSelectedCenter: Vector3;
     private __meshes: Mesh[] = [];
     private __translateCenter: Vector3;
+    __lastSelectedCenter: Vector3;
+    __lastSelectedBoxSize: number;
 
     constructor(canvas: string | HTMLCanvasElement) {
         this.__listeners = new Set<listener>();
@@ -98,11 +86,7 @@ export class ViewController {
         this.__animationLoop();
     }
 
-    private __addPlane(divisions = 50) {
-        this.__gridHelper = new GridHelper(100, divisions);
-        this.__scene.add(this.__gridHelper);
-        this.__gridHelper.visible = false;
-    }
+    // PUBLIC -------------------
 
     public enablePlane() {
         this.__gridHelper.visible = true;
@@ -114,6 +98,91 @@ export class ViewController {
 
     public togglePlane() {
         this.__gridHelper.visible = this.__gridHelper.visible ? false : true;
+    }
+
+    public getClippingState() {
+        return planeState;
+    }
+
+    public enableSpaceNavigator() {
+        // TODO: I should move postition from orbit controls over to this
+        this.__spaceNavigatorEnabled = true;
+    }
+
+    public disableSpaceNavigator() {
+        this.__spaceNavigatorEnabled = false;
+    }
+
+    public addEventListener(context: listener) {
+        this.__listeners.add(context);
+    }
+
+    public removeEventListener(context: listener) {
+        this.__listeners.delete(context);
+    }
+
+    public clearScene() {
+        propertyMap.clear();
+        resetId();
+        resetMeshId();
+        this.__translateCenter = null;
+        const toRemove: MeshExtended[] = [];
+        this.__scene.children.forEach((mesh: MeshExtended) => {
+            if (mesh.meshType) {
+                mesh.geometry.dispose();
+                mesh.remove();
+                toRemove.push(mesh);
+            }
+        });
+        toRemove.map((m) => this.__scene.remove(m));
+    }
+
+    public clearSelection() {
+        const toRemove: MeshExtended[] = [];
+        this.__scene.children.forEach((mesh: MeshExtended) => {
+            if (mesh.meshType === "selected") {
+                mesh.geometry.dispose();
+                mesh.remove();
+                toRemove.push(mesh);
+            }
+        });
+        toRemove.map((m) => this.__scene.remove(m));
+    }
+
+    public async readFile(
+        file: File[],
+        center = false,
+        callback?: (atFileNo: number, noOfFIles: number) => void
+    ) {
+        for (let i = 0; i < file.length; i++) {
+            try {
+                const meshesPerColor = await readAndParseIFC(file[i]);
+
+                meshesPerColor.forEach((geo) => {
+                    if (center) {
+                        geo.translateY(geo.position.y - this.__getCenter(geo).y);
+                        geo.translateX(geo.position.x - this.__getCenter(geo).x);
+                        geo.translateZ(geo.position.z - this.__getCenter(geo).z + 1); // need +1 to not break
+                    }
+
+                    this.__meshes.push(geo);
+                    this.__scene.add(geo);
+                    callback(i + 1, file.length);
+                });
+            } catch (err) {
+                console.log(err);
+                console.log("file:", file[i]);
+            }
+            if (this.__meshes[0]) {
+                this.__fitModelToFrame(this.__meshes[0]);
+            }
+        }
+    }
+
+    private __addPlane(divisions = 50) {
+        this.__gridHelper = new GridHelper(100, divisions);
+        this.__scene.add(this.__gridHelper);
+        this.__gridHelper.visible = false;
     }
 
     private __addClipping() {
@@ -211,10 +280,6 @@ export class ViewController {
         });
     }
 
-    public getClippingState() {
-        return planeState;
-    }
-
     private __animationLoop() {
         if (this.__monitors) {
             this.__monitors.begin();
@@ -233,15 +298,6 @@ export class ViewController {
         }
 
         requestAnimationFrame(() => this.__animationLoop());
-    }
-
-    public enableSpaceNavigator() {
-        // TODO: I should move postition from orbit controls over to this
-        this.__spaceNavigatorEnabled = true;
-    }
-
-    public disableSpaceNavigator() {
-        this.__spaceNavigatorEnabled = false;
     }
 
     private __AddSpaceNavigator() {
@@ -346,36 +402,6 @@ export class ViewController {
         document.body.appendChild(this.__monitors.dom);
     }
 
-    public async readFile(
-        file: File[],
-        center = false,
-        callback?: (atFileNo: number, noOfFIles: number) => void
-    ) {
-        for (let i = 0; i < file.length; i++) {
-            try {
-                const meshesPerColor = await readAndParseIFC(file[i]);
-
-                meshesPerColor.forEach((geo) => {
-                    if (center) {
-                        geo.translateY(geo.position.y - this.__getCenter(geo).y);
-                        geo.translateX(geo.position.x - this.__getCenter(geo).x);
-                        geo.translateZ(geo.position.z - this.__getCenter(geo).z + 1); // need +1 to not break
-                    }
-
-                    this.__meshes.push(geo);
-                    this.__scene.add(geo);
-                    callback(i + 1, file.length);
-                });
-            } catch (err) {
-                console.log(err);
-                console.log("file:", file[i]);
-            }
-            if (this.__meshes[0]) {
-                this.__fitModelToFrame(this.__meshes[0]);
-            }
-        }
-    }
-
     private __fitModelToFrame(object: Mesh) {
         const box = new Box3().setFromObject(object);
         const boxSize = box.getSize(new Vector3()).length();
@@ -399,42 +425,6 @@ export class ViewController {
 
         this.__controls.target.copy(boxCenter);
         this.__controls.update();
-    }
-
-    public addEventListener(context: listener) {
-        this.__listeners.add(context);
-    }
-
-    public removeEventListener(context: listener) {
-        this.__listeners.delete(context);
-    }
-
-    public clearScene() {
-        propertyMap.clear();
-        resetId();
-        resetMeshId();
-        this.__translateCenter = null;
-        const toRemove: MeshExtended[] = [];
-        this.__scene.children.forEach((mesh: MeshExtended) => {
-            if (mesh.meshType) {
-                mesh.geometry.dispose();
-                mesh.remove();
-                toRemove.push(mesh);
-            }
-        });
-        toRemove.map((m) => this.__scene.remove(m));
-    }
-
-    public clearSelection() {
-        const toRemove: MeshExtended[] = [];
-        this.__scene.children.forEach((mesh: MeshExtended) => {
-            if (mesh.meshType === "selected") {
-                mesh.geometry.dispose();
-                mesh.remove();
-                toRemove.push(mesh);
-            }
-        });
-        toRemove.map((m) => this.__scene.remove(m));
     }
 
     private filterClippingPlanes(objs: Intersection[]) {
