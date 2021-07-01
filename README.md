@@ -23,10 +23,10 @@ What I want to have working (and might fail at getting to work):
   * [ ] deselect when clicking same item
 * [ ] show all (hidden)
 * [ ] hide not selected
-* [ ] use spacenavigator
+* [x] use spacenavigator
 * [x] set focus to last selected with button
   * [ ] set focus on selected when you click on a item 
-* [ ] clear scene (so you can load new, else it will add)
+* [x] clear scene (so you can load new, else it will add)
 * [ ] enable wireframe on material
 * [ ] some selection three
 * [x] simple clipping tools
