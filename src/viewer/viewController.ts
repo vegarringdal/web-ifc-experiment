@@ -559,7 +559,7 @@ export class ViewController {
                                                     groupIndex
                                                 ];
 
-                                            if (currentMeshGroup.id === id) {
+                                            if (currentMeshGroup && currentMeshGroup.id === id) {
                                                 // if ID is okmm then geenrate mesh and add it to the scene
                                                 this.__addSelected(
                                                     currentMesh,
