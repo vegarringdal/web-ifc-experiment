@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.2-next.38](https://github.com/simple-html/simple-html/compare/v0.0.2-next.36...v0.0.2-next.38) (2021-07-01)
+
+
+### Features
+
+* highligh all geometry with same expressid ([1673143](https://github.com/simple-html/simple-html/commits/16731434f7791ae023e6e9e1c290361beeeaf3f5))
+
+
+### Bug Fixes
+
+* selection when loaded many files ([3bafc29](https://github.com/simple-html/simple-html/commits/3bafc299bedc8b9582131ebcd1760a0a4fca105c))
+
 ### [0.0.2-next.37](https://github.com/simple-html/simple-html/compare/v0.0.2-next.35...v0.0.2-next.36) (2021-06-30)
 
 - custom wasm file -> https://github.com/tomvandig/web-ifc/pull/57
