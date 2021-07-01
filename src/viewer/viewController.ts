@@ -67,7 +67,7 @@ export class ViewController {
     private __gridHelper: GridHelper;
     private __meshes: Mesh[] = [];
     private __translateCenter: Vector3;
-    __lastSelectedCenter: Vector3;
+    private __lastSelectedCenter: Vector3;
     __lastSelectedBoxSize: number;
 
     constructor(canvas: string | HTMLCanvasElement) {
@@ -147,6 +147,13 @@ export class ViewController {
             }
         });
         toRemove.map((m) => this.__scene.remove(m));
+    }
+
+    public setOrbitFocusPointToSelected() {
+        if (this.__lastSelectedCenter) {
+            this.__controls.target.copy(this.__lastSelectedCenter);
+            this.__controls.update();
+        }
     }
 
     public async readFile(
@@ -483,18 +490,18 @@ export class ViewController {
         mesh.geometry.computeVertexNormals();
         (mesh as MeshExtended).meshType = "selected";
 
+        if (this.__translateCenter) {
+            mesh.translateY(mesh.position.y - this.__getCenter(mesh).y);
+            mesh.translateX(mesh.position.x - this.__getCenter(mesh).x);
+            mesh.translateZ(mesh.position.z - this.__getCenter(mesh).z + 1);
+        }
+
         const box = new Box3().setFromObject(mesh);
         const boxSize = box.getSize(new Vector3()).length();
         const boxCenter = box.getCenter(new Vector3());
 
         this.__lastSelectedCenter = boxCenter;
         this.__lastSelectedBoxSize = boxSize;
-
-        if (this.__translateCenter) {
-            mesh.translateY(mesh.position.y - this.__getCenter(mesh).y);
-            mesh.translateX(mesh.position.x - this.__getCenter(mesh).x);
-            mesh.translateZ(mesh.position.z - this.__getCenter(mesh).z + 1);
-        }
 
         this.__scene.add(mesh);
     }

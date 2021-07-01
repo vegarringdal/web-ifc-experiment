@@ -24,7 +24,7 @@ What I want to have working (and might fail at getting to work):
 * [ ] show all (hidden)
 * [ ] hide not selected
 * [ ] use spacenavigator
-* [ ] set focus to selected with button
+* [x] set focus to last selected with button
   * [ ] set focus on selected when you click on a item 
 * [ ] clear scene (so you can load new, else it will add)
 * [ ] enable wireframe on material
