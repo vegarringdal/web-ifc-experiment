@@ -95,7 +95,7 @@ export class ViewController {
         this.__addClickEvent();
         this.__addClipping();
         this.__addPlane();
-        this.animationLoop();
+        this.__animationLoop();
     }
 
     private __addPlane(divisions = 50) {
@@ -215,7 +215,7 @@ export class ViewController {
         return planeState;
     }
 
-    private animationLoop() {
+    private __animationLoop() {
         if (this.__monitors) {
             this.__monitors.begin();
         }
@@ -232,7 +232,7 @@ export class ViewController {
             this.__monitors.end();
         }
 
-        requestAnimationFrame(() => this.animationLoop());
+        requestAnimationFrame(() => this.__animationLoop());
     }
 
     public enableSpaceNavigator() {
@@ -371,12 +371,12 @@ export class ViewController {
                 console.log("file:", file[i]);
             }
             if (this.__meshes[0]) {
-                this.fitModelToFrame(this.__meshes[0]);
+                this.__fitModelToFrame(this.__meshes[0]);
             }
         }
     }
 
-    public fitModelToFrame(object: Mesh) {
+    private __fitModelToFrame(object: Mesh) {
         const box = new Box3().setFromObject(object);
         const boxSize = box.getSize(new Vector3()).length();
         const boxCenter = box.getCenter(new Vector3());
@@ -537,7 +537,6 @@ export class ViewController {
                         for (let i = 0; i < groups.length; i++) {
                             const limit = groups[i].start + groups[i].count;
                             if (limit > faceNo) {
-
                                 if (!event.ctrlKey) {
                                     this.clearSelection();
                                 }
