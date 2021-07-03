@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.2-next.39](https://github.com/simple-html/simple-html/compare/v0.0.2-next.38...v0.0.2-next.39) (2021-07-03)
+
+
+### Features
+
+* set focus point for orbit control to last selected ([5a2c6e2](https://github.com/simple-html/simple-html/commits/5a2c6e2a65c4411a783e38ecaa3fb6f0f1780fd0))
+
 ### [0.0.2-next.38](https://github.com/simple-html/simple-html/compare/v0.0.2-next.36...v0.0.2-next.38) (2021-07-01)
 
 
