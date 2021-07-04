@@ -68,6 +68,7 @@ export class ViewController {
     private __meshes: Mesh[] = [];
     private __translateCenter: Vector3;
     private __lastSelectedCenter: Vector3;
+    private __selected = new Set<number>();
     __lastSelectedBoxSize: number;
 
     constructor(canvas: string | HTMLCanvasElement) {
@@ -138,9 +139,23 @@ export class ViewController {
     }
 
     public clearSelection() {
+        this.__selected = new Set<number>();
         const toRemove: MeshExtended[] = [];
         this.__scene.children.forEach((mesh: MeshExtended) => {
             if (mesh.meshType === "selected") {
+                mesh.geometry.dispose();
+                mesh.remove();
+                toRemove.push(mesh);
+            }
+        });
+        toRemove.map((m) => this.__scene.remove(m));
+    }
+
+    public clearSelectionOnID(id: number) {
+        this.__selected.delete(id);
+        const toRemove: MeshExtended[] = [];
+        this.__scene.children.forEach((mesh: MeshExtended) => {
+            if (mesh.meshType === "selected" && mesh.meshID === id) {
                 mesh.geometry.dispose();
                 mesh.remove();
                 toRemove.push(mesh);
@@ -465,7 +480,8 @@ export class ViewController {
         return objs.filter(filter);
     }
 
-    private __addSelected(generateFromMesh: any, group: any) {
+    private __addSelected(id: number, generateFromMesh: any, group: any) {
+        this.__selected.add(id);
         const positionAtt = generateFromMesh.geometry.attributes.position;
         const index = generateFromMesh.geometry.index.array;
         const bg = new BufferGeometry();
@@ -489,6 +505,7 @@ export class ViewController {
         mesh.material.clippingPlanes = generateFromMesh.material.clippingPlanes;
         mesh.geometry.computeVertexNormals();
         (mesh as MeshExtended).meshType = "selected";
+        (mesh as MeshExtended).meshID = id;
 
         if (this.__translateCenter) {
             mesh.translateY(mesh.position.y - this.__getCenter(mesh).y);
@@ -544,6 +561,14 @@ export class ViewController {
                                 // next part is to get all elements and highligh them
                                 const collectionID = data.collectionID;
                                 const collection = collectionMap.get(collectionID);
+
+                                if (this.__selected.has(userData[i].id)) {
+                                    for (let y = 0; y < collection.length; y = y + 2) {
+                                        const id = collection[y];
+                                        this.clearSelectionOnID(id);
+                                    }
+                                    return;
+                                }
                                 for (let y = 0; y < collection.length; y = y + 2) {
                                     const id = collection[y];
                                     const groupIndex = collection[y + 1];
@@ -569,6 +594,7 @@ export class ViewController {
                                             if (currentMeshGroup && currentMeshGroup.id === id) {
                                                 // if ID is okmm then geenrate mesh and add it to the scene
                                                 this.__addSelected(
+                                                    id,
                                                     currentMesh,
                                                     currentMesh.geometry.groups[groupIndex]
                                                 );

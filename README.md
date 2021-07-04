@@ -20,7 +20,7 @@ What I want to have working (and might fail at getting to work):
 * [x] center items when loading (default atm) - uses first file as default for next ones
 * [x] show data of selected
 * [x] multi select by holding CTRL 
-  * [ ] deselect when clicking same item
+  * [x] deselect when clicking same item (when using CTRL key)
 * [ ] show all (hidden)
 * [ ] hide not selected
 * [x] use spacenavigator
