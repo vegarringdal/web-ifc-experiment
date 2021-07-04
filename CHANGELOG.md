@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.2-next.40](https://github.com/simple-html/simple-html/compare/v0.0.2-next.39...v0.0.2-next.40) (2021-07-04)
+
+
+### Features
+
+* deselect item if selected before (is using control key) ([aa85e47](https://github.com/simple-html/simple-html/commits/aa85e47edba968112c267d1452b2b547373780ca))
+
 ### [0.0.2-next.39](https://github.com/simple-html/simple-html/compare/v0.0.2-next.38...v0.0.2-next.39) (2021-07-03)
 
 
