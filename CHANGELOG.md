@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.2-next.41](https://github.com/simple-html/simple-html/compare/v0.0.2-next.40...v0.0.2-next.41) (2021-07-05)
+
+
+### Features
+
+* hide not selected ([99df515](https://github.com/simple-html/simple-html/commits/99df51582906557ed125c5c9f3829c0f7b9ffdd3))
+
 ### [0.0.2-next.40](https://github.com/simple-html/simple-html/compare/v0.0.2-next.39...v0.0.2-next.40) (2021-07-04)
 
 
