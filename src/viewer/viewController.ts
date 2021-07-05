@@ -69,6 +69,7 @@ export class ViewController {
     private __translateCenter: Vector3;
     private __lastSelectedCenter: Vector3;
     private __selected = new Set<number>();
+    private __selectionColor = "blue";
     __lastSelectedBoxSize: number;
 
     constructor(canvas: string | HTMLCanvasElement) {
@@ -135,6 +136,12 @@ export class ViewController {
                 toRemove.push(mesh);
             }
         });
+        toRemove.map((m) => {
+            const index = this.__meshes.indexOf(m);
+            if (index !== -1) {
+                this.__meshes.splice(index, 1);
+            }
+        });
         toRemove.map((m) => this.__scene.remove(m));
     }
 
@@ -148,7 +155,34 @@ export class ViewController {
                 toRemove.push(mesh);
             }
         });
-        toRemove.map((m) => this.__scene.remove(m));
+        this.__remove(toRemove);
+    }
+
+    public hideNotSelected() {
+        this.__scene.children.forEach((mesh: MeshExtended) => {
+            if (mesh.meshType && mesh.meshType !== "selected") {
+                mesh.visible = false;
+            }
+            if (mesh.meshType && mesh.meshType === "selected") {
+                mesh.meshType = "new-visible-model";
+                mesh.material.color = mesh.meshColor;
+                this.__selected.delete(mesh.meshID);
+            }
+        });
+    }
+
+    public showAll() {
+        const toRemove: MeshExtended[] = [];
+        this.__scene.children.forEach((mesh: MeshExtended) => {
+            if (mesh.meshType && mesh.meshType !== "selected") {
+                mesh.visible = true;
+            }
+            if (mesh.meshType && mesh.meshType === "new-visible-model") {
+                toRemove.push(mesh);
+            }
+        });
+
+        this.__remove(toRemove);
     }
 
     public clearSelectionOnID(id: number) {
@@ -161,7 +195,7 @@ export class ViewController {
                 toRemove.push(mesh);
             }
         });
-        toRemove.map((m) => this.__scene.remove(m));
+        this.__remove(toRemove);
     }
 
     public setOrbitFocusPointToSelected() {
@@ -205,6 +239,16 @@ export class ViewController {
         this.__gridHelper = new GridHelper(100, divisions);
         this.__scene.add(this.__gridHelper);
         this.__gridHelper.visible = false;
+    }
+
+    private __remove(toRemove: MeshExtended[]) {
+        toRemove.map((m) => {
+            const index = this.__meshes.indexOf(m);
+            if (index !== -1) {
+                this.__meshes.splice(index, 1);
+            }
+        });
+        toRemove.map((m) => this.__scene.remove(m));
     }
 
     private __addClipping() {
@@ -451,7 +495,13 @@ export class ViewController {
 
     private filterClippingPlanes(objs: Intersection[]) {
         function filter(elem: any) {
+            const visible = elem.object.visible;
             const clippingPlanes = elem.object.material.clippingPlanes;
+
+            // if not visiable, then skip it
+            if (!visible) {
+                return false;
+            }
             // if no clippingplane, then its nothing to test
             if (!clippingPlanes) {
                 return true;
@@ -480,7 +530,13 @@ export class ViewController {
         return objs.filter(filter);
     }
 
-    private __addSelected(id: number, generateFromMesh: any, group: any) {
+    private __addSelected(
+        id: number,
+        generateFromMesh: any,
+        group: any,
+        color: Color,
+        opacity: number
+    ) {
         this.__selected.add(id);
         const positionAtt = generateFromMesh.geometry.attributes.position;
         const index = generateFromMesh.geometry.index.array;
@@ -501,11 +557,16 @@ export class ViewController {
         bg.setAttribute("position", new BufferAttribute(new Float32Array(positions), 3, true));
         bg.setIndex(new BufferAttribute(newIndex, 1));
 
-        const mesh = new Mesh(bg, getMaterial(new Color("blue"), 1));
+        const mesh = new Mesh(bg, getMaterial(new Color(this.__selectionColor), opacity));
         mesh.material.clippingPlanes = generateFromMesh.material.clippingPlanes;
         mesh.geometry.computeVertexNormals();
+        //@ts-ignore
+        mesh.geometry.computeBoundsTree();
+        mesh.geometry.groups = [group];
+        mesh.geometry.userData = { mergedUserData: [{ id }] };
         (mesh as MeshExtended).meshType = "selected";
         (mesh as MeshExtended).meshID = id;
+        (mesh as MeshExtended).meshColor = color;
 
         if (this.__translateCenter) {
             mesh.translateY(mesh.position.y - this.__getCenter(mesh).y);
@@ -519,7 +580,7 @@ export class ViewController {
 
         this.__lastSelectedCenter = boxCenter;
         this.__lastSelectedBoxSize = boxSize;
-
+        this.__meshes.push(mesh);
         this.__scene.add(mesh);
     }
 
@@ -596,7 +657,9 @@ export class ViewController {
                                                 this.__addSelected(
                                                     id,
                                                     currentMesh,
-                                                    currentMesh.geometry.groups[groupIndex]
+                                                    currentMesh.geometry.groups[groupIndex],
+                                                    (currentMesh.material as any).color,
+                                                    (currentMesh.material as any).opacity
                                                 );
                                             }
                                         }

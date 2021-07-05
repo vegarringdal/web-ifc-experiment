@@ -21,8 +21,8 @@ What I want to have working (and might fail at getting to work):
 * [x] show data of selected
 * [x] multi select by holding CTRL 
   * [x] deselect when clicking same item (when using CTRL key)
-* [ ] show all (hidden)
-* [ ] hide not selected
+* [x] show all (hidden)
+* [x] hide not selected
 * [x] use spacenavigator
 * [x] set focus to last selected with button
   * [ ] set focus on selected when you click on a item 
