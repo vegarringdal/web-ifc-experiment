@@ -128,34 +128,24 @@ export class ViewController {
         resetId();
         resetMeshId();
         this.__translateCenter = null;
-        const toRemove: MeshExtended[] = [];
+        const meshToRemove: MeshExtended[] = [];
         this.__scene.children.forEach((mesh: MeshExtended) => {
             if (mesh.meshType) {
-                mesh.geometry.dispose();
-                mesh.remove();
-                toRemove.push(mesh);
+                meshToRemove.push(mesh);
             }
         });
-        toRemove.map((m) => {
-            const index = this.__meshes.indexOf(m);
-            if (index !== -1) {
-                this.__meshes.splice(index, 1);
-            }
-        });
-        toRemove.map((m) => this.__scene.remove(m));
+        this.__remove(meshToRemove);
     }
 
     public clearSelection() {
         this.__selected = new Set<number>();
-        const toRemove: MeshExtended[] = [];
+        const meshToRemove: MeshExtended[] = [];
         this.__scene.children.forEach((mesh: MeshExtended) => {
             if (mesh.meshType === "selected") {
-                mesh.geometry.dispose();
-                mesh.remove();
-                toRemove.push(mesh);
+                meshToRemove.push(mesh);
             }
         });
-        this.__remove(toRemove);
+        this.__remove(meshToRemove);
     }
 
     public hideNotSelected() {
@@ -172,30 +162,28 @@ export class ViewController {
     }
 
     public showAll() {
-        const toRemove: MeshExtended[] = [];
+        const meshToRemove: MeshExtended[] = [];
         this.__scene.children.forEach((mesh: MeshExtended) => {
             if (mesh.meshType && mesh.meshType !== "selected") {
                 mesh.visible = true;
             }
             if (mesh.meshType && mesh.meshType === "new-visible-model") {
-                toRemove.push(mesh);
+                meshToRemove.push(mesh);
             }
         });
 
-        this.__remove(toRemove);
+        this.__remove(meshToRemove);
     }
 
     public clearSelectionOnID(id: number) {
         this.__selected.delete(id);
-        const toRemove: MeshExtended[] = [];
+        const meshToRemove: MeshExtended[] = [];
         this.__scene.children.forEach((mesh: MeshExtended) => {
             if (mesh.meshType === "selected" && mesh.meshID === id) {
-                mesh.geometry.dispose();
-                mesh.remove();
-                toRemove.push(mesh);
+                meshToRemove.push(mesh);
             }
         });
-        this.__remove(toRemove);
+        this.__remove(meshToRemove);
     }
 
     public setOrbitFocusPointToSelected() {
@@ -235,20 +223,24 @@ export class ViewController {
         }
     }
 
-    private __addPlane(divisions = 50) {
-        this.__gridHelper = new GridHelper(100, divisions);
+    private __addPlane(size = 100, divisions = 50) {
+        this.__gridHelper = new GridHelper(size, divisions);
         this.__scene.add(this.__gridHelper);
         this.__gridHelper.visible = false;
     }
 
-    private __remove(toRemove: MeshExtended[]) {
-        toRemove.map((m) => {
+    private __remove(meshToRemove: MeshExtended[]) {
+        meshToRemove.map((m) => {
             const index = this.__meshes.indexOf(m);
             if (index !== -1) {
                 this.__meshes.splice(index, 1);
             }
         });
-        toRemove.map((m) => this.__scene.remove(m));
+        meshToRemove.map((m) => {
+            m.geometry.dispose();
+            m.remove();
+            this.__scene.remove(m);
+        });
     }
 
     private __addClipping() {
