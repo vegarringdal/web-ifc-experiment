@@ -15,7 +15,7 @@ What I want to have working (and might fail at getting to work):
 * [x] select items/picking to get data about item
   * [x] and highlight (limited data atm, since I will use database to get data from TAG property)
   * [x] select all elements with same ID  (before this, just simple parts get highlighted)
-* [ ] hide items
+* [x] hide items
 * [x] select many files and load them
 * [x] center items when loading (default atm) - uses first file as default for next ones
 * [x] show data of selected
@@ -32,6 +32,8 @@ What I want to have working (and might fail at getting to work):
 * [x] simple clipping tools
   * [x] with working selection/picking to get data about item
 * [x] simple ground plane
+* [ ] merge geometry buffer per expressID/color to same memory (might kill normals with this..)
+* [ ] clean up selection/hide spagetti :-)
 
 ## how to use
 

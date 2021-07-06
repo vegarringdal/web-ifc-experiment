@@ -22,7 +22,7 @@ export function ifcVertexDataToGeometryAttributes(vertexData: number[], indexDat
         normals.push(vertexData[k * 6 + 4]);
         normals.push(vertexData[k * 6 + 5]);
 
-        custom.push(vertexData[5]);
+        custom.push(0);
     }
 
     geometry.setAttribute("position", new BufferAttribute(new Float32Array(positions), 3, false));

@@ -14,7 +14,8 @@ import {
     Raycaster,
     BufferGeometry,
     Intersection,
-    BufferAttribute
+    BufferAttribute,
+    InterleavedBufferAttribute
 } from "three";
 
 //@ts-ignore
@@ -69,6 +70,14 @@ export class ViewController {
     private __translateCenter: Vector3;
     private __lastSelectedCenter: Vector3;
     private __selected = new Set<number>();
+    private __hiddenMeshes = new Map<
+        number,
+        {
+            group: { start: number; count: number; materialIndex?: number };
+            index: ArrayLike<number>;
+            geometryAtt: BufferAttribute | InterleavedBufferAttribute;
+        }
+    >();
     private __selectionColor = "blue";
     __lastSelectedBoxSize: number;
 
@@ -170,6 +179,21 @@ export class ViewController {
             if (mesh.meshType && mesh.meshType === "new-visible-model") {
                 meshToRemove.push(mesh);
             }
+        });
+
+        // show meshes set to invisible
+        Array.from(this.__hiddenMeshes).map(([id, value]) => {
+            const group = value.group;
+            const index = value.index;
+            const geometryAtt = value.geometryAtt;
+
+            for (let i = group.start; i < group.start + group.count; i++) {
+                (geometryAtt as any).array[index[i]] = 0;
+            }
+
+            geometryAtt.needsUpdate = true;
+
+            this.__hiddenMeshes.delete(id);
         });
 
         this.__remove(meshToRemove);
@@ -490,7 +514,16 @@ export class ViewController {
             const visible = elem.object.visible;
             const clippingPlanes = elem.object.material.clippingPlanes;
 
-            // if not visiable, then skip it
+            // get attribute so we can check if its hidden
+            const faceNo = elem.object.geometry?.index?.array[elem.faceIndex * 3];
+            const hidden = elem.object.geometry.attributes.custom?.array[faceNo];
+
+            // element set hidden
+            if (hidden > 0) {
+                return false;
+            }
+
+            // if not visible, then skip it
             if (!visible) {
                 return false;
             }
@@ -559,6 +592,7 @@ export class ViewController {
         (mesh as MeshExtended).meshType = "selected";
         (mesh as MeshExtended).meshID = id;
         (mesh as MeshExtended).meshColor = color;
+        (mesh as MeshExtended).generateFromMesh = generateFromMesh;
 
         if (this.__translateCenter) {
             mesh.translateY(mesh.position.y - this.__getCenter(mesh).y);
@@ -574,6 +608,27 @@ export class ViewController {
         this.__lastSelectedBoxSize = boxSize;
         this.__meshes.push(mesh);
         this.__scene.add(mesh);
+    }
+
+    public hideSelected() {
+        const meshToRemove: MeshExtended[] = [];
+        this.__meshes.forEach((m: MeshExtended) => {
+            if (m.meshType === "selected") {
+                meshToRemove.push(m);
+                const geometryAtt = m.generateFromMesh.geometry.attributes.custom;
+                const index = m.generateFromMesh.geometry.index.array;
+                const group = m.geometry.groups[0];
+                const id = m.meshID;
+                this.__hiddenMeshes.set(id, { group, index, geometryAtt });
+
+                for (let i = group.start; i < group.start + group.count; i++) {
+                    (geometryAtt as any).array[index[i]] = 1;
+                }
+                geometryAtt.needsUpdate = true;
+            }
+        });
+
+        this.__remove(meshToRemove);
     }
 
     private __addClickEvent() {
