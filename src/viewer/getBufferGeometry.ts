@@ -10,11 +10,11 @@ export function getBufferGeometry(
     const verts: number[] = ifcAPI.GetVertexArray(
         geometry.GetVertexData(),
         geometry.GetVertexDataSize()
-    );
+    ) as any;
     const indices: number[] = ifcAPI.GetIndexArray(
         geometry.GetIndexData(),
         geometry.GetIndexDataSize()
-    );
+    ) as any;
     const bufferGeometry = ifcVertexDataToGeometryAttributes(verts, indices);
     return bufferGeometry;
 }
