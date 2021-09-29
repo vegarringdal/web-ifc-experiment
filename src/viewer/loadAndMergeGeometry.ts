@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import * as WebIFC from "web-ifc/web-ifc-api";
-import { BufferGeometryUtils } from "three/examples/jsm/utils/BufferGeometryUtils";
+import { mergeBufferGeometries } from "three/examples/jsm/utils/BufferGeometryUtils";
 import { Color, Mesh } from "three";
 import { getAllGeometry } from "./getAllGeometry";
 import { getMaterial } from "./material";
@@ -20,7 +20,7 @@ export function loadAndMergeGeometry(modelID: number, ifcAPI: WebIFC.IfcAPI) {
             const id = geometries[0].userData.id;
             const properties = propertyMap.get(id);
             const mesh = new Mesh(
-                BufferGeometryUtils.mergeBufferGeometries(geometries, true),
+                mergeBufferGeometries(geometries, true),
                 getMaterial(
                     new Color(properties.color.x, properties.color.y, properties.color.z),
                     properties.color.w
