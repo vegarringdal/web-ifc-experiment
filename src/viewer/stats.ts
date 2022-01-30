@@ -1,11 +1,11 @@
 import { ObjectState } from "./state/state";
 
-type STATS ={
+type STATS = {
     calls: number;
     lines: number;
     points: number;
     triangles: number;
-}
+};
 
 export const statsState = new ObjectState<STATS>("STATS_STATE", {
     calls: 0,

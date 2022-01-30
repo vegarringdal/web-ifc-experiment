@@ -307,8 +307,12 @@ export class AppRoot extends HTMLElement {
             <div class="absolute z-[90] top-0 right-36">
                 <span class="m-2 text-white bg-gray-900">calls:${statsState.getValue().calls}</span>
                 <span class="m-2 text-white bg-gray-900">lines:${statsState.getValue().lines}</span>
-                <span class="m-2 text-white bg-gray-900">points:${statsState.getValue().points}</span>
-                <span class="m-2 text-white bg-gray-900">triangles:${statsState.getValue().triangles}</span>
+                <span class="m-2 text-white bg-gray-900"
+                    >points:${statsState.getValue().points}</span
+                >
+                <span class="m-2 text-white bg-gray-900"
+                    >triangles:${statsState.getValue().triangles}</span
+                >
             </div>
             <div class="bottom-0 right-0 absolute bg-indigo-800 text-white m-2 p-2 flex flex-col">
                 ${this.getIFCDataAsHtml(this.data)}
