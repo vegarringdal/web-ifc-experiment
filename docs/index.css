@@ -286,6 +286,9 @@ video {
 .right-0 {
   right: 0px;
 }
+.right-36 {
+  right: 9rem;
+}
 .bottom-0 {
   bottom: 0px;
 }
@@ -366,6 +369,10 @@ video {
 .bg-gray-800 {
   --tw-bg-opacity: 1;
   background-color: rgba(31, 41, 55, var(--tw-bg-opacity));
+}
+.bg-gray-900 {
+  --tw-bg-opacity: 1;
+  background-color: rgba(17, 24, 39, var(--tw-bg-opacity));
 }
 .bg-indigo-500 {
   --tw-bg-opacity: 1;
