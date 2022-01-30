@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.2-next.48](https://github.com/simple-html/simple-html/compare/v0.0.2-next.47...v0.0.2-next.48) (2022-01-30)
+
 ### [0.0.2-next.47](https://github.com/simple-html/simple-html/compare/v0.0.2-next.46...v0.0.2-next.47) (2022-01-30)
 
 ### [0.0.2-next.46](https://github.com/simple-html/simple-html/compare/v0.0.2-next.45...v0.0.2-next.46) (2021-11-07)
