@@ -43,6 +43,7 @@ import { resetMeshId } from "./getNewMeshId";
 import { resetId } from "./colorId";
 import { getMaterial } from "./material";
 import { collectionMap } from "./collectionMap";
+import { statsState } from "./stats";
 
 export type { planeStateType } from "./planeState";
 type listener = { handleEvent: (e: any) => void };
@@ -376,6 +377,13 @@ export class ViewController {
         this.__renderer.render(this.__scene, this.__camera);
 
         if (this.__monitors) {
+            const stats = this.__renderer.info.render;
+            statsState.setValue({
+                calls: stats.calls,
+                lines: stats.lines,
+                points: stats.points,
+                triangles: stats.triangles
+            });
             this.__monitors.end();
         }
 

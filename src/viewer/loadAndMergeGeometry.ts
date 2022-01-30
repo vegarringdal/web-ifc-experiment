@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import * as WebIFC from "web-ifc/web-ifc-api";
-import { mergeBufferGeometries } from "three/examples/jsm/utils/BufferGeometryUtils";
+// @ts-ignore
+import { mergeBufferGeometries } from "../../node_modules/three/examples/jsm/utils/BufferGeometryUtils";
 import { Color, Mesh } from "three";
 import { getAllGeometry } from "./getAllGeometry";
 import { getMaterial } from "./material";

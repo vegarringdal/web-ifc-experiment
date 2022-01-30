@@ -2,6 +2,7 @@ import { clippingControlX, clippingControlY, clippingControlZ } from "clippingCo
 import { html, render } from "lit-html";
 import { ViewController } from "viewer/viewController";
 import { isValidUrl } from "viewer/isValidUrl";
+import { statsState } from "viewer/stats";
 
 declare const VERSION: string;
 export class AppRoot extends HTMLElement {
@@ -17,6 +18,7 @@ export class AppRoot extends HTMLElement {
         this.render();
         this.viewController = new ViewController("3dview");
         this.viewController.addEventListener(this);
+        statsState.subscribe(this, this.render);
     }
 
     handleEvent(e: any) {
@@ -302,6 +304,12 @@ export class AppRoot extends HTMLElement {
             <!--   template -->
             <canvas class="top-0 absolute w-full h-full" id="3dview"> </canvas>
             ${this.showButtonsTemplate()}
+            <div class="absolute z-[90] top-0 right-36">
+                <span class="m-2 text-white bg-gray-900">calls:${statsState.getValue().calls}</span>
+                <span class="m-2 text-white bg-gray-900">lines:${statsState.getValue().lines}</span>
+                <span class="m-2 text-white bg-gray-900">points:${statsState.getValue().points}</span>
+                <span class="m-2 text-white bg-gray-900">triangles:${statsState.getValue().triangles}</span>
+            </div>
             <div class="bottom-0 right-0 absolute bg-indigo-800 text-white m-2 p-2 flex flex-col">
                 ${this.getIFCDataAsHtml(this.data)}
             </div>
