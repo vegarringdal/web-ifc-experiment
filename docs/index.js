@@ -3182,7 +3182,7 @@ return ret;
                     <div
                         class="inline-block p-2 m-2 bg-indigo-800 text-white z-10 relative text-center"
                     >
-                        V:${"0.0.2-next.48"}
+                        V:${"0.0.2-next.49"}
                     </div>
                     <button
                         class="inline-block p-2 m-2 bg-indigo-800 text-white z-10 relative"
