@@ -5,7 +5,10 @@ Parser used is [web-ifc](https://github.com/tomvandig/web-ifc)
 
 Work here might end up as seperate package or part of [web-ifc-viewer](https://github.com/agviegas/web-ifc-viewer)
 
-Warning, this will have a lot of weird stuff :-)
+Warning 💣⚠️🪖
+* This will have a lot of weird stuff, there have been no focus at all on how code is, just try and get it to work.
+* Spagetti code is a good word for it 😂🎉😎
+* Its pretty much been a testign ground for another project
 
 Atm its not something you can install, most work will go into helper viewController class - located under folder scr/viewer
 
@@ -25,7 +28,7 @@ What I want to have working (and might fail at getting to work):
 * [x] hide not selected
 * [x] use spacenavigator
 * [x] set focus to last selected with button
-  * [ ] set focus on selected when you click on a item 
+  * [ ] set focus on selected when you click on a item
 * [x] clear scene (so you can load new, else it will add)
 * [ ] enable wireframe on material
 * [ ] some selection three
