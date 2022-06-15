@@ -59,7 +59,7 @@ client(null, {
     },
     entryPoints: ["./src/index.ts"],
     outfile: "./docs/index.js",
-    plugins: [minifyHTMLLiteralsPlugin(), SkipPathAndFs],
+    plugins: [SkipPathAndFs],
     minify: true,
     bundle: true,
     platform: "browser",
