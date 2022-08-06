@@ -1,0 +1,12 @@
+{
+    "recommendations": [
+        "eamodio.gitlens",
+        "pflannery.vscode-versionlens",
+        "esbenp.prettier-vscode",
+        "gruntfuggly.todo-tree",
+        "esbenp.prettier-vscode",
+        "bradlc.vscode-tailwindcss",
+        "rangav.vscode-thunder-client",
+        "redhat.vscode-yaml"
+    ]
+}
