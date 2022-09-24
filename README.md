@@ -1,5 +1,9 @@
 # web-ifc-experiment
 
+This repo is not maintained. Used what I learned here to make a 3d application at work
+
+Will not be maintained - but might rebuilt it later if I have time takign all I learned from 3d application at work - if I dont get to open source work application. But again that was not using IFC, but backend parsing of RVM files and custom format from azure blob storage
+
 This was a repo where I tried gpu picking, but it used to much memory on very large models, so moved away from it
 Parser used is [web-ifc](https://github.com/tomvandig/web-ifc)
 
